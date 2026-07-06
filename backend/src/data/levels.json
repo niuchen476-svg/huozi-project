@@ -1,0 +1,9 @@
+[
+  { "id": "ruijin-departure", "order": 1, "title": "瑞金出发", "conflict": "为什么要走", "status": "draft" },
+  { "id": "xiangjiang-battle", "order": 2, "title": "湘江血战", "conflict": "代价有多大", "status": "draft" },
+  { "id": "zunyi-turn", "order": 3, "title": "遵义转折", "conflict": "为什么是转折点", "status": "draft" },
+  { "id": "sidu-chishui", "order": 4, "title": "四渡赤水", "conflict": "机动与迷惑", "status": "draft" },
+  { "id": "luding-bridge", "order": 5, "title": "飞夺泸定桥", "conflict": "极限时间与极限手段", "status": "sample" },
+  { "id": "snow-grassland", "order": 6, "title": "雪山草地", "conflict": "极限生存", "status": "draft" },
+  { "id": "huining-join", "order": 7, "title": "会宁会师", "conflict": "意义在哪", "status": "draft" }
+]

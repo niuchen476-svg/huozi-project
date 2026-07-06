@@ -1,0 +1,25 @@
+import { renderHomeView } from "./views/home.js";
+import { renderMapView } from "./views/map.js";
+import { renderLevelView } from "./views/level.js";
+import { setupBgm } from "./bgm.js";
+
+const app = document.querySelector("#app");
+
+function route() {
+  const hash = window.location.hash.slice(1) || "/";
+  const levelMatch = hash.match(/^\/level\/(.+)$/);
+
+  app.classList.toggle("app--fullbleed", hash === "/map" || hash === "/");
+
+  if (levelMatch) {
+    renderLevelView(app, levelMatch[1]);
+  } else if (hash === "/map") {
+    renderMapView(app);
+  } else {
+    renderHomeView(app);
+  }
+}
+
+window.addEventListener("hashchange", route);
+route();
+setupBgm();
