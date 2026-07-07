@@ -408,24 +408,118 @@ export function createRiverColumn() {
 
 function createSoldier(scale = 1) {
   const group = new THREE.Group();
-  const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x9c231b, roughness: 0.72 });
-  const headMaterial = new THREE.MeshStandardMaterial({ color: 0xd3a06e, roughness: 0.7 });
-  const packMaterial = new THREE.MeshStandardMaterial({ color: 0x51432f, roughness: 0.8 });
+  const robeMaterial = new THREE.MeshStandardMaterial({ color: 0x5f1717, roughness: 0.78 });
+  const robeDarkMaterial = new THREE.MeshStandardMaterial({ color: 0x351014, roughness: 0.82 });
+  const armorMaterial = new THREE.MeshStandardMaterial({ color: 0x171b1f, metalness: 0.38, roughness: 0.42 });
+  const helmetMaterial = new THREE.MeshStandardMaterial({ color: 0x262a2d, metalness: 0.48, roughness: 0.36 });
+  const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xc9a14c, metalness: 0.72, roughness: 0.28 });
+  const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xd6a27a, roughness: 0.66 });
+  const plumeMaterial = new THREE.MeshStandardMaterial({ color: 0xaa2c25, roughness: 0.62 });
 
-  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.11 * scale, 0.14 * scale, 0.46 * scale, 12), bodyMaterial);
-  body.position.y = 0.36 * scale;
-  body.castShadow = true;
-  group.add(body);
+  function addMesh(mesh, position, rotation = null) {
+    mesh.position.set(position[0] * scale, position[1] * scale, position[2] * scale);
+    if (rotation) mesh.rotation.set(rotation[0], rotation[1], rotation[2]);
+    mesh.castShadow = true;
+    group.add(mesh);
+    return mesh;
+  }
 
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.12 * scale, 14, 10), headMaterial);
-  head.position.y = 0.66 * scale;
-  head.castShadow = true;
-  group.add(head);
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.13 * scale, 0.17 * scale, 0.43 * scale, 14), robeMaterial);
+  addMesh(torso, [0, 0.42, 0]);
 
-  const pack = new THREE.Mesh(new THREE.BoxGeometry(0.2 * scale, 0.28 * scale, 0.08 * scale), packMaterial);
-  pack.position.set(0, 0.37 * scale, 0.13 * scale);
-  pack.castShadow = true;
-  group.add(pack);
+  const frontSkirt = new THREE.Mesh(new THREE.BoxGeometry(0.3 * scale, 0.38 * scale, 0.035 * scale), robeMaterial);
+  addMesh(frontSkirt, [0, 0.16, -0.04]);
+
+  const splitPanelMaterial = new THREE.MeshStandardMaterial({ color: 0x4b1317, roughness: 0.82 });
+  [-0.09, 0.09].forEach((x) => {
+    const panel = new THREE.Mesh(new THREE.BoxGeometry(0.12 * scale, 0.42 * scale, 0.045 * scale), splitPanelMaterial);
+    addMesh(panel, [x, 0.12, -0.07]);
+  });
+
+  const trim = new THREE.Mesh(new THREE.BoxGeometry(0.34 * scale, 0.045 * scale, 0.055 * scale), armorMaterial);
+  addMesh(trim, [0, -0.09, -0.07]);
+
+  const belt = new THREE.Mesh(new THREE.BoxGeometry(0.37 * scale, 0.055 * scale, 0.08 * scale), armorMaterial);
+  addMesh(belt, [0, 0.28, -0.02]);
+
+  [-0.07, 0.07].forEach((x) => {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.025 * scale, 0.03 * scale, 0.26 * scale, 8), armorMaterial);
+    addMesh(leg, [x, -0.15, 0]);
+    const boot = new THREE.Mesh(new THREE.BoxGeometry(0.07 * scale, 0.035 * scale, 0.12 * scale), armorMaterial);
+    addMesh(boot, [x, -0.29, -0.035]);
+  });
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.105 * scale, 16, 10), skinMaterial);
+  addMesh(head, [0, 0.69, -0.015]);
+
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.128 * scale, 16, 8), helmetMaterial);
+  helmet.scale.y = 0.62;
+  addMesh(helmet, [0, 0.77, -0.005]);
+
+  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.2 * scale, 0.035 * scale, 0.028 * scale), armorMaterial);
+  addMesh(visor, [0, 0.735, -0.115]);
+
+  [-0.095, 0.095].forEach((x) => {
+    const cheekGuard = new THREE.Mesh(new THREE.BoxGeometry(0.04 * scale, 0.14 * scale, 0.035 * scale), helmetMaterial);
+    addMesh(cheekGuard, [x, 0.655, -0.045], [0, 0, x < 0 ? -0.18 : 0.18]);
+  });
+
+  const neckGuard = new THREE.Mesh(new THREE.BoxGeometry(0.22 * scale, 0.16 * scale, 0.045 * scale), robeDarkMaterial);
+  addMesh(neckGuard, [0, 0.62, 0.085]);
+
+  const plumeBase = new THREE.Mesh(new THREE.CylinderGeometry(0.014 * scale, 0.014 * scale, 0.08 * scale, 8), goldMaterial);
+  addMesh(plumeBase, [0, 0.88, 0]);
+
+  const plume = new THREE.Mesh(new THREE.CylinderGeometry(0.012 * scale, 0.018 * scale, 0.24 * scale, 8), plumeMaterial);
+  addMesh(plume, [0, 1.02, 0]);
+
+  const plumeTip = new THREE.Mesh(new THREE.ConeGeometry(0.027 * scale, 0.09 * scale, 8), armorMaterial);
+  addMesh(plumeTip, [0, 1.185, 0]);
+
+  [-1, 1].forEach((side) => {
+    const shoulder = new THREE.Mesh(new THREE.BoxGeometry(0.15 * scale, 0.07 * scale, 0.12 * scale), armorMaterial);
+    addMesh(shoulder, [side * 0.18, 0.58, -0.01], [0, 0, side * 0.18]);
+
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.035 * scale, 0.04 * scale, 0.34 * scale, 8), armorMaterial);
+    addMesh(upperArm, [side * 0.255, 0.43, -0.01], [0, 0, side * 0.66]);
+
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.028 * scale, 0.032 * scale, 0.28 * scale, 8), armorMaterial);
+    addMesh(forearm, [side * 0.36, 0.29, -0.02], [0, 0, side * 0.78]);
+
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.038 * scale, 10, 8), skinMaterial);
+    addMesh(hand, [side * 0.46, 0.19, -0.03]);
+
+    for (let i = 0; i < 4; i += 1) {
+      const stud = new THREE.Mesh(new THREE.SphereGeometry(0.012 * scale, 8, 6), goldMaterial);
+      addMesh(stud, [side * (0.22 + i * 0.055), 0.53 - i * 0.075, -0.082]);
+    }
+  });
+
+  const chestMirror = new THREE.Mesh(new THREE.CylinderGeometry(0.073 * scale, 0.073 * scale, 0.024 * scale, 24), goldMaterial);
+  addMesh(chestMirror, [0, 0.49, -0.148], [Math.PI / 2, 0, 0]);
+
+  const mirrorBoss = new THREE.Mesh(new THREE.SphereGeometry(0.028 * scale, 12, 8), goldMaterial);
+  addMesh(mirrorBoss, [0, 0.49, -0.163]);
+
+  const rivetGeometry = new THREE.SphereGeometry(0.011 * scale, 8, 6);
+  const rivetRows = [
+    [-0.07, 0, 0.07],
+    [-0.085, -0.03, 0.03, 0.085],
+    [-0.07, 0, 0.07],
+    [-0.085, -0.03, 0.03, 0.085],
+  ];
+  rivetRows.forEach((xs, row) => {
+    xs.forEach((x) => {
+      const rivet = new THREE.Mesh(rivetGeometry, goldMaterial);
+      addMesh(rivet, [x, 0.56 - row * 0.075, -0.145]);
+    });
+  });
+
+  [-0.11, -0.045, 0.045, 0.11].forEach((x, index) => {
+    const fringeMaterial = index % 2 === 0 ? robeDarkMaterial : robeMaterial;
+    const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.04 * scale, 0.13 * scale, 0.035 * scale), fringeMaterial);
+    addMesh(fringe, [x, -0.19, -0.075]);
+  });
 
   return group;
 }
