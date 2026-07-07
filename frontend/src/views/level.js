@@ -1,24 +1,15 @@
-import { fetchLevel, verifyInference } from "../api.js";
+import { fetchLevel, submitReflection } from "../api.js";
 import { markCompleted, hasCrossedBridge, markBridgeCrossed } from "../state.js";
 import { renderBridgeAction } from "./bridgeAction.js";
-
-const VERDICT_LABEL = {
-  supported: "✅ 有史料支持",
-  partial: "⚠️ 部分成立、遗漏关键信息",
-  refuted: "❌ 被证据反驳",
-};
 
 const ACTION_SCENES = {
   "luding-bridge": renderBridgeAction,
 };
 
+const POEM_FORMS = ["七律", "绝句", "词"];
+
 export async function renderLevelView(root, levelId) {
-  const actionScene = ACTION_SCENES[levelId];
-  const playedAction = actionScene && !hasCrossedBridge(levelId);
-  if (playedAction) {
-    await actionScene(root);
-    markBridgeCrossed(levelId);
-  }
+  const app = document.querySelector("#app");
 
   root.innerHTML = `
     <div class="view view-level">
@@ -39,6 +30,16 @@ export async function renderLevelView(root, levelId) {
     return;
   }
 
+  const actionScene = ACTION_SCENES[levelId];
+  const playedAction = actionScene && !hasCrossedBridge(levelId);
+
+  if (playedAction) {
+    app.classList.add("app--fullbleed");
+    await actionScene(root, level);
+    markBridgeCrossed(levelId);
+    app.classList.remove("app--fullbleed");
+  }
+
   root.innerHTML = `
     <div class="view view-level">
       <a class="back-link" href="#/map">← 返回路线图</a>
@@ -46,7 +47,7 @@ export async function renderLevelView(root, levelId) {
       <header class="level-header">
         <p class="level-header__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
         <h1>${level.title}</h1>
-        ${playedAction ? `<p class="level-header__debrief">刚才你在枪林弹雨里做出的选择，现在用真实史料复盘检验一下。</p>` : ""}
+        ${playedAction ? `<p class="level-header__debrief">刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。</p>` : ""}
         <p class="level-header__scenario">${level.scenario}</p>
       </header>
 
@@ -59,17 +60,30 @@ export async function renderLevelView(root, levelId) {
         </section>
 
         <section class="dossier__inference">
-          <h2 class="dossier__heading">${level.playerQuestion}</h2>
-          <textarea id="inference-input" rows="6" placeholder="写下你的推断，可以引用具体的档案卡内容……"></textarea>
-          <button id="submit-inference" type="button">提交推断，交付核验</button>
-          <div id="verdict-panel" class="verdict-panel"></div>
+          <h2 class="dossier__heading">写下你此刻的感悟</h2>
+          <textarea id="reflection-input" rows="6" placeholder="经历了这一切，你有什么感想？"></textarea>
+
+          <div class="poem-form-picker">
+            <span class="poem-form-picker__label">选择诗词形式：</span>
+            ${POEM_FORMS.map(
+              (form, i) => `
+              <label class="poem-form-picker__option">
+                <input type="radio" name="poem-form" value="${form}" ${i === 0 ? "checked" : ""} />
+                <span>${form}</span>
+              </label>
+            `
+            ).join("")}
+          </div>
+
+          <button id="submit-reflection" type="button">提交感悟，请 AI 赋诗</button>
+          <div id="reflection-panel" class="reflection-panel"></div>
         </section>
       </div>
     </div>
   `;
 
   document
-    .querySelector("#submit-inference")
+    .querySelector("#submit-reflection")
     .addEventListener("click", () => handleSubmit(levelId));
 }
 
@@ -89,47 +103,40 @@ function renderCard(card) {
 }
 
 async function handleSubmit(levelId) {
-  const input = document.querySelector("#inference-input");
-  const panel = document.querySelector("#verdict-panel");
-  const inference = input.value.trim();
+  const input = document.querySelector("#reflection-input");
+  const panel = document.querySelector("#reflection-panel");
+  const form = document.querySelector('input[name="poem-form"]:checked').value;
+  const reflection = input.value.trim();
 
-  if (!inference) {
-    panel.innerHTML = `<p class="error">请先写下你的推断</p>`;
+  if (!reflection) {
+    panel.innerHTML = `<p class="error">请先写下你的感悟</p>`;
     return;
   }
 
-  panel.innerHTML = `<p class="loading">正在逐条核验……</p>`;
+  panel.innerHTML = `<p class="loading">AI 正在构思……</p>`;
 
   try {
-    const result = await verifyInference(levelId, inference);
-    panel.innerHTML = renderVerdict(result);
-
-    if (result.overallPassed) {
-      markCompleted(levelId);
-    }
+    const result = await submitReflection(levelId, reflection, form);
+    panel.innerHTML = renderPoem(result);
+    markCompleted(levelId);
   } catch (err) {
-    panel.innerHTML = `<p class="error">核验失败：${err.message}</p>`;
+    panel.innerHTML = `<p class="error">生成失败：${err.message}</p>`;
   }
 }
 
-function renderVerdict(result) {
-  const pointsHtml = result.points
-    .map(
-      (point) => `
-      <li class="verdict-point verdict-point--${point.verdict}">
-        <p class="verdict-point__claim">${point.claim}</p>
-        <p class="verdict-point__label">${VERDICT_LABEL[point.verdict] || point.verdict}</p>
-        <p class="verdict-point__evidence">${point.evidence}</p>
-      </li>
-    `
-    )
+function renderPoem(result) {
+  const lines = (result.poemBody || "")
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => `<p class="poem-line">${line.trim()}</p>`)
     .join("");
 
   return `
-    <ul class="verdict-list">${pointsHtml}</ul>
-    <p class="verdict-summary">${result.summary}</p>
-    <p class="verdict-overall verdict-overall--${result.overallPassed ? "pass" : "fail"}">
-      ${result.overallPassed ? "证据链站得住脚，关卡解锁。" : "证据链尚未站住，修改推断后可重新提交。"}
-    </p>
+    <p class="reflection-commentary">${result.commentary}</p>
+    <div class="poem-card">
+      <p class="poem-card__form">${result.poemForm}</p>
+      <h3 class="poem-card__title">${result.poemTitle}</h3>
+      ${lines}
+    </div>
   `;
 }

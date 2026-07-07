@@ -374,11 +374,43 @@ a {
 
 .bridge-scene__bg {
   position: absolute;
-  inset: 0;
+  inset: -3%;
+  width: 106%;
+  height: 106%;
   background-color: #2b241c;
   background-size: cover;
   background-position: center;
   transition: background-image 0.6s ease;
+}
+
+.bridge-scene__bg--sway {
+  animation: bridge-sway 3.6s ease-in-out infinite;
+}
+
+@keyframes bridge-sway {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-0.6%, 0.3%) rotate(-0.3deg);
+  }
+  75% {
+    transform: translate(0.6%, -0.3%) rotate(0.3deg);
+  }
+}
+
+.bridge-scene__bg--jolt {
+  animation: bridge-sway 3.6s ease-in-out infinite, bridge-jolt 0.25s ease-out;
+}
+
+@keyframes bridge-jolt {
+  0% {
+    transform: scale(1.015) translateY(4px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
 }
 
 .bridge-scene__vignette {
@@ -518,9 +550,9 @@ a {
   }
 }
 
-/* ---------- 敢死队选人 ---------- */
+/* ---------- 历史背景前置 ---------- */
 
-.squad-select {
+.history-intro {
   position: absolute;
   inset: 0;
   z-index: 25;
@@ -528,10 +560,59 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 20px;
   padding: 24px;
-  background-size: cover;
-  background-position: center;
+  background: rgba(10, 8, 6, 0.68);
+  text-align: center;
+}
+
+.history-intro__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: rgba(237, 228, 205, 0.75);
+}
+
+.history-intro__title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--color-paper);
+  margin: 0;
+}
+
+.history-intro__text {
+  max-width: 620px;
+  color: rgba(237, 228, 205, 0.9);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+#history-intro-start {
+  margin-top: 12px;
+  padding: 12px 32px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-paper);
+  background: var(--color-red);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+#history-intro-start:hover {
+  background: var(--color-red-deep);
+  transform: translateY(-2px);
+}
+
+/* ---------- 敢死队选人 ---------- */
+
+.squad-select {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
   transition: opacity 0.5s ease;
 }
 
@@ -539,7 +620,30 @@ a {
   opacity: 0;
 }
 
+.squad-select__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.squad-select__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 8, 6, 0.65) 0%,
+    rgba(10, 8, 6, 0.15) 30%,
+    rgba(10, 8, 6, 0.15) 70%,
+    rgba(10, 8, 6, 0.65) 100%
+  );
+}
+
 .squad-select__title {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
   max-width: 640px;
   text-align: center;
   font-family: var(--font-serif);
@@ -549,50 +653,28 @@ a {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
-.squad-select__lineup {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.squad-select__mate,
 .squad-select__slot {
-  width: 56px;
-  height: 56px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   font-family: var(--font-serif);
-  font-size: 0.8rem;
-  color: var(--color-paper);
-  overflow: hidden;
-}
-
-.squad-select__mate {
-  background: rgba(85, 73, 60, 0.7);
-  border: 2px solid rgba(237, 228, 205, 0.4);
-}
-
-.squad-select__mate img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  user-select: none;
-}
-
-.squad-select__slot {
+  font-size: 0.72rem;
   border: 2px dashed var(--color-red);
   color: var(--color-red);
-  background: rgba(156, 35, 27, 0.12);
-  font-size: 0.72rem;
+  background: rgba(156, 35, 27, 0.15);
+  animation: bridge-warning-pulse 1.4s ease-in-out infinite;
 }
 
 .squad-select__player {
-  width: 56px;
-  height: 56px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -602,7 +684,8 @@ a {
   font-weight: 700;
   color: var(--color-paper);
   background: var(--color-red);
-  border: 2px solid var(--color-paper);
+  border: 3px solid var(--color-paper);
+  box-shadow: 0 0 0 3px rgba(156, 35, 27, 0.55);
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -618,13 +701,18 @@ a {
 
 .squad-select__player--locked {
   cursor: default;
-  box-shadow: 0 0 0 4px rgba(156, 35, 27, 0.4);
+  box-shadow: 0 0 0 5px rgba(156, 35, 27, 0.5);
 }
 
 .squad-select__hint {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--font-sans);
   font-size: 0.85rem;
-  color: rgba(237, 228, 205, 0.85);
+  color: rgba(237, 228, 205, 0.9);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
 /* ---------- 关卡页 ---------- */
@@ -744,84 +832,66 @@ a {
   background: var(--color-red-deep);
 }
 
-.verdict-panel {
+.poem-form-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 0.9rem;
+}
+
+.poem-form-picker__label {
+  color: var(--color-ink-soft);
+}
+
+.poem-form-picker__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-family: var(--font-serif);
+}
+
+.reflection-panel {
   margin-top: 24px;
 }
 
-.verdict-list {
-  list-style: none;
-  margin: 0 0 16px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.reflection-commentary {
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+  margin: 0 0 20px;
 }
 
-.verdict-point {
-  padding: 12px 14px;
-  border-left: 4px solid var(--color-ink-soft);
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 0 var(--radius) var(--radius) 0;
+.poem-card {
+  padding: 24px 28px;
+  background: var(--color-paper-deep);
+  border: 1px solid rgba(42, 36, 32, 0.18);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  text-align: center;
 }
 
-.verdict-point--supported {
-  border-left-color: var(--color-red);
-}
-
-.verdict-point--partial {
-  border-left-color: var(--color-gold);
-}
-
-.verdict-point--refuted {
-  border-left-color: var(--color-slate);
-}
-
-.verdict-point__claim {
+.poem-card__form {
   margin: 0 0 6px;
-  font-weight: 500;
-}
-
-.verdict-point__label {
-  margin: 0 0 6px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.verdict-point--supported .verdict-point__label {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
   color: var(--color-red);
+  text-transform: uppercase;
 }
 
-.verdict-point--partial .verdict-point__label {
-  color: var(--color-gold);
-}
-
-.verdict-point--refuted .verdict-point__label {
-  color: var(--color-slate);
-}
-
-.verdict-point__evidence {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--color-ink-soft);
-}
-
-.verdict-summary {
-  color: var(--color-ink-soft);
-  font-size: 0.92rem;
-}
-
-.verdict-overall {
+.poem-card__title {
   font-family: var(--font-serif);
-  font-weight: 700;
-  padding: 10px 0;
+  font-size: 1.2rem;
+  margin: 0 0 16px;
 }
 
-.verdict-overall--pass {
-  color: var(--color-red);
-}
-
-.verdict-overall--fail {
-  color: var(--color-slate);
+.poem-line {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 2.1;
+  margin: 0;
+  color: var(--color-ink);
 }
 
 /* ---------- 背景音乐按钮 ---------- */

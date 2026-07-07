@@ -1,25 +1,25 @@
 import { Router } from "express";
 import { loadLevelsIndex, loadLevelCards } from "../services/levelsData.js";
-import { verifyInference } from "../services/verify.js";
+import { generateReflection } from "../services/reflect.js";
 
 const router = Router();
 
-const MAX_INFERENCE_LENGTH = 2000;
+const MAX_REFLECTION_LENGTH = 2000;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX = 12; // 每个 IP 每 10 分钟最多提交这么多次核验（会实际调用计费的 LLM 接口）
-const verifyRequestLog = new Map();
+const RATE_LIMIT_MAX = 12; // 每个 IP 每 10 分钟最多提交这么多次（会实际调用计费的 LLM 接口）
+const aiRequestLog = new Map();
 
-function verifyRateLimit(req, res, next) {
+function aiRateLimit(req, res, next) {
   const key = req.ip;
   const now = Date.now();
-  const recent = (verifyRequestLog.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  const recent = (aiRequestLog.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
 
   if (recent.length >= RATE_LIMIT_MAX) {
     return res.status(429).json({ error: "请求过于频繁，请稍后再试" });
   }
 
   recent.push(now);
-  verifyRequestLog.set(key, recent);
+  aiRequestLog.set(key, recent);
   next();
 }
 
@@ -41,17 +41,20 @@ router.get("/levels/:id", async (req, res) => {
   }
 });
 
-router.post("/levels/:id/verify", verifyRateLimit, async (req, res) => {
-  const { inference } = req.body;
-  if (!inference || typeof inference !== "string") {
-    return res.status(400).json({ error: "缺少 inference 字段" });
+router.post("/levels/:id/reflect", aiRateLimit, async (req, res) => {
+  const { reflection, form } = req.body;
+  if (!reflection || typeof reflection !== "string") {
+    return res.status(400).json({ error: "缺少 reflection 字段" });
   }
-  if (inference.length > MAX_INFERENCE_LENGTH) {
-    return res.status(400).json({ error: `推断内容过长，请控制在 ${MAX_INFERENCE_LENGTH} 字以内` });
+  if (reflection.length > MAX_REFLECTION_LENGTH) {
+    return res.status(400).json({ error: `感悟内容过长，请控制在 ${MAX_REFLECTION_LENGTH} 字以内` });
+  }
+  if (!["七律", "绝句", "词"].includes(form)) {
+    return res.status(400).json({ error: "诗词形式必须是 七律 / 绝句 / 词 之一" });
   }
 
   try {
-    const result = await verifyInference(req.params.id, inference);
+    const result = await generateReflection(req.params.id, reflection, form);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -12,6 +12,10 @@ const TEAMMATE_ICON = `${ASSET_BASE}/teammate-icon.png`;
 const TEAMMATE_FALL = `${ASSET_BASE}/teammate-fall.png`;
 const VICTORY_IMAGE = `${ASSET_BASE}/bridge-victory.png`;
 
+// 坐标是在 squad-assembly.png 图片里的百分比位置：队伍后排 -> 桥头
+const PLAYER_START_POS = { x: 88, y: 45 };
+const SQUAD_SLOT_POS = { x: 44, y: 53 };
+
 const NARRATIVE_BEATS = [
   { at: 2, text: "脚下的铁索还带着体温——是刚刚倒下的战友抓过的地方" },
   { at: 35, text: "对岸的机枪一刻不停，火力像雨点一样打在铁链上" },
@@ -20,7 +24,6 @@ const NARRATIVE_BEATS = [
 
 const HIT_LINES = ["一名战士中弹，坠入湍急的大渡河", "小心！", "撑住，就快到了！"];
 
-const SQUAD_SIZE = 5;
 const HIT_LIMIT = 3;
 const ADVANCE_STEP = 5;
 const DODGE_WINDOW_MS = 850;
@@ -28,12 +31,12 @@ const MIN_FIRE_GAP_MS = 1400;
 const MAX_FIRE_GAP_MS = 2600;
 const FIRE_LIMIT = 5;
 
-export function renderBridgeAction(root) {
+export function renderBridgeAction(root, level) {
   return new Promise((resolve) => {
     root.innerHTML = `
       <div class="view view-bridge-action">
         <div class="bridge-scene" id="bridge-scene">
-          <div class="bridge-scene__bg" id="bridge-bg"></div>
+          <div class="bridge-scene__bg" id="bridge-bg" style="background-image: url('${KEYFRAMES[0].bg}')"></div>
           <div class="bridge-scene__vignette"></div>
 
           <div class="bridge-hud" id="bridge-hud" hidden>
@@ -47,29 +50,34 @@ export function renderBridgeAction(root) {
           <div class="bridge-caption" id="bridge-caption" hidden></div>
           <div class="bridge-hint" id="bridge-hint" hidden></div>
 
-          <div class="squad-select" id="squad-select" style="background-image: linear-gradient(rgba(20,16,12,0.55), rgba(20,16,12,0.55)), url('${SQUAD_BG}')">
-            <p class="squad-select__title">长官喊话：桥板已经被敌人拆光，只剩下十三根光铁索！<br />但泸定桥，天黑之前必须拿下！谁愿意第一个上？</p>
-            <div class="squad-select__lineup" id="squad-lineup">
-              ${renderTeammates()}
-              <div class="squad-select__slot" id="squad-slot">拖到这里</div>
-              <div class="squad-select__player" id="squad-player"><img src="${TEAMMATE_ICON}" alt="你" draggable="false" /></div>
+          <div class="history-intro" id="history-intro">
+            <p class="history-intro__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
+            <h2 class="history-intro__title">${level.title}</h2>
+            <p class="history-intro__text">${level.scenario}</p>
+            <button type="button" id="history-intro-start">开始行动</button>
+          </div>
+
+          <div class="squad-select" id="squad-select" hidden>
+            <div class="squad-select__bg" style="background-image: url('${SQUAD_BG}')"></div>
+            <div class="squad-select__scrim"></div>
+            <p class="squad-select__title">团长喊话：桥板已经被敌人拆光，只剩下十三根光铁索！<br />但泸定桥，天黑之前必须拿下！谁愿意第一个上？</p>
+            <div class="squad-select__slot" id="squad-slot" style="left: ${SQUAD_SLOT_POS.x}%; top: ${SQUAD_SLOT_POS.y}%;">拖到这里</div>
+            <div class="squad-select__player" id="squad-player" style="left: ${PLAYER_START_POS.x}%; top: ${PLAYER_START_POS.y}%;">
+              <img src="${TEAMMATE_ICON}" alt="你" draggable="false" />
             </div>
-            <p class="squad-select__hint">把"你"拖到最前面的"拖到这里"位置，报名突击队</p>
+            <p class="squad-select__hint">把画面里的"你"从队伍里拖到桥头位置，报名突击队</p>
           </div>
         </div>
       </div>
     `;
 
-    setupSquadSelect(() => startCrossing(resolve));
+    document.querySelector("#history-intro-start").addEventListener("click", () => {
+      document.querySelector("#history-intro").remove();
+      const squadSelect = document.querySelector("#squad-select");
+      squadSelect.hidden = false;
+      setupSquadSelect(() => startCrossing(resolve));
+    });
   });
-}
-
-function renderTeammates() {
-  let html = "";
-  for (let i = 0; i < SQUAD_SIZE; i++) {
-    html += `<div class="squad-select__mate"><img src="${TEAMMATE_ICON}" alt="同志" draggable="false" /></div>`;
-  }
-  return html;
 }
 
 function setupSquadSelect(onSelected) {
@@ -160,6 +168,7 @@ function startCrossing(resolve) {
 
   squadSelect.remove();
   hud.hidden = false;
+  bg.classList.add("bridge-scene__bg--sway");
 
   let progress = 0;
   let hits = 0;
@@ -211,6 +220,13 @@ function startCrossing(resolve) {
     img.style.left = `${20 + Math.random() * 60}%`;
     scene.appendChild(img);
     img.addEventListener("animationend", () => img.remove());
+  }
+
+  function jolt() {
+    bg.classList.remove("bridge-scene__bg--jolt");
+    // 强制重排，保证同一个 class 连续加两次也能重新触发动画
+    void bg.offsetWidth;
+    bg.classList.add("bridge-scene__bg--jolt");
   }
 
   function scheduleFire() {
@@ -275,6 +291,7 @@ function startCrossing(resolve) {
     clearTimeout(dodgeTimeout);
     warningEl.hidden = true;
     window.removeEventListener("keydown", onKeyDown);
+    bg.classList.remove("bridge-scene__bg--sway");
     bg.style.backgroundImage = `url(${VICTORY_IMAGE})`;
     showCaption("两小时激战，泸定城，拿下了。", "victory", 2600);
     setTimeout(() => {
@@ -289,6 +306,7 @@ function startCrossing(resolve) {
     if (event.code === "Space" || event.key === " ") {
       event.preventDefault();
       progress = Math.min(100, progress + ADVANCE_STEP);
+      jolt();
       updateHud();
       if (progress >= 100) winCrossing();
       return;
