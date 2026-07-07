@@ -67,10 +67,11 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
   "ruijin-departure": {
     "levelId": "ruijin-departure",
     "title": "瑞金出发",
-    "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-    "playerQuestion": "TODO：待填写本关推断问题。",
-    "cards": [],
-    "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+    "date": "1934-10",
+    "location": "江西瑞金、于都一带中央苏区",
+    "scenario": "1934年10月，第五次反“围剿”失利后，中央苏区被层层碉堡与封锁线挤压，红军主力在原地继续作战的空间越来越小。为了保存力量、寻求新的战略机动，中央红军主力和中央机关从瑞金、于都等地集结出发，跨过于都河，开始后来被称为长征的战略转移。出发不是浪漫远行，而是在敌军压迫、道路封锁、物资紧缺、群众送别的复杂处境中做出的艰难选择。",
+    "playerQuestion": "如果你站在1934年10月的中央苏区，面对封锁线、物资压力和部队保存问题，你怎样理解“必须出发”？写下你的判断与理由。",
+    "significance": "瑞金出发标志着中央红军长征的开始。它把一场局部根据地保卫战转化为漫长的战略转移，也让“为什么必须走”成为理解长征起点的关键问题。"
   },
   "sidu-chishui": {
     "levelId": "sidu-chishui",
@@ -91,10 +92,11 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
   "xiangjiang-battle": {
     "levelId": "xiangjiang-battle",
     "title": "湘江血战",
-    "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-    "playerQuestion": "TODO：待填写本关推断问题。",
-    "cards": [],
-    "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+    "date": "1934-11-25 至 1934-12-01",
+    "location": "广西全州、兴安、灌阳一带湘江渡口",
+    "scenario": "1934年11月底，中央红军在突破前三道封锁线后进入湘江地区。国民党军企图把红军压在湘江以东合围，红军必须在有限时间内抢占渡口、架设通路、掩护中央纵队和大部队渡江。江面、滩头、山口同时承受炮火与追击，许多部队为掩护主力付出巨大牺牲。湘江血战之后，中央红军由出发时的八万六千余人锐减到三万余人左右，惨烈代价成为长征初期最沉重的一课。",
+    "playerQuestion": "面对湘江封锁、渡口争夺和巨大减员，你认为这场战斗的代价应该怎样理解？写下你的判断与理由。",
+    "significance": "湘江血战是中央红军长征初期损失最惨重的战役之一。它以极大的牺牲换得主力突破封锁，也把“代价有多大、为什么要改变指挥方式”推到所有人面前。"
   },
   "zunyi-turn": {
     "levelId": "zunyi-turn",
