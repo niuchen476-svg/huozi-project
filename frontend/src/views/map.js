@@ -57,24 +57,21 @@ export async function renderMapView(root) {
   });
 }
 
-// 只在"史料已就绪"的关卡之间做链式解锁：前一个就绪关卡通关，下一个就绪关卡才解锁。
-// 还没写史料的关卡（status !== "sample"）永远锁定，不占用解锁链条。
+// 已完成内容的关卡直接点亮，方便从地图进入任意样本关卡。
+// 还没写史料的关卡（status !== "sample"）永远锁定。
 function computeStatuses(sortedLevels, progress) {
-  const readyLevels = sortedLevels.filter((level) => level.status === "sample");
   const statusById = {};
 
   sortedLevels.forEach((level) => {
-    statusById[level.id] = "locked";
-  });
-
-  readyLevels.forEach((level, index) => {
+    if (level.status !== "sample") {
+      statusById[level.id] = "locked";
+      return;
+    }
     if (progress[level.id] === "completed") {
       statusById[level.id] = "completed";
       return;
     }
-    const previousReady = readyLevels[index - 1];
-    const previousDone = !previousReady || progress[previousReady.id] === "completed";
-    statusById[level.id] = previousDone ? "unlocked" : "locked";
+    statusById[level.id] = "unlocked";
   });
 
   return statusById;
