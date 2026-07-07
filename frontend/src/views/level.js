@@ -3,14 +3,19 @@ import { markCompleted, hasCrossedBridge, markBridgeCrossed } from "../state.js"
 import { renderBridgeAction } from "./bridgeAction.js";
 
 const ACTION_SCENES = {
-  "ruijin-departure": renderCampaignAction3dLazy,
-  "xiangjiang-battle": renderCampaignAction3dLazy,
+  "ruijin-departure": renderRuijinDepartureAction3dLazy,
+  "xiangjiang-battle": renderXiangjiangBattleAction3dLazy,
   "luding-bridge": renderBridgeAction,
 };
 
-async function renderCampaignAction3dLazy(root, level) {
-  const { renderCampaignAction3d } = await import("./campaignAction3d.js");
-  return renderCampaignAction3d(root, level);
+async function renderRuijinDepartureAction3dLazy(root, level) {
+  const { renderRuijinDepartureAction3d } = await import("./action3d/ruijinDeparture3d.js");
+  return renderRuijinDepartureAction3d(root, level);
+}
+
+async function renderXiangjiangBattleAction3dLazy(root, level) {
+  const { renderXiangjiangBattleAction3d } = await import("./action3d/xiangjiangBattle3d.js");
+  return renderXiangjiangBattleAction3d(root, level);
 }
 
 const POEM_FORMS = ["七律", "绝句", "词"];

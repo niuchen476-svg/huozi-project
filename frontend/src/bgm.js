@@ -21,7 +21,9 @@ export function setupBgm() {
       setPlaying(true);
       return true;
     } catch (err) {
-      console.error("[bgm] 播放失败:", err.name, err.message, "audio.error:", audio.error);
+      if (err.name !== "NotAllowedError") {
+        console.warn("[bgm] 播放失败:", err.name, err.message, "audio.error:", audio.error);
+      }
       return false;
     }
   }
