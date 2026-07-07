@@ -1,0 +1,10 @@
+{
+  "name": "huozi-project",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync-data": "node scripts/sync-level-data.mjs",
+    "deploy-reflect": "supabase functions deploy reflect --project-ref pfkamgzktfwfotirlocd"
+  }
+}
