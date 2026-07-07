@@ -1,4 +1,4 @@
-const AUDIO_SRC = "/assets/audio/theme.mp3";
+const AUDIO_SRC = "assets/audio/theme.mp3";
 
 export function setupBgm() {
   const audio = document.querySelector("#bgm");

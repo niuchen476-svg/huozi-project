@@ -93,7 +93,7 @@ a {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: url("/assets/cover/cover.png") center / cover no-repeat;
+  background: center / cover no-repeat;
 }
 
 .view-home__scrim {

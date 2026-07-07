@@ -1,0 +1,8 @@
+{
+  "levelId": "ruijin-departure",
+  "title": "瑞金出发",
+  "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
+  "playerQuestion": "TODO：待填写本关推断问题。",
+  "cards": [],
+  "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+}

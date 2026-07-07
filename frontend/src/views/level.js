@@ -92,7 +92,7 @@ function renderCard(card) {
     <article class="archive-card">
       <img
         class="archive-card__image"
-        src="${card.image}"
+        src="${card.image.replace(/^\//, "")}"
         alt="${card.title}"
         onerror="this.style.display='none'"
       />

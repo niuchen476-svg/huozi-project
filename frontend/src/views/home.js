@@ -1,6 +1,8 @@
+const COVER_IMAGE_SRC = "assets/cover/cover.png";
+
 export function renderHomeView(root) {
   root.innerHTML = `
-    <div class="view view-home">
+    <div class="view view-home" style="background-image: url('${COVER_IMAGE_SRC}')">
       <div class="view-home__scrim"></div>
       <div class="view-home__content">
         <header class="map-header">

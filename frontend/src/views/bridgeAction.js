@@ -1,4 +1,4 @@
-const ASSET_BASE = "/assets/levels/luding-bridge";
+const ASSET_BASE = "assets/levels/luding-bridge";
 
 const KEYFRAMES = [
   { at: 0, bg: `${ASSET_BASE}/pov-start.png` },
