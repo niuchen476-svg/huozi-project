@@ -67,10 +67,63 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
   "ruijin-departure": {
     "levelId": "ruijin-departure",
     "title": "瑞金出发",
-    "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-    "playerQuestion": "TODO：待填写本关推断问题。",
-    "cards": [],
-    "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+    "date": "1934-10",
+    "location": "江西瑞金、于都一带中央苏区",
+    "unit": "中央红军主力及中央机关",
+    "actionDebrief": "刚才你在夜色、封锁线和物资压力之间带队突围，现在写下你的感悟吧。",
+    "scenario": "1934年10月，第五次反“围剿”失利后，中央苏区被层层碉堡与封锁线挤压，红军主力在原地继续作战的空间越来越小。为了保存力量、寻求新的战略机动，中央红军主力和中央机关从瑞金、于都等地集结出发，跨过于都河，开始后来被称为长征的战略转移。出发不是浪漫远行，而是在敌军压迫、道路封锁、物资紧缺、群众送别的复杂处境中做出的艰难选择。",
+    "playerQuestion": "如果你站在1934年10月的中央苏区，面对封锁线、物资压力和部队保存问题，你怎样理解“必须出发”？写下你的判断与理由。",
+    "cards": [
+      {
+        "id": "ruijin-departure-01",
+        "title": "第五次反“围剿”后的压力",
+        "rawText": "1933年至1934年，国民党军对中央苏区实行堡垒推进和经济封锁，红军在第五次反“围剿”中陷入被动，中央苏区回旋余地不断缩小。",
+        "translation": "中央苏区面对军事围堵和物资封锁，原地坚守的代价越来越高，战略转移成为保存主力的重要选择。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "军事围堵",
+          "经济封锁",
+          "保存主力"
+        ]
+      },
+      {
+        "id": "ruijin-departure-02",
+        "title": "从瑞金、于都一带集结出发",
+        "rawText": "1934年10月，中央红军主力和中央机关从瑞金、于都等中央苏区核心区域集结转移，夜间隐蔽行动，跨过于都河后踏上西进道路。",
+        "translation": "出发地点不是单一城门，而是以瑞金、于都一带为核心的集结转移；夜色、渡河和隐蔽行动构成了开端的真实压力。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "集结转移",
+          "夜间行动",
+          "跨过于都河"
+        ]
+      },
+      {
+        "id": "ruijin-departure-03",
+        "title": "八万余人的沉重队列",
+        "rawText": "长征开始时，中央红军约八万六千余人随主力转移，队伍中既有作战部队，也有机关、后勤、医疗、电台和文件物资。",
+        "translation": "这支队伍不只是战斗纵队，还承担着机关、后勤、通信和医疗任务；速度、隐蔽和物资取舍相互拉扯。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "约八万六千余人",
+          "后勤负担",
+          "通信与医疗"
+        ]
+      },
+      {
+        "id": "ruijin-departure-04",
+        "title": "告别中央苏区",
+        "rawText": "红军离开中央苏区时，许多群众送别亲人和队伍；这一夜既是军事转移，也是根据地、家庭与战士之间的沉重告别。",
+        "translation": "瑞金出发的情绪不只是“启程”，还有对根据地和亲人的告别，这让战略选择背后的代价更加具体。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "群众送别",
+          "根据地告别",
+          "战略选择的代价"
+        ]
+      }
+    ],
+    "significance": "瑞金出发标志着中央红军长征的开始。它把一场局部根据地保卫战转化为漫长的战略转移，也让“为什么必须走”成为理解长征起点的关键问题。"
   },
   "sidu-chishui": {
     "levelId": "sidu-chishui",
@@ -91,10 +144,63 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
   "xiangjiang-battle": {
     "levelId": "xiangjiang-battle",
     "title": "湘江血战",
-    "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-    "playerQuestion": "TODO：待填写本关推断问题。",
-    "cards": [],
-    "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+    "date": "1934-11-25 至 1934-12-01",
+    "location": "广西全州、兴安、灌阳一带湘江渡口",
+    "unit": "中央红军主力",
+    "actionDebrief": "刚才你在江滩、炮火和掩护队形之间抢出通路，现在写下你的感悟吧。",
+    "scenario": "1934年11月底，中央红军在突破前三道封锁线后进入湘江地区。国民党军企图把红军压在湘江以东合围，红军必须在有限时间内抢占渡口、架设通路、掩护中央纵队和大部队渡江。江面、滩头、山口同时承受炮火与追击，许多部队为掩护主力付出巨大牺牲。湘江血战之后，中央红军由出发时的八万六千余人锐减到三万余人左右，惨烈代价成为长征初期最沉重的一课。",
+    "playerQuestion": "面对湘江封锁、渡口争夺和巨大减员，你认为这场战斗的代价应该怎样理解？写下你的判断与理由。",
+    "cards": [
+      {
+        "id": "xiangjiang-battle-01",
+        "title": "第四道封锁线",
+        "rawText": "湘江一线是中央红军长征初期必须突破的关键封锁线。敌军企图利用湘江与周边山地、渡口形成围堵，阻断红军西进。",
+        "translation": "湘江不是普通河流障碍，而是与敌军封锁线叠加在一起的战略关口；能否及时渡江直接关系主力存亡。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "湘江封锁线",
+          "渡口争夺",
+          "主力存亡"
+        ]
+      },
+      {
+        "id": "xiangjiang-battle-02",
+        "title": "抢渡与掩护",
+        "rawText": "红军先头部队抢占渡口，工兵和战士在炮火下搭设、修复渡江通路，阻击部队在两翼和后方苦战，掩护中央纵队与大部队过江。",
+        "translation": "渡江不是单点冲锋，而是抢渡、架桥、阻击、掩护同时展开；任何一个环节被击穿，都可能让队伍被压在江东。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "抢占渡口",
+          "搭设通路",
+          "阻击掩护"
+        ]
+      },
+      {
+        "id": "xiangjiang-battle-03",
+        "title": "从八万六千余人到三万余人",
+        "rawText": "湘江战役后，中央红军人数由长征出发时的八万六千余人锐减到三万余人左右，许多红军战士牺牲在渡江与阻击战中。",
+        "translation": "“惨烈”可以被数字看见：大幅减员说明这场战斗不仅改变了队伍规模，也改变了后来对战略指挥的反思。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "八万六千余人",
+          "三万余人左右",
+          "巨大牺牲"
+        ]
+      },
+      {
+        "id": "xiangjiang-battle-04",
+        "title": "通向遵义前的沉重反思",
+        "rawText": "湘江血战的惨重损失，使红军内部对当时的战略指挥和行军方式产生深刻反思，也为后来遵义会议的召开积累了现实压力。",
+        "translation": "湘江的意义不只在于突围成功，更在于惨痛损失推动了红军对路线、指挥和机动作战方式的重新思考。",
+        "image": "/assets/map/route.png",
+        "keyPoints": [
+          "战略反思",
+          "指挥问题",
+          "通向遵义"
+        ]
+      }
+    ],
+    "significance": "湘江血战是中央红军长征初期损失最惨重的战役之一。它以极大的牺牲换得主力突破封锁，也把“代价有多大、为什么要改变指挥方式”推到所有人面前。"
   },
   "zunyi-turn": {
     "levelId": "zunyi-turn",

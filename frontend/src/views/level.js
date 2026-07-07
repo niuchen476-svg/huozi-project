@@ -3,8 +3,20 @@ import { markCompleted, hasCrossedBridge, markBridgeCrossed } from "../state.js"
 import { renderBridgeAction } from "./bridgeAction.js";
 
 const ACTION_SCENES = {
+  "ruijin-departure": renderRuijinDepartureAction3dLazy,
+  "xiangjiang-battle": renderXiangjiangBattleAction3dLazy,
   "luding-bridge": renderBridgeAction,
 };
+
+async function renderRuijinDepartureAction3dLazy(root, level) {
+  const { renderRuijinDepartureAction3d } = await import("./action3d/ruijinDeparture3d.js");
+  return renderRuijinDepartureAction3d(root, level);
+}
+
+async function renderXiangjiangBattleAction3dLazy(root, level) {
+  const { renderXiangjiangBattleAction3d } = await import("./action3d/xiangjiangBattle3d.js");
+  return renderXiangjiangBattleAction3d(root, level);
+}
 
 const POEM_FORMS = ["七律", "绝句", "词"];
 
@@ -34,10 +46,10 @@ export async function renderLevelView(root, levelId) {
   const playedAction = actionScene && !hasCrossedBridge(levelId);
 
   if (playedAction) {
-    app.classList.add("app--fullbleed");
+    app.classList.add("app--fullbleed", "app--action-scene");
     await actionScene(root, level);
     markBridgeCrossed(levelId);
-    app.classList.remove("app--fullbleed");
+    app.classList.remove("app--fullbleed", "app--action-scene");
   }
 
   root.innerHTML = `
@@ -47,7 +59,7 @@ export async function renderLevelView(root, levelId) {
       <header class="level-header">
         <p class="level-header__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
         <h1>${level.title}</h1>
-        ${playedAction ? `<p class="level-header__debrief">刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。</p>` : ""}
+        ${playedAction ? `<p class="level-header__debrief">${level.actionDebrief || "刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。"}</p>` : ""}
         <p class="level-header__scenario">${level.scenario}</p>
       </header>
 
