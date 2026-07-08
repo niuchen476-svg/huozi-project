@@ -1,7 +1,8 @@
-import { fetchLevelsIndex } from "../api.js";
+import { fetchLevelsIndex, preloadLevelsIndex } from "../api.js";
 import { getProgress } from "../state.js";
+import { preloadLevelResources } from "./level.js";
 
-const MAP_IMAGE_SRC = "assets/map/route.png";
+const MAP_IMAGE_SRC = "assets/map/route.jpg";
 
 // 坐标为在地图图片中的百分比位置（横向 x% / 纵向 y%），对应图上的星标/地名：
 // 瑞金 → 湘江战役 → 遵义会议 → 四渡赤水（标签处）→ 强渡大渡河/飞夺泸定桥 → 翻越夹金山/两河口会议 → 会宁会师
@@ -15,7 +16,14 @@ const MARKER_POSITIONS = {
   "huining-join": { x: 32, y: 15 },
 };
 
+export function preloadMapAssets() {
+  preloadLevelsIndex();
+  preloadImage(MAP_IMAGE_SRC);
+}
+
 export async function renderMapView(root) {
+  preloadMapAssets();
+
   root.innerHTML = `
     <div class="view view-map view-map--fullscreen">
       <p class="loading">正在展开路线图...</p>
@@ -43,17 +51,27 @@ export async function renderMapView(root) {
       <a class="map-back-link" href="#/">← 返回首页</a>
       <div class="map-hint">点击关卡图钉，开始挑战吧！</div>
       <div class="route-map-image">
-        <img class="route-map-image__bg" src="${MAP_IMAGE_SRC}" alt="长征路线图" />
+        <img class="route-map-image__bg" src="${MAP_IMAGE_SRC}" alt="长征路线图" decoding="async" fetchpriority="high" />
         ${sorted.map((level, index) => renderPin(level, statusById[level.id], index)).join("")}
       </div>
     </div>
   `;
 
   root.querySelectorAll("[data-level-id]").forEach((node) => {
+    const preloadThisLevel = () => preloadLevelResources(node.dataset.levelId);
+    node.addEventListener("pointerenter", preloadThisLevel, { once: true });
+    node.addEventListener("focus", preloadThisLevel, { once: true });
     node.addEventListener("click", () => {
       if (node.dataset.status === "locked") return;
+      preloadThisLevel();
       window.location.hash = `#/level/${node.dataset.levelId}`;
     });
+  });
+
+  idle(() => {
+    sorted
+      .filter((level) => statusById[level.id] !== "locked")
+      .forEach((level) => preloadLevelResources(level.id));
   });
 }
 
@@ -98,4 +116,18 @@ function renderPin(level, status, index) {
       <span class="route-pin__label">${level.title}</span>
     </button>
   `;
+}
+
+function preloadImage(src) {
+  const image = new Image();
+  image.decoding = "async";
+  image.src = src;
+}
+
+function idle(callback) {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(callback, { timeout: 1500 });
+    return;
+  }
+  window.setTimeout(callback, 250);
 }

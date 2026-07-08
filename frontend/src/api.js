@@ -7,19 +7,45 @@ const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 // 关卡数据改为读取打包进 frontend/public/data 的静态 JSON，
 // AI 点评生成改为调用 Supabase Edge Function。
 const STATIC_MODE = import.meta.env.PROD;
+let levelsIndexPromise = null;
+const levelPromises = new Map();
+
+function fetchJson(url, errorMessage) {
+  return fetch(url, { cache: STATIC_MODE ? "force-cache" : "default" }).then((res) => {
+    if (!res.ok) throw new Error(errorMessage);
+    return res.json();
+  });
+}
 
 export async function fetchLevelsIndex() {
   const url = STATIC_MODE ? `${DATA_BASE}/levels.json` : `${API_BASE}/levels`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("加载关卡列表失败");
-  return res.json();
+  levelsIndexPromise ||= fetchJson(url, "加载关卡列表失败").catch((err) => {
+    levelsIndexPromise = null;
+    throw err;
+  });
+  return levelsIndexPromise;
 }
 
 export async function fetchLevel(id) {
   const url = STATIC_MODE ? `${DATA_BASE}/levels/${id}/cards.json` : `${API_BASE}/levels/${id}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("加载关卡数据失败");
-  return res.json();
+  if (!levelPromises.has(id)) {
+    levelPromises.set(
+      id,
+      fetchJson(url, "加载关卡数据失败").catch((err) => {
+        levelPromises.delete(id);
+        throw err;
+      })
+    );
+  }
+  return levelPromises.get(id);
+}
+
+export function preloadLevelsIndex() {
+  fetchLevelsIndex().catch(() => {});
+}
+
+export function preloadLevel(id) {
+  fetchLevel(id).catch(() => {});
 }
 
 export async function submitReflection(id, reflection, form) {

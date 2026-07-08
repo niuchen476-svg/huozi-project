@@ -1,18 +1,18 @@
 const ASSET_BASE = "assets/levels/luding-bridge";
 
 const KEYFRAMES = [
-  { at: 0, bg: `${ASSET_BASE}/pov-start.png` },
-  { at: 30, bg: `${ASSET_BASE}/pov-mid.png` },
-  { at: 65, bg: `${ASSET_BASE}/pov-fire.png` },
-  { at: 90, bg: `${ASSET_BASE}/pov-arrival.png` },
+  { at: 0, bg: `${ASSET_BASE}/pov-start.jpg` },
+  { at: 30, bg: `${ASSET_BASE}/pov-mid.jpg` },
+  { at: 65, bg: `${ASSET_BASE}/pov-fire.jpg` },
+  { at: 90, bg: `${ASSET_BASE}/pov-arrival.jpg` },
 ];
 
-const SQUAD_BG = `${ASSET_BASE}/squad-assembly.png`;
-const TEAMMATE_ICON = `${ASSET_BASE}/teammate-icon.png`;
+const SQUAD_BG = `${ASSET_BASE}/squad-assembly.jpg`;
+const TEAMMATE_ICON = `${ASSET_BASE}/teammate-icon.jpg`;
 const TEAMMATE_FALL = `${ASSET_BASE}/teammate-fall.png`;
-const VICTORY_IMAGE = `${ASSET_BASE}/bridge-victory.png`;
+const VICTORY_IMAGE = `${ASSET_BASE}/bridge-victory.jpg`;
 
-// 坐标是在 squad-assembly.png 图片里的百分比位置：队伍后排 -> 桥头
+// 坐标是在 squad-assembly.jpg 图片里的百分比位置：队伍后排 -> 桥头
 const PLAYER_START_POS = { x: 88, y: 45 };
 const SQUAD_SLOT_POS = { x: 44, y: 53 };
 
@@ -31,7 +31,16 @@ const MIN_FIRE_GAP_MS = 1400;
 const MAX_FIRE_GAP_MS = 2600;
 const FIRE_LIMIT = 5;
 
+export function preloadBridgeActionAssets() {
+  [SQUAD_BG, TEAMMATE_ICON, KEYFRAMES[0].bg].forEach(preloadImage);
+  idle(() => {
+    [...KEYFRAMES.slice(1).map((frame) => frame.bg), VICTORY_IMAGE, TEAMMATE_FALL].forEach(preloadImage);
+  });
+}
+
 export function renderBridgeAction(root, level) {
+  preloadBridgeActionAssets();
+
   return new Promise((resolve) => {
     root.innerHTML = `
       <div class="view view-bridge-action">
@@ -72,12 +81,27 @@ export function renderBridgeAction(root, level) {
     `;
 
     document.querySelector("#history-intro-start").addEventListener("click", () => {
+      KEYFRAMES.forEach((frame) => preloadImage(frame.bg));
       document.querySelector("#history-intro").remove();
       const squadSelect = document.querySelector("#squad-select");
       squadSelect.hidden = false;
       setupSquadSelect(() => startCrossing(resolve));
     });
   });
+}
+
+function preloadImage(src) {
+  const image = new Image();
+  image.decoding = "async";
+  image.src = src;
+}
+
+function idle(callback) {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(callback, { timeout: 1500 });
+    return;
+  }
+  window.setTimeout(callback, 250);
 }
 
 function setupSquadSelect(onSelected) {

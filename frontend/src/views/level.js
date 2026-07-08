@@ -1,6 +1,6 @@
-import { fetchLevel, submitReflection } from "../api.js";
+import { fetchLevel, preloadLevel, submitReflection } from "../api.js";
 import { markCompleted, resetLevelProgress, hasCrossedBridge, markBridgeCrossed } from "../state.js";
-import { renderBridgeAction } from "./bridgeAction.js";
+import { preloadBridgeActionAssets, renderBridgeAction } from "./bridgeAction.js";
 
 const ACTION_SCENES = {
   "ruijin-departure": renderRuijinDepartureAction3dLazy,
@@ -8,14 +8,38 @@ const ACTION_SCENES = {
   "luding-bridge": renderBridgeAction,
 };
 
+const actionSceneModulePromises = {};
+
 async function renderRuijinDepartureAction3dLazy(root, level) {
-  const { renderRuijinDepartureAction3d } = await import("./action3d/ruijinDeparture3d.js");
+  const { renderRuijinDepartureAction3d } = await loadAction3dModule("ruijin-departure");
   return renderRuijinDepartureAction3d(root, level);
 }
 
 async function renderXiangjiangBattleAction3dLazy(root, level) {
-  const { renderXiangjiangBattleAction3d } = await import("./action3d/xiangjiangBattle3d.js");
+  const { renderXiangjiangBattleAction3d } = await loadAction3dModule("xiangjiang-battle");
   return renderXiangjiangBattleAction3d(root, level);
+}
+
+function loadAction3dModule(levelId) {
+  if (levelId === "ruijin-departure") {
+    actionSceneModulePromises[levelId] ||= import("./action3d/ruijinDeparture3d.js");
+  }
+  if (levelId === "xiangjiang-battle") {
+    actionSceneModulePromises[levelId] ||= import("./action3d/xiangjiangBattle3d.js");
+  }
+  return actionSceneModulePromises[levelId];
+}
+
+export function preloadLevelResources(levelId) {
+  preloadLevel(levelId);
+  if (levelId === "ruijin-departure" || levelId === "xiangjiang-battle") {
+    loadAction3dModule(levelId)?.catch(() => {
+      delete actionSceneModulePromises[levelId];
+    });
+  }
+  if (levelId === "luding-bridge") {
+    preloadBridgeActionAssets();
+  }
 }
 
 const POEM_FORMS = ["七律", "绝句", "词"];
@@ -343,6 +367,8 @@ function renderCard(card) {
         class="archive-card__image"
         src="${card.image.replace(/^\//, "")}"
         alt="${card.title}"
+        loading="lazy"
+        decoding="async"
         onerror="this.style.display='none'"
       />
       <h3 class="archive-card__title">${card.title}</h3>
