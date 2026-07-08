@@ -1,263 +1,507 @@
 import { ZUNYI_ASSETS } from "../cinematicAssets.js";
 
-const SCENES = [
+const STEPS = [
   {
-    id: "door",
-    title: "进入会场",
-    objective: "靠近亮着灯的会议室",
-    location: "遵义会议会址外",
-    primaryBackground: "/assets/levels/zunyi-turn/dora-exterior.png",
-    fallbackBackground: ZUNYI_ASSETS.cinematic.exteriorNight,
-    mode: "exterior",
-    action: "走近门口",
-    dialogue: [
-      { speaker: "记录员", text: "夜里，遵义会址还亮着灯。你跟着队伍来到门外。" },
-      { speaker: "警戒员", text: "声音小一点。屋里正在讨论红军下一步怎么走。" },
-      { speaker: "记录员", text: "这不是普通会议。湘江之后，大家都知道不能再照旧打了。" },
-    ],
+    id: "intro",
+    title: "进入会议室",
+    prompt: "先听清楚这场会议为什么必须召开。",
   },
   {
-    id: "threshold",
-    title: "门口旁听",
-    objective: "听清会议真正讨论的问题",
-    location: "会议室门口",
-    primaryBackground: "/assets/levels/zunyi-turn/dora-doorway.png",
-    fallbackBackground: ZUNYI_ASSETS.cinematic.meetingRoomWide,
-    mode: "doorway",
-    action: "到桌边记录",
-    dialogue: [
-      { speaker: "会议发言", text: "第五次反“围剿”失利后，红军一路被动。" },
-      { speaker: "会议发言", text: "湘江之后，中央红军从 8.6 万人减少到约 3 万人。" },
-      { speaker: "会议主持", text: "问题不只是敌人强。军事指挥和打法，必须重新判断。" },
-      { speaker: "会议发言", text: "不能再死板硬打，要想办法重新争取主动。" },
-    ],
+    id: "crisis",
+    title: "一、整理当前局面",
+    prompt: "点击一张桌上的史料，再点击右侧记录纸上的对应栏目。",
   },
   {
-    id: "desk",
-    title: "桌边记录",
-    objective: "把关键线索记下来",
-    location: "会议桌旁",
-    primaryBackground: "/assets/levels/zunyi-turn/dora-desk.png",
-    fallbackBackground: ZUNYI_ASSETS.cinematic.meetingRoomWide,
-    mode: "desk",
-    action: "提交会议判断",
-    observations: [
-      { title: "战损报告", text: "湘江之后，队伍锐减，红军已经到了非常危险的关头。" },
-      { title: "作战地图", text: "追兵还在逼近，继续正面硬拼会让队伍更被动。" },
-      { title: "会议记录", text: "会议重点批评错误军事指挥，讨论新的领导和新的打法。" },
-    ],
+    id: "cause",
+    title: "二、判断问题根源",
+    prompt: "把真正的原因和干扰项分开。会议不是在否定战士，而是在重新判断指挥和打法。",
   },
   {
-    id: "choice",
-    title: "会议判断",
-    objective: "判断下一步方向",
-    location: "会议桌旁",
-    primaryBackground: "/assets/levels/zunyi-turn/dora-desk.png",
-    fallbackBackground: ZUNYI_ASSETS.cinematic.meetingRoomWide,
-    mode: "choice",
-    dialogue: [
-      { speaker: "会议决定", text: "会议批评了博古、李德在军事指挥上的错误。" },
-      { speaker: "会议决定", text: "会议增选毛泽东为中央政治局常委。" },
-      { speaker: "会议决定", text: "红军接下来要改变死板打法，继续北上。" },
-    ],
+    id: "plan",
+    title: "三、选择新的方向",
+    prompt: "在两种方案里选出能让红军重新争取主动的一种。",
+  },
+  {
+    id: "decision",
+    title: "四、完成会议记录",
+    prompt: "按逻辑顺序整理会议决定。",
   },
   {
     id: "route",
-    title: "转折之后",
-    objective: "看新的方向怎样影响后面的路线",
-    location: "会议后的地图",
-    primaryBackground: "/assets/levels/zunyi-turn/dora-desk.png",
-    fallbackBackground: ZUNYI_ASSETS.props.meetingMapFallback,
-    mode: "route",
-    action: "收好会议记录纸",
-    dialogue: [
-      { speaker: "记录员", text: "遵义会议之后，红军不再只是被动挨打。" },
-      { speaker: "记录员", text: "四渡赤水、巧渡金沙江、飞夺泸定桥，都是重新争取主动的路。" },
-    ],
+    title: "转折验证",
+    prompt: "看会议后的路线怎样从被动转向主动。",
   },
 ];
 
+const CRISIS_CARDS = [
+  {
+    id: "xiangjiang-loss",
+    label: "湘江战役损失惨重",
+    type: "crisis",
+    kind: "report",
+    hint: "这是危机事实：队伍已经到了非常危险的关头。",
+  },
+  {
+    id: "number-drop",
+    label: "队伍从 8.6 万人减少到约 3 万人",
+    type: "crisis",
+    kind: "report",
+    hint: "这是危机事实：人数锐减说明原来的打法不能再照旧。",
+  },
+  {
+    id: "enemy-chase",
+    label: "敌军继续围追堵截",
+    type: "crisis",
+    kind: "map",
+    hint: "这是危机事实：外部压力仍在逼近。",
+  },
+  {
+    id: "zunyi-rest",
+    label: "攻占遵义，获得短暂休整",
+    type: "chance",
+    kind: "telegram",
+    hint: "这是暂时机会：终于能坐下来认真解决问题。",
+  },
+];
+
+const CAUSE_CARDS = [
+  {
+    id: "rigid-battle",
+    label: "死板阵地战",
+    type: "cause",
+    kind: "record",
+    hint: "这是主要原因：打法太死板，容易被敌人牵着走。",
+  },
+  {
+    id: "passive",
+    label: "长期被动挨打",
+    type: "cause",
+    kind: "map",
+    hint: "这是主要原因：红军需要重新争取主动。",
+  },
+  {
+    id: "wrong-command",
+    label: "错误军事指挥",
+    type: "cause",
+    kind: "telegram",
+    hint: "这是主要原因：会议集中批评的就是错误军事指挥。",
+  },
+  {
+    id: "not-brave",
+    label: "战士不勇敢",
+    type: "distractor",
+    kind: "note",
+    hint: "这是干扰项。湘江战役中红军苦战五昼夜，问题不是战士不勇敢。",
+  },
+  {
+    id: "bad-weather",
+    label: "天气不好",
+    type: "distractor",
+    kind: "note",
+    hint: "这是干扰项。天气会增加困难，但会议重点讨论的是指挥和打法。",
+  },
+];
+
+const DECISION_CARDS = [
+  { id: "criticize", label: "批评错误军事路线", detail: "先指出为什么原来的打法让红军陷入被动。" },
+  { id: "leadership", label: "调整军事领导", detail: "再让新的判断进入核心指挥。" },
+  { id: "north", label: "红军继续北上", detail: "最后把新的方向落实到接下来的路线。" },
+];
+
+const DECISION_ORDER = ["criticize", "leadership", "north"];
 const ROUTE_POINTS = ["遵义会议", "四渡赤水", "巧渡金沙江", "飞夺泸定桥"];
 
 export function renderZunyiMeeting(root, level) {
   return new Promise((resolve) => {
     const state = {
-      index: 0,
-      progress: {},
       level,
       resolve,
+      step: "intro",
+      selectedCard: null,
+      placed: {},
+      decisions: [],
+      completed: new Set(),
+      feedback: "你是会议小记录员。先把桌上的线索整理清楚，再写出会议判断。",
+      hint: "小参谋：别急着背结论，先看见危机，再找原因。",
     };
 
-    root.innerHTML = `
-      <div class="zunyi-pov" id="zunyi-pov">
-        <div class="zunyi-pov__frame" id="zunyi-frame"></div>
-      </div>
-    `;
-
-    renderScene(state);
+    render(root, state);
   });
 }
 
-function getStep(state) {
-  const scene = SCENES[state.index];
-  return state.progress[scene.id] || 0;
-}
+function render(root, state) {
+  const step = STEPS.find((item) => item.id === state.step);
 
-function isSceneComplete(scene, state) {
-  const step = getStep(state);
-  if (scene.dialogue) return step >= scene.dialogue.length - 1;
-  if (scene.observations) return step >= scene.observations.length - 1;
-  return true;
-}
+  root.innerHTML = `
+    <div class="view-zunyi">
+      <div class="zunyi-room">
+        <div class="zunyi-room__lamp"></div>
+        <div class="zunyi-topbar">
+          <a class="zunyi-back" href="#/map">返回路线图</a>
+          <div class="zunyi-progress" aria-label="关卡进度">
+            ${STEPS.map((item) => `<span class="zunyi-progress__dot ${progressClass(item, state)}"></span>`).join("")}
+          </div>
+        </div>
 
-function renderScene(state) {
-  const scene = SCENES[state.index];
-  const level = state.level;
-  const frame = document.querySelector("#zunyi-frame");
-  const complete = isSceneComplete(scene, state);
-
-  frame.className = `zunyi-pov__frame zunyi-pov__frame--${scene.mode}`;
-  frame.style.setProperty("--zunyi-bg-primary", `url("${scene.primaryBackground}")`);
-  frame.style.setProperty("--zunyi-bg-fallback", `url("${scene.fallbackBackground}")`);
-  frame.innerHTML = `
-    <div class="zunyi-pov__image"></div>
-    <div class="zunyi-pov__grain"></div>
-    <div class="zunyi-pov__vignette"></div>
-
-    <a class="zunyi-pov__back" href="#/map">返回路线图</a>
-
-    <div class="zunyi-pov__topline">
-      <span>${level.date || "1935 年 1 月"}</span>
-      <div class="zunyi-pov__compass" aria-label="任务进度">
-        ${SCENES.map((item, index) => `<i class="${index <= state.index ? "is-lit" : ""}"></i>`).join("")}
+        ${state.step === "intro" ? renderIntro(state) : renderStep(step, state)}
       </div>
-      <span>${scene.location}</span>
     </div>
-
-    ${renderSceneBody(scene, state)}
-
-    <section class="zunyi-pov__brief">
-      <p>${scene.objective}</p>
-      <h1>${scene.title}</h1>
-    </section>
-
-    <div class="zunyi-pov__hud">
-      <strong>${level.title || "遵义转折"}</strong>
-      <span>会议记录员视角</span>
-    </div>
-
-    ${scene.action && complete ? `
-      <button class="zunyi-pov__action" type="button">${scene.action}</button>
-    ` : ""}
   `;
 
-  setupSceneEvents(scene, state);
+  attachEvents(root, state);
 }
 
-function renderSceneBody(scene, state) {
-  if (scene.dialogue) {
-    return renderDialogue(scene, state);
-  }
-
-  if (scene.observations) {
-    return renderObservations(scene, state);
-  }
-
+function progressClass(item, state) {
+  if (item.id === state.step) return "zunyi-progress__dot--active";
+  if (state.completed.has(item.id)) return "zunyi-progress__dot--done";
   return "";
 }
 
-function renderDialogue(scene, state) {
-  const step = getStep(state);
-  const line = scene.dialogue[step];
-  const complete = step >= scene.dialogue.length - 1;
-
+function renderIntro(state) {
   return `
-    <div class="zunyi-pov__dialogue">
-      <p>${line.speaker}</p>
-      <strong>${line.text}</strong>
-      ${complete ? "" : `<button type="button" data-next-line>继续听</button>`}
-    </div>
-    ${scene.id === "choice" ? renderChoicePanel(complete) : ""}
-    ${scene.id === "route" ? renderRoutePanel() : ""}
+    <section class="zunyi-story">
+      <div class="zunyi-story__visual zunyi-story__visual--meeting"></div>
+      <div class="zunyi-story__panel">
+        <p class="zunyi-story__tag">${state.level.date || "1935 年 1 月 15 日至 17 日"}</p>
+        <h2>${state.level.title || "遵义转折"}</h2>
+        <p>湘江之后，中央红军从 8.6 万人减少到约 3 万人。红军终于在遵义获得短暂休整，必须坐下来判断：问题到底出在哪里，下一步怎么走。</p>
+        <strong>会议记录员视角</strong>
+        <button class="zunyi-primary" type="button" data-next-step>开始记录</button>
+      </div>
+    </section>
   `;
 }
 
-function renderObservations(scene, state) {
-  const step = getStep(state);
-  const item = scene.observations[step];
-  const complete = step >= scene.observations.length - 1;
+function renderStep(step, state) {
+  return `
+    <main class="zunyi-table">
+      <section class="zunyi-stage">
+        <header class="zunyi-stage__header">
+          <p class="zunyi-stage__step">${step.title}</p>
+          <h2>${step.prompt}</h2>
+          <p>${state.level.location || "贵州遵义 · 遵义会议会址"}</p>
+        </header>
+        ${renderWorkspace(state)}
+        <p class="zunyi-feedback" aria-live="polite">${state.feedback}</p>
+      </section>
+
+      <aside class="zunyi-note">
+        <p class="zunyi-note__label">会议记录纸</p>
+        <h3>已写入的判断</h3>
+        <ol>
+          <li>${state.completed.has("crisis") ? "当前危机：红军损失惨重，继续被敌军追击；遵义提供了短暂休整机会。" : "当前危机：等待整理"}</li>
+          <li>${state.completed.has("cause") ? "问题根源：错误军事指挥让红军长期被动。" : "问题根源：等待判断"}</li>
+          <li>${state.completed.has("plan") ? "新方向：改变死板打法，采用灵活机动的运动战。" : "新方向：等待选择"}</li>
+          <li>${state.completed.has("decision") ? "会议决定：批评错误路线，调整军事领导，继续北上。" : "会议决定：等待排序"}</li>
+        </ol>
+        <div class="zunyi-ai">
+          <p class="zunyi-ai__label">小参谋</p>
+          <p>${state.hint}</p>
+          <button type="button" data-hint>问小参谋</button>
+        </div>
+      </aside>
+    </main>
+  `;
+}
+
+function renderWorkspace(state) {
+  if (state.step === "crisis") {
+    return renderSortingWorkspace(state, CRISIS_CARDS, [
+      { id: "crisis", title: "危机事实", desc: "损失、追击、被动局面" },
+      { id: "chance", title: "暂时机会", desc: "攻占遵义后获得的休整时间" },
+    ]);
+  }
+
+  if (state.step === "cause") {
+    return renderSortingWorkspace(state, CAUSE_CARDS, [
+      { id: "cause", title: "主要原因", desc: "会议真正要解决的问题" },
+      { id: "distractor", title: "干扰原因", desc: "看似有关，但不是会议重点" },
+    ]);
+  }
+
+  if (state.step === "plan") return renderPlanWorkspace();
+  if (state.step === "decision") return renderDecisionWorkspace(state);
+  return renderRouteWorkspace();
+}
+
+function renderSortingWorkspace(state, cards, zones) {
+  const placedIds = new Set(Object.keys(state.placed));
 
   return `
-    <div class="zunyi-pov__observation">
-      <p>正在记录：${item.title}</p>
-      <strong>${item.text}</strong>
-      ${complete ? "" : `<button type="button" data-next-line>继续观察</button>`}
+    <div class="zunyi-workspace">
+      <div class="zunyi-cinematic-desk">
+        <div class="zunyi-desk-perspective">
+          <div class="zunyi-object-bank">
+            ${renderDeskProps()}
+            ${cards
+              .filter((card) => !placedIds.has(card.id))
+              .map((card) => renderEvidenceCard(card, state.selectedCard === card.id))
+              .join("")}
+          </div>
+          <div class="zunyi-record-sheet">
+            <span class="zunyi-record-sheet__clip"></span>
+            <div class="zunyi-zones">
+              ${zones.map((zone) => renderZone(zone, cards, state)).join("")}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
 
-function renderChoicePanel(showChoices) {
-  if (!showChoices) return "";
+function renderDeskProps() {
+  return `
+    <div class="zunyi-table-props">
+      <img class="zunyi-prop zunyi-prop--lamp" src="${ZUNYI_ASSETS.props.keroseneLamp}" alt="" />
+      <img class="zunyi-prop zunyi-prop--letter-stack" src="${ZUNYI_ASSETS.props.letterStack}" alt="" />
+      <img class="zunyi-prop zunyi-prop--hand-letter" src="${ZUNYI_ASSETS.props.handwrittenLetter}" alt="" />
+      <img class="zunyi-prop zunyi-prop--cap" src="${ZUNYI_ASSETS.props.redStarCap}" alt="" />
+      <img class="zunyi-prop zunyi-prop--satchel" src="${ZUNYI_ASSETS.props.clothSatchel}" alt="" />
+      <img class="zunyi-prop zunyi-prop--canteen" src="${ZUNYI_ASSETS.props.canteen}" alt="" />
+      <span class="zunyi-prop zunyi-prop--cup"></span>
+      <span class="zunyi-prop zunyi-prop--pencil"></span>
+    </div>
+  `;
+}
+
+function renderEvidenceCard(card, selected) {
+  return `
+    <button
+      type="button"
+      class="zunyi-card zunyi-card--button ${cardClass(card)} ${selected ? "zunyi-card--selected" : ""}"
+      data-card="${card.id}"
+    >
+      <span class="zunyi-card__pin"></span>
+      <small>${card.kind === "map" ? "作战地图" : card.kind === "telegram" ? "电报纸" : card.kind === "record" ? "会议发言" : "史料纸"}</small>
+      <span>${card.label}</span>
+      <span class="zunyi-card__label">档</span>
+    </button>
+  `;
+}
+
+function cardClass(card) {
+  if (card.kind === "map") return "zunyi-object--meeting-map";
+  if (card.kind === "telegram") return "zunyi-card--telegram";
+  if (card.kind === "record") return "zunyi-object--record-book";
+  if (card.kind === "note") return "zunyi-card--note";
+  return "zunyi-card--report";
+}
+
+function renderZone(zone, cards, state) {
+  const placedCards = Object.entries(state.placed)
+    .filter(([, target]) => target === zone.id)
+    .map(([id]) => cards.find((card) => card.id === id))
+    .filter(Boolean);
 
   return `
-    <div class="zunyi-pov__choice">
-      <button type="button" data-choice="rigid">
-        <strong>继续正面硬拼</strong>
-        <span>旧办法，会继续陷入被动。</span>
+    <section class="zunyi-zone" data-zone="${zone.id}">
+      <div class="zunyi-zone__heading">
+        <h3>${zone.title}</h3>
+      </div>
+      <p>${zone.desc}</p>
+      <div class="zunyi-zone__cards">
+        ${placedCards
+          .map(
+            (card) => `
+              <article class="zunyi-card zunyi-card--placed ${cardClass(card)}">
+                <small>已归档</small>
+                <span>${card.label}</span>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderPlanWorkspace() {
+  return `
+    <div class="zunyi-choice zunyi-choice--desk">
+      <button class="zunyi-plan zunyi-plan--warn" type="button" data-plan="rigid">
+        <span>继续正面硬拼</span>
+        <small>沿用旧办法，在敌军优势兵力前继续被动消耗。</small>
       </button>
-      <button type="button" data-choice="mobile">
-        <strong>灵活机动，寻找机会</strong>
-        <span>新方向，重新争取主动。</span>
+      <button class="zunyi-plan zunyi-plan--right" type="button" data-plan="mobile">
+        <span>灵活机动，寻找机会</span>
+        <small>避开敌人的优势，重新争取战场主动。</small>
       </button>
     </div>
-    <p class="zunyi-pov__feedback" id="zunyi-feedback">选择会议建议。</p>
   `;
 }
 
-function renderRoutePanel() {
+function renderDecisionWorkspace(state) {
+  const used = new Set(state.decisions);
+
   return `
-    <div class="zunyi-pov__route">
-      ${ROUTE_POINTS.map((point, index) => `
-        <article style="--x:${4 + index * 27}%; --delay:${index * 0.18}s">
-          <span>${index + 1}</span>
-          <strong>${point}</strong>
-        </article>
-      `).join("")}
+    <div class="zunyi-order">
+      <div class="zunyi-order__track">
+        ${DECISION_ORDER.map((_, index) => `<span>${state.decisions[index] ? `${index + 1}. ${labelForDecision(state.decisions[index])}` : `${index + 1}. 等待贴入决定卡`}</span>`).join("")}
+      </div>
+      <div class="zunyi-order__cards">
+        ${DECISION_CARDS.map(
+          (card) => `
+            <button class="zunyi-card zunyi-card--button zunyi-card--decision" type="button" data-decision="${card.id}" ${used.has(card.id) ? "disabled" : ""}>
+              <small>决定卡</small>
+              <span>${card.label}</span>
+              <em>${card.detail}</em>
+            </button>
+          `
+        ).join("")}
+      </div>
+      <button class="zunyi-next" type="button" data-clear-decisions>重新排序</button>
     </div>
-    <p class="zunyi-pov__route-note">会议后的路线开始变得主动。</p>
   `;
 }
 
-function setupSceneEvents(scene, state) {
-  document.querySelector("[data-next-line]")?.addEventListener("click", () => {
-    state.progress[scene.id] = getStep(state) + 1;
-    renderScene(state);
+function renderRouteWorkspace() {
+  return `
+    <div class="zunyi-turn-map" style="--zunyi-desk-bg: url('/assets/levels/zunyi-turn/meeting-table-room.png')">
+      <img class="zunyi-turn-map__paper" src="/assets/levels/zunyi-turn/meeting-room-map.png" alt="会议后的路线图" />
+      <div class="zunyi-turn-map__route">
+        ${ROUTE_POINTS.map(
+          (point, index) => `
+            <article class="zunyi-turn-map__point" style="--point-index:${index}; --x:${10 + index * 27}%; --y:${index % 2 ? 62 : 34}%">
+              <span>${index + 1}</span>
+              <strong>${point}</strong>
+            </article>
+          `
+        ).join("")}
+      </div>
+      <img class="zunyi-prop zunyi-prop--lamp zunyi-prop--turn-lamp" src="${ZUNYI_ASSETS.props.keroseneLamp}" alt="" />
+      <button class="zunyi-next" type="button" data-finish>收好会议记录纸</button>
+    </div>
+  `;
+}
+
+function labelForDecision(id) {
+  return DECISION_CARDS.find((card) => card.id === id)?.label || "";
+}
+
+function attachEvents(root, state) {
+  root.querySelector("[data-next-step]")?.addEventListener("click", () => {
+    state.completed.add("intro");
+    state.step = "crisis";
+    state.feedback = "选择一张史料，再点记录纸上的栏目。";
+    render(root, state);
   });
 
-  document.querySelector(".zunyi-pov__action")?.addEventListener("click", () => {
-    if (scene.id === "route") {
-      state.resolve();
-      return;
-    }
-    state.index += 1;
-    renderScene(state);
-  });
-
-  document.querySelectorAll("[data-choice]").forEach((button) => {
+  root.querySelectorAll("[data-card]").forEach((button) => {
     button.addEventListener("click", () => {
-      const feedback = document.querySelector("#zunyi-feedback");
-      if (button.dataset.choice === "rigid") {
-        feedback.textContent = "这个判断还是旧打法。会议真正要改变的是被动硬拼。";
-        button.classList.add("is-wrong");
-        return;
-      }
-
-      button.classList.add("is-right");
-      feedback.textContent = "判断成立：改变死板打法，采用灵活机动的运动战。";
-      setTimeout(() => {
-        state.index += 1;
-        renderScene(state);
-      }, 650);
+      const cards = state.step === "crisis" ? CRISIS_CARDS : CAUSE_CARDS;
+      const card = cards.find((item) => item.id === button.dataset.card);
+      state.selectedCard = card.id;
+      state.feedback = `已拿起：${card.label}。现在点右侧记录纸上的栏目。`;
+      state.hint = `小参谋：${card.hint}`;
+      render(root, state);
     });
   });
+
+  root.querySelectorAll("[data-zone]").forEach((zone) => {
+    zone.addEventListener("click", () => placeSelectedCard(root, state, zone.dataset.zone));
+  });
+
+  root.querySelector("[data-hint]")?.addEventListener("click", () => {
+    state.hint = hintForStep(state);
+    render(root, state);
+  });
+
+  root.querySelectorAll("[data-plan]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.plan !== "mobile") {
+        state.feedback = "这个判断还是旧打法。红军已经损失严重，继续硬拼会再次陷入被动。";
+        state.hint = "小参谋：转折不是继续原来的路，而是换一种能争取主动的打法。";
+        render(root, state);
+        return;
+      }
+      state.completed.add("plan");
+      state.step = "decision";
+      state.feedback = "判断成立：改变死板打法，采用灵活机动的运动战。现在整理会议决定。";
+      state.hint = "小参谋：先指出错误，再调整领导，最后确定接下来的方向。";
+      render(root, state);
+    });
+  });
+
+  root.querySelectorAll("[data-decision]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (state.decisions.length >= DECISION_ORDER.length) return;
+      state.decisions.push(button.dataset.decision);
+      const correctSoFar = state.decisions.every((id, index) => id === DECISION_ORDER[index]);
+      if (!correctSoFar) {
+        state.feedback = "顺序还不稳：先要批评错误路线，再调整军事领导，最后决定继续北上。";
+        state.hint = "小参谋：会议记录要像推理一样，先原因，再调整，再行动。";
+      } else if (state.decisions.length === DECISION_ORDER.length) {
+        state.completed.add("decision");
+        state.step = "route";
+        state.feedback = "会议记录整理完成。现在看这次会议为什么能成为转折。";
+        state.hint = "小参谋：会后的路线亮起来，说明红军开始重新争取主动。";
+      } else {
+        state.feedback = "这一张贴对了，继续补全会议记录。";
+      }
+      render(root, state);
+    });
+  });
+
+  root.querySelector("[data-clear-decisions]")?.addEventListener("click", () => {
+    state.decisions = [];
+    state.feedback = "已清空排序。重新按“原因、调整、行动”的逻辑贴决定卡。";
+    render(root, state);
+  });
+
+  root.querySelector("[data-finish]")?.addEventListener("click", () => {
+    state.completed.add("route");
+    state.resolve();
+  });
+}
+
+function placeSelectedCard(root, state, zoneId) {
+  if (!state.selectedCard) {
+    state.feedback = "先点击桌上的一张史料纸，再放到记录纸栏目里。";
+    return render(root, state);
+  }
+
+  const cards = state.step === "crisis" ? CRISIS_CARDS : CAUSE_CARDS;
+  const card = cards.find((item) => item.id === state.selectedCard);
+
+  if (card.type !== zoneId) {
+    state.feedback = card.type === "distractor"
+      ? "这张更像干扰项。它会影响局面，但不是遵义会议真正要解决的重点。"
+      : "再想想这张史料说的是危机、机会，还是原因。";
+    state.hint = `小参谋：${card.hint}`;
+    render(root, state);
+    return;
+  }
+
+  state.placed[card.id] = zoneId;
+  state.selectedCard = null;
+  state.feedback = card.hint;
+
+  const required = cards.filter((item) => item.type !== "distractor" || state.step === "cause");
+  const complete = required.every((item) => state.placed[item.id] === item.type);
+
+  if (complete) {
+    state.completed.add(state.step);
+    if (state.step === "crisis") {
+      state.step = "cause";
+      state.placed = {};
+      state.feedback = "局面看清楚了。下一步要判断：问题根源到底是什么？";
+      state.hint = "小参谋：不要把结果当原因，也不要把战士当问题。看“指挥”和“打法”。";
+    } else {
+      state.step = "plan";
+      state.placed = {};
+      state.feedback = "原因找到了：错误军事指挥让红军长期被动。现在选择新的方向。";
+      state.hint = "小参谋：如果继续硬拼，就是没有转折。";
+    }
+  }
+
+  render(root, state);
+}
+
+function hintForStep(state) {
+  if (state.step === "crisis") return "小参谋：人数锐减、敌军追击放进危机；攻占遵义带来的休整放进机会。";
+  if (state.step === "cause") return "小参谋：会议重点是军事指挥和打法，不是说战士不勇敢。";
+  if (state.step === "plan") return "小参谋：能让红军重新争取主动的方案，才是新的方向。";
+  if (state.step === "decision") return "小参谋：顺序是批评错误路线、调整军事领导、继续北上。";
+  return "小参谋：四渡赤水、巧渡金沙江、飞夺泸定桥，都是转向主动后的路线。";
 }

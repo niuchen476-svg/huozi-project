@@ -4,7 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "build": "npm --prefix frontend run build",
+    "build:pages": "npm --prefix frontend run build:pages",
     "sync-data": "node scripts/sync-level-data.mjs",
+    "check-data": "node scripts/check-level-data-sync.mjs",
     "deploy-reflect": "supabase functions deploy reflect --project-ref pfkamgzktfwfotirlocd"
   }
 }

@@ -1,49 +1,110 @@
-# huozi-project
+# 长征档案行
 
-活字编程 · 复活我们的图书馆 —— 项目脚手架（选题待定）
+活字编程课程项目。前端是静态互动站点，本地开发时可连接 Express 后端；部署到 GitHub Pages 后读取静态数据，并通过 Supabase Edge Function 处理 AI 反思。
 
-## 目录结构
+## 目录边界
 
+```text
+frontend/                 前端应用、正式静态素材、GitHub Pages 构建入口
+backend/                  本地 Express API；backend/src/data 是关卡数据唯一编辑源
+supabase/functions/       生产静态站点调用的 Edge Function
+scripts/                  数据同步、数据一致性检查等维护脚本
+docs/                     产品文档、交互脚本、参考素材和归档说明
+.github/workflows/        GitHub Pages 自动部署
 ```
-huozi-project/
-├── frontend/     # Vite + 原生 JS 前端，浏览器可直接预览
-├── backend/      # Node.js + Express 后端 API
-└── docs/         # 课程要求、选题笔记等文档
+
+## 数据源规则
+
+只直接编辑：
+
+```text
+backend/src/data/
 ```
 
-## 快速开始
+不要手改这些生成副本：
 
-### 后端
+```text
+frontend/public/data/
+supabase/functions/reflect/data/levels-data.ts
+```
+
+关卡数据改动后运行：
 
 ```bash
-cd backend
-npm install
-npm run dev   # http://localhost:3001
+npm run sync-data
+npm run check-data
 ```
 
-### 前端
+## 素材规则
+
+正式运行素材放在：
+
+```text
+frontend/public/assets/
+```
+
+参考视频、截帧、临时检查图放在：
+
+```text
+docs/references/
+```
+
+`docs/references` 不参与 GitHub Pages 构建；不要把参考素材放回 `frontend/public/assets`，否则会被部署到线上站点。
+
+## 本地开发
+
+后端：
 
 ```bash
-cd frontend
-npm install
-npm run dev   # http://localhost:5173
+npm run dev:backend
 ```
 
-前端默认通过 `/api` 前缀请求后端（见 `frontend/vite.config.js` 的 proxy 配置）。
-
-## 推送到 GitHub
+前端：
 
 ```bash
-git init
-git add .
-git commit -m "init: project skeleton"
-git branch -M main
-git remote add origin <你的仓库地址>
-git push -u origin main
+npm run dev:frontend
 ```
 
-## 待办
+默认地址：
 
-- [ ] 确定选题（六大赛道 + Define 五问）
-- [ ] 接入 CADAL / 图书馆真实数据
-- [ ] 补充 AI 能力（OCR / RAG / 图像修复等）
+```text
+后端 API：http://localhost:3001
+前端预览：http://localhost:5173
+```
+
+## 构建和部署
+
+本地普通构建：
+
+```bash
+npm run build
+```
+
+GitHub Pages 构建：
+
+```bash
+npm run build:pages
+```
+
+推送到 `main` 后，`.github/workflows/deploy-pages.yml` 会自动部署 `frontend/dist` 到：
+
+```text
+https://niuchen476-svg.github.io/huozi-project/
+```
+
+## AI 反思
+
+本地后端反思接口依赖 `backend/.env`：
+
+```text
+MIMO_API_BASE=...
+MIMO_API_KEY=...
+MIMO_MODEL=mimo-v2.5
+```
+
+GitHub Pages 静态模式下不使用 Express 后端，而是调用 Supabase Edge Function。改动会影响 AI 反思的关卡数据后，需要同步数据并重新部署函数：
+
+```bash
+npm run sync-data
+npm run deploy-reflect
+```

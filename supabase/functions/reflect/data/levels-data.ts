@@ -32,7 +32,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "24小时急行军240里",
         "rawText": "5月28日接到紧急命令：必须29日清晨拿下泸定桥，剩余路程240里，限时不到24小时。山路泥泞、天降暴雨，战士饿着肚子、全身湿透，一刻不停行军；夜里敌军举火把赶路，红军也点燃火把，和敌人隔河并行，敌人丝毫没认出；后半夜大雨浇灭火把，敌军就地宿营休息，红军摸黑冒雨持续前进；5月29日清晨6点，红四团神兵天降抵达泸定桥西岸。",
         "translation": "红四团在不到24小时内急行军240里，利用夜色和暴雨隐蔽行踪，抢在敌军增援之前抵达西岸。",
-        "image": "/assets/levels/luding-bridge/card-02-march.png",
+        "image": "/assets/levels/luding-bridge/pov-start.png",
         "keyPoints": [
           "时间窗口极限",
           "行军隐蔽性"
@@ -43,7 +43,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "22勇士突击队编成",
         "rawText": "战前布置：挑选22名勇士组成突击队，装备短枪、马刀、手榴弹；三连战士跟在后方，一边冲锋一边铺木板。全团6挺重机枪集中火力压制东岸敌人碉堡。总攻打响（下午4点）：数十把军号同时吹响，枪声、喊杀声震彻山谷。勇士们无任何遮挡，徒手抓冰冷铁索向前攀爬，子弹不断打在铁链上，多名战士中弹坠入湍急的大渡河，无人后退。",
         "translation": "22人突击队轻装强攻铁索，后方三连边冲边铺桥板，全团6挺重机枪火力掩护，下午4点发起总攻。",
-        "image": "/assets/levels/luding-bridge/card-03-assault.png",
+        "image": "/assets/levels/luding-bridge/squad-assembly.png",
         "keyPoints": [
           "22勇士人数与编成",
           "火力掩护部署"
@@ -54,7 +54,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "夺桥战斗结果",
         "rawText": "冲到东桥头时，敌人点燃煤油、木板燃起大火封锁桥头。连长廖大珠带头冲进烈火，勇士紧随其后，穿过火墙与敌人近身肉搏。两小时激战结束，红军占领泸定城，打通北上通道；22名勇士4人壮烈牺牲，18人成功登岸。",
         "translation": "东桥头燃起大火封锁，廖大珠带队冲火肉搏，激战两小时后夺下泸定城，22人中4人牺牲、18人登岸。",
-        "image": "/assets/levels/luding-bridge/card-04-outcome.png",
+        "image": "/assets/levels/luding-bridge/bridge-victory.png",
         "keyPoints": [
           "伤亡结果",
           "战斗结局"
@@ -79,7 +79,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "第五次反“围剿”后的压力",
         "rawText": "1933年至1934年，国民党军对中央苏区实行堡垒推进和经济封锁，红军在第五次反“围剿”中陷入被动，中央苏区回旋余地不断缩小。",
         "translation": "中央苏区面对军事围堵和物资封锁，原地坚守的代价越来越高，战略转移成为保存主力的重要选择。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/ruijin-departure/cards/01-pressure.jpg",
         "keyPoints": [
           "军事围堵",
           "经济封锁",
@@ -91,7 +91,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "从瑞金、于都一带集结出发",
         "rawText": "1934年10月，中央红军主力和中央机关从瑞金、于都等中央苏区核心区域集结转移，夜间隐蔽行动，跨过于都河后踏上西进道路。",
         "translation": "出发地点不是单一城门，而是以瑞金、于都一带为核心的集结转移；夜色、渡河和隐蔽行动构成了开端的真实压力。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/ruijin-departure/cards/02-assembly.jpg",
         "keyPoints": [
           "集结转移",
           "夜间行动",
@@ -103,7 +103,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "八万余人的沉重队列",
         "rawText": "长征开始时，中央红军约八万六千余人随主力转移，队伍中既有作战部队，也有机关、后勤、医疗、电台和文件物资。",
         "translation": "这支队伍不只是战斗纵队，还承担着机关、后勤、通信和医疗任务；速度、隐蔽和物资取舍相互拉扯。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/ruijin-departure/cards/03-column.jpg",
         "keyPoints": [
           "约八万六千余人",
           "后勤负担",
@@ -115,7 +115,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "告别中央苏区",
         "rawText": "红军离开中央苏区时，许多群众送别亲人和队伍；这一夜既是军事转移，也是根据地、家庭与战士之间的沉重告别。",
         "translation": "瑞金出发的情绪不只是“启程”，还有对根据地和亲人的告别，这让战略选择背后的代价更加具体。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/ruijin-departure/cards/04-farewell.jpg",
         "keyPoints": [
           "群众送别",
           "根据地告别",
@@ -156,7 +156,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "第四道封锁线",
         "rawText": "湘江一线是中央红军长征初期必须突破的关键封锁线。敌军企图利用湘江与周边山地、渡口形成围堵，阻断红军西进。",
         "translation": "湘江不是普通河流障碍，而是与敌军封锁线叠加在一起的战略关口；能否及时渡江直接关系主力存亡。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/xiangjiang-battle/cards/01-blockade.jpg",
         "keyPoints": [
           "湘江封锁线",
           "渡口争夺",
@@ -168,7 +168,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "抢渡与掩护",
         "rawText": "红军先头部队抢占渡口，工兵和战士在炮火下搭设、修复渡江通路，阻击部队在两翼和后方苦战，掩护中央纵队与大部队过江。",
         "translation": "渡江不是单点冲锋，而是抢渡、架桥、阻击、掩护同时展开；任何一个环节被击穿，都可能让队伍被压在江东。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/xiangjiang-battle/cards/02-crossing.jpg",
         "keyPoints": [
           "抢占渡口",
           "搭设通路",
@@ -180,7 +180,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "从八万六千余人到三万余人",
         "rawText": "湘江战役后，中央红军人数由长征出发时的八万六千余人锐减到三万余人左右，许多红军战士牺牲在渡江与阻击战中。",
         "translation": "“惨烈”可以被数字看见：大幅减员说明这场战斗不仅改变了队伍规模，也改变了后来对战略指挥的反思。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/xiangjiang-battle/cards/03-cost.jpg",
         "keyPoints": [
           "八万六千余人",
           "三万余人左右",
@@ -192,7 +192,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "通向遵义前的沉重反思",
         "rawText": "湘江血战的惨重损失，使红军内部对当时的战略指挥和行军方式产生深刻反思，也为后来遵义会议的召开积累了现实压力。",
         "translation": "湘江的意义不只在于突围成功，更在于惨痛损失推动了红军对路线、指挥和机动作战方式的重新思考。",
-        "image": "/assets/map/route.png",
+        "image": "/assets/levels/xiangjiang-battle/cards/04-reflection.jpg",
         "keyPoints": [
           "战略反思",
           "指挥问题",
@@ -215,7 +215,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "湘江血战的代价",
         "rawText": "第五次反“围剿”失败后，中央红军被迫实行战略转移。1934年11月，红军在广西湘江遭国民党军重兵围堵，苦战五昼夜才得以突围，但付出了极其惨重的代价：出发时8.6万人的队伍，渡过湘江后只剩3万人左右。惨败让越来越多的红军将领开始质疑博古、李德的军事指挥。",
         "translation": "红军从瑞金出发时有8.6万人，湘江一战下来只剩3万人左右，惨重的损失让大家开始怀疑，现在这种打法到底对不对。",
-        "image": "/assets/levels/zunyi-turn/card-01-xiangjiang-cost.png",
+        "image": "/assets/levels/zunyi-turn/meeting-room-map.png",
         "keyPoints": [
           "湘江战役损失",
           "军事指挥受质疑"
@@ -226,7 +226,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "遵义会议的召开",
         "rawText": "1935年1月15日至17日，中共中央政治局扩大会议在贵州遵义原黔军师长柏辉章公馆（今遵义会议会址）召开。毛泽东、朱德、周恩来、张闻天、陈云、博古等政治局委员出席，刘伯承、彭德怀、林彪、聂荣臻、邓小平、杨尚昆等红军将领参加，军事顾问李德及翻译伍修权列席会议。",
         "translation": "1935年1月15日到17日，中央领导人和红军将领们在遵义的一栋公馆里开会，专门讨论红军接下来该怎么办。",
-        "image": "/assets/levels/zunyi-turn/card-02-meeting-venue.png",
+        "image": "/assets/levels/zunyi-turn/site-exterior.png",
         "keyPoints": [
           "会议时间地点",
           "参会核心人物"
@@ -237,7 +237,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "会议做出的核心决定",
         "rawText": "会议集中批判了博古、李德在军事指挥上的“左”倾教条主义错误，否定了死板的阵地战打法；增选毛泽东为中央政治局常委，事实上确立了毛泽东在党中央和红军中的领导地位；取消了博古、李德、周恩来组成的旧“三人团”，改由朱德、周恩来负责军事指挥，周恩来是党内委托的对军事指挥下最后决心的负责者；会议还决定红军继续北上，建立川陕甘革命根据地。",
         "translation": "会议批评了博古、李德指挥打仗的错误做法，增选毛泽东进入核心领导层，取消了原来的军事指挥小组，改由朱德、周恩来指挥打仗，并决定红军继续往北走，去建立新的根据地。",
-        "image": "/assets/levels/zunyi-turn/card-03-key-decisions.png",
+        "image": "/assets/levels/zunyi-turn/meeting-manuscript.png",
         "keyPoints": [
           "否定错误军事路线",
           "毛泽东进入领导核心",
@@ -250,7 +250,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "转折之后：连打胜仗",
         "rawText": "遵义会议之前，红军在博古、李德指挥下一路被动挨打、节节溃退；遵义会议之后，毛泽东指挥红军打起灵活机动的运动战：四渡赤水，把几十万敌军调得团团转；随后巧渡金沙江，彻底跳出了敌军的包围圈；又强渡大渡河、飞夺泸定桥，顺利完成北上。",
         "translation": "开会之前红军一路被追着打，开会之后毛泽东指挥红军灵活作战，四渡赤水调开敌人，巧渡金沙江跳出包围圈，又飞夺泸定桥，一路打出了主动权。",
-        "image": "/assets/levels/zunyi-turn/card-04-turning-point.png",
+        "image": "/assets/levels/zunyi-turn/meeting-painting-wide.png",
         "keyPoints": [
           "会前被动挨打",
           "会后运动战连胜",
@@ -262,7 +262,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "纪念馆里的历史见证",
         "rawText": "遵义会议纪念馆完整保留了会议室原物：长方形木桌、老式木椅、搪瓷茶杯、煤油灯；馆藏还包括红军行军地图、油印的会议决议手稿、红军军装与八角帽、干粮袋、铜水壶、作战电报，以及当年红军书写的革命标语和宣传布告。",
         "translation": "纪念馆里保留着开会时用的桌椅、茶杯、油灯，还有当年的地图、会议决议手稿、军装八角帽、水壶、电报和标语，这些实物都是那段历史的见证。",
-        "image": "/assets/levels/zunyi-turn/card-05-museum-relics.png",
+        "image": "/assets/levels/zunyi-turn/meeting-table-room.png",
         "keyPoints": [
           "会议室原物",
           "长征实物文献"

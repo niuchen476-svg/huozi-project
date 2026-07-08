@@ -48,7 +48,7 @@ frontend/public/assets/levels/luding-bridge/effects/
 
 frontend/public/assets/shared/fragments/
 frontend/public/assets/shared/ui/
-frontend/public/assets/references/
+docs/references/
 ```
 
 说明：
@@ -58,7 +58,7 @@ frontend/public/assets/references/
 - `effects/`：透明 PNG 特效，如烟雾、火星、弹道、光晕。
 - `shared/fragments/`：通关碎片，如铁索链环、会议记录纸。
 - `shared/ui/`：长征行囊、提示框、印章、低干扰 HUD。
-- `references/`：参考视频、截帧，不直接进入正式游戏。
+- `docs/references/`：参考视频、截帧，不进入 `frontend/public`，不参与 GitHub Pages 正式部署。
 
 ---
 
@@ -183,7 +183,7 @@ frontend/public/assets/relics/canteen-tin.png
 位置：
 
 ```text
-frontend/public/assets/references/
+docs/references/
 ```
 
 已有：
