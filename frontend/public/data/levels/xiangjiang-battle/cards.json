@@ -13,7 +13,7 @@
       "title": "第四道封锁线",
       "rawText": "湘江一线是中央红军长征初期必须突破的关键封锁线。敌军企图利用湘江与周边山地、渡口形成围堵，阻断红军西进。",
       "translation": "湘江不是普通河流障碍，而是与敌军封锁线叠加在一起的战略关口；能否及时渡江直接关系主力存亡。",
-      "image": "/assets/map/route.jpg",
+      "image": "/assets/levels/xiangjiang-battle/cards/01-blockade.jpg",
       "keyPoints": [
         "湘江封锁线",
         "渡口争夺",
@@ -25,7 +25,7 @@
       "title": "抢渡与掩护",
       "rawText": "红军先头部队抢占渡口，工兵和战士在炮火下搭设、修复渡江通路，阻击部队在两翼和后方苦战，掩护中央纵队与大部队过江。",
       "translation": "渡江不是单点冲锋，而是抢渡、架桥、阻击、掩护同时展开；任何一个环节被击穿，都可能让队伍被压在江东。",
-      "image": "/assets/map/route.jpg",
+      "image": "/assets/levels/xiangjiang-battle/cards/02-crossing.jpg",
       "keyPoints": [
         "抢占渡口",
         "搭设通路",
@@ -37,7 +37,7 @@
       "title": "从八万六千余人到三万余人",
       "rawText": "湘江战役后，中央红军人数由长征出发时的八万六千余人锐减到三万余人左右，许多红军战士牺牲在渡江与阻击战中。",
       "translation": "“惨烈”可以被数字看见：大幅减员说明这场战斗不仅改变了队伍规模，也改变了后来对战略指挥的反思。",
-      "image": "/assets/map/route.jpg",
+      "image": "/assets/levels/xiangjiang-battle/cards/03-cost.jpg",
       "keyPoints": [
         "八万六千余人",
         "三万余人左右",
@@ -49,7 +49,7 @@
       "title": "通向遵义前的沉重反思",
       "rawText": "湘江血战的惨重损失，使红军内部对当时的战略指挥和行军方式产生深刻反思，也为后来遵义会议的召开积累了现实压力。",
       "translation": "湘江的意义不只在于突围成功，更在于惨痛损失推动了红军对路线、指挥和机动作战方式的重新思考。",
-      "image": "/assets/map/route.jpg",
+      "image": "/assets/levels/xiangjiang-battle/cards/04-reflection.jpg",
       "keyPoints": [
         "战略反思",
         "指挥问题",
