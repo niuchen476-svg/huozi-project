@@ -31,16 +31,20 @@ function send(res, status, body, headers = {}) {
 function resolveStaticPath(urlPath) {
   const decodedPath = decodeURIComponent(urlPath);
   const relativePath = decodedPath === "/" ? "index.html" : decodedPath.slice(1);
-  const baseDir = relativePath.startsWith("assets/") || relativePath.startsWith("data/")
-    ? publicDir
-    : serveRoot;
-  const filePath = path.resolve(baseDir, relativePath);
-  const relativeToBase = path.relative(baseDir, filePath);
-
-  if (relativeToBase.startsWith("..") || path.isAbsolute(relativeToBase)) {
-    return null;
+  // Try the source/build root first, then the public dir (so vendored
+  // modules like ./vendor/three.module.js resolve both in dev and in build).
+  for (const baseDir of [serveRoot, publicDir]) {
+    const filePath = path.resolve(baseDir, relativePath);
+    const relativeToBase = path.relative(baseDir, filePath);
+    if (relativeToBase.startsWith("..") || path.isAbsolute(relativeToBase)) continue;
+    try {
+      statSync(filePath);
+      return filePath;
+    } catch {
+      // keep looking in the next base dir
+    }
   }
-  return filePath;
+  return null;
 }
 
 async function proxyApi(req, res) {

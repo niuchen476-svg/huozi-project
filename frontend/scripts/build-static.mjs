@@ -37,8 +37,10 @@ if (normalizedBase !== "/") {
       const ext = path.extname(entry.name);
       if (ext !== ".css" && ext !== ".js" && ext !== ".mjs") continue;
       let content = await readFile(full, "utf-8");
-      // Replace "/assets/" references in url(), inline styles, JS strings
-      content = content.replace(/["'(\/]\/assets\//g, `${normalizedBase}assets/`);
+      // Replace "/assets/" references in url(), inline styles, JS strings.
+      // Use a capture group for the leading quote/paren so it is preserved
+      // (otherwise eating the quote breaks JS string literals and CSS url()).
+      content = content.replace(/(["'(\/])\/assets\//g, `$1${normalizedBase}assets/`);
       await writeFile(full, content);
     }
   }
