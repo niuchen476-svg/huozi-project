@@ -45,7 +45,7 @@ export function preloadLevelResources(levelId) {
 }
 
 const POEM_FORMS = ["七律", "绝句", "词"];
-const REPLAY_ACTION_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle"]);
+const REPLAY_ACTION_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle", "luding-bridge"]);
 
 const SPECIAL_CHALLENGES = {
   "ruijin-departure": {
@@ -135,6 +135,10 @@ export async function renderLevelView(root, levelId) {
         <h1>${level.title}</h1>
         ${playedAction ? `<p class="level-header__debrief">${specialChallenge?.debrief || level.actionDebrief || "刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。"}</p>` : ""}
         <p class="level-header__scenario">${level.scenario}</p>
+        <div class="level-header__actions">
+          <button type="button" data-restart-level-page>重新挑战本关</button>
+          <a href="#/map">返回路线图</a>
+        </div>
       </header>
 
       <div class="dossier">
@@ -157,6 +161,8 @@ export async function renderLevelView(root, levelId) {
       .querySelector("#submit-reflection")
       .addEventListener("click", () => handleSubmit(root, levelId));
   }
+
+  root.querySelector("[data-restart-level-page]")?.addEventListener("click", () => restartLevel(root, levelId));
 }
 
 function renderReflectionTask() {

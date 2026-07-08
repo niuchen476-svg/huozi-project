@@ -27,6 +27,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  width: 100%;
 }
 
 body {
@@ -87,13 +88,16 @@ a {
 .view-home {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: center / cover no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .view-home__scrim {
@@ -420,6 +424,17 @@ a {
   pointer-events: none;
 }
 
+.bridge-scene--intro .bridge-scene__bg {
+  background-position: center;
+  background-size: cover;
+  filter: sepia(0.08) contrast(1.05) brightness(0.82);
+}
+
+.bridge-scene--intro .bridge-hud,
+.bridge-scene--intro .bridge-hud__progress {
+  display: none !important;
+}
+
 .bridge-crossing-path {
   position: absolute;
   inset: 0;
@@ -448,6 +463,11 @@ a {
 
 .bridge-chain--right {
   transform: translateX(82px) rotate(-9deg) rotateX(58deg);
+}
+
+.bridge-crossing-path .bridge-chain,
+.bridge-crossing-path .bridge-crawler {
+  display: none;
 }
 
 .bridge-crawler {
@@ -674,6 +694,166 @@ a {
   transform: translateY(-2px);
 }
 
+.bridge-role-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6, 5, 4, 0.42);
+}
+
+.bridge-role-prompt__card {
+  width: min(420px, calc(100vw - 48px));
+  padding: 26px 28px;
+  text-align: center;
+  border: 1px solid rgba(248, 230, 168, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(55, 35, 22, 0.94), rgba(18, 13, 9, 0.96));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.bridge-role-prompt__card p {
+  margin: 0 0 10px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.bridge-role-prompt__card h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.45;
+}
+
+.bridge-role-prompt__card span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(237, 228, 205, 0.82);
+  line-height: 1.75;
+}
+
+.bridge-role-prompt__card button {
+  margin-top: 22px;
+  padding: 10px 24px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(242, 201, 76, 0.54);
+  border-radius: 999px;
+  background: rgba(156, 35, 27, 0.82);
+  cursor: pointer;
+}
+
+.bridge-role-prompt__card button:hover {
+  background: rgba(111, 23, 18, 0.9);
+}
+
+.bridge-video-bubble {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 10px 18px;
+  color: #f8e6a8;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(248, 230, 168, 0.44);
+  border-radius: 999px;
+  background: rgba(18, 13, 9, 0.58);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  animation: bridge-video-bubble-float 2.8s ease-in-out infinite;
+}
+
+.bridge-video-bubble:hover {
+  color: #fff6d6;
+  border-color: rgba(242, 201, 76, 0.78);
+  background: rgba(111, 23, 18, 0.72);
+}
+
+@keyframes bridge-video-bubble-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.bridge-video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.bridge-video-modal[hidden] {
+  display: none;
+}
+
+.bridge-video-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(5, 4, 3, 0.76);
+  cursor: pointer;
+}
+
+.bridge-video-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(920px, calc(100vw - 48px));
+  padding: 16px;
+  border: 1px solid rgba(248, 230, 168, 0.32);
+  border-radius: 8px;
+  background: rgba(18, 13, 9, 0.94);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+}
+
+.bridge-video-modal__panel video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: min(72vh, 620px);
+  border-radius: 6px;
+  background: #000;
+}
+
+.bridge-video-modal__close {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 2;
+  padding: 8px 14px;
+  color: #f8e6a8;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(248, 230, 168, 0.38);
+  border-radius: 999px;
+  background: rgba(18, 13, 9, 0.82);
+  cursor: pointer;
+}
+
+.bridge-video-modal__close:hover {
+  border-color: rgba(242, 201, 76, 0.78);
+  background: rgba(111, 23, 18, 0.72);
+}
+
 /* ---------- 敢死队选人 ---------- */
 
 .squad-select {
@@ -723,16 +903,19 @@ a {
 .squad-select__slot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 64px;
-  height: 64px;
+  width: 132px;
+  height: 176px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  padding: 12px;
+  border-radius: 8px;
   font-family: var(--font-serif);
-  font-size: 0.72rem;
-  border: 2px dashed var(--color-red);
-  color: var(--color-red);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  text-align: center;
+  border: 2px dashed rgba(237, 228, 205, 0.78);
+  color: var(--color-paper);
   background: rgba(156, 35, 27, 0.15);
   animation: bridge-warning-pulse 1.4s ease-in-out infinite;
 }
@@ -740,35 +923,46 @@ a {
 .squad-select__player {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 64px;
-  height: 64px;
+  width: 128px;
+  height: 292px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
   font-family: var(--font-serif);
   font-weight: 700;
   color: var(--color-paper);
-  background: var(--color-red);
-  border: 3px solid var(--color-paper);
-  box-shadow: 0 0 0 3px rgba(156, 35, 27, 0.55);
   cursor: grab;
   touch-action: none;
   user-select: none;
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.44));
+  animation: squad-soldier-breathe 1.2s ease-in-out infinite;
 }
 
 .squad-select__player img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   pointer-events: none;
   user-select: none;
 }
 
 .squad-select__player--locked {
   cursor: default;
-  box-shadow: 0 0 0 5px rgba(156, 35, 27, 0.5);
+  animation: none;
+  filter:
+    drop-shadow(0 0 12px rgba(242, 201, 76, 0.42))
+    drop-shadow(0 18px 18px rgba(0, 0, 0, 0.44));
+}
+
+@keyframes squad-soldier-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-5px);
+  }
 }
 
 .squad-select__hint {
@@ -780,6 +974,71 @@ a {
   font-size: 0.85rem;
   color: rgba(237, 228, 205, 0.9);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.bridge-instruction {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6, 5, 4, 0.46);
+}
+
+.bridge-instruction[hidden] {
+  display: none;
+}
+
+.bridge-instruction__card {
+  width: min(460px, calc(100vw - 48px));
+  padding: 24px 28px;
+  text-align: center;
+  border: 1px solid rgba(248, 230, 168, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(55, 35, 22, 0.94), rgba(18, 13, 9, 0.96));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.bridge-instruction__card p {
+  margin: 0 0 10px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.bridge-instruction__card h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.45;
+}
+
+.bridge-instruction__card span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(237, 228, 205, 0.84);
+  line-height: 1.8;
+}
+
+.bridge-instruction__card button {
+  margin-top: 22px;
+  padding: 10px 24px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(242, 201, 76, 0.54);
+  border-radius: 999px;
+  background: rgba(156, 35, 27, 0.82);
+  cursor: pointer;
+}
+
+.bridge-instruction__card button:hover {
+  background: rgba(111, 23, 18, 0.9);
 }
 
 /* ---------- 3D 行动场景 ---------- */
@@ -1161,6 +1420,9 @@ a {
   .campaign-3d__controls button,
   #campaign-start {
     font-size: 0.86rem;
+  }
+}
+
 /* ---------- 遵义会议推理关 ---------- */
 
 .view-zunyi {
@@ -2456,6 +2718,44 @@ a {
   max-width: 68ch;
 }
 
+.level-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.level-header__actions button,
+.level-header__actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.level-header__actions button {
+  color: var(--color-paper);
+  background: var(--color-red);
+  border: none;
+  cursor: pointer;
+}
+
+.level-header__actions button:hover {
+  background: var(--color-red-deep);
+}
+
+.level-header__actions a {
+  color: var(--color-red-deep);
+  border: 1px solid rgba(156, 35, 27, 0.25);
+  background: rgba(251, 247, 234, 0.65);
+}
+
 .dossier {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -2818,22 +3118,51 @@ a {
 
 .bgm-toggle {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 16px;
+  right: 24px;
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 118px;
+  min-height: 42px;
+  padding: 10px 18px;
   font-family: var(--font-sans);
   font-size: 0.85rem;
-  color: var(--color-paper);
-  background: var(--color-ink);
-  border: none;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #f8e6a8;
+  background:
+    linear-gradient(180deg, rgba(59, 39, 25, 0.78), rgba(18, 13, 9, 0.78));
+  border: 1px solid rgba(248, 230, 168, 0.38);
   border-radius: 999px;
   cursor: pointer;
-  box-shadow: var(--shadow-card);
-  z-index: 10;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  z-index: 60;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .bgm-toggle:hover {
-  background: var(--color-red-deep);
+  border-color: rgba(242, 201, 76, 0.74);
+  background:
+    linear-gradient(180deg, rgba(111, 23, 18, 0.82), rgba(45, 22, 15, 0.84));
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.38),
+    0 0 18px rgba(242, 201, 76, 0.18);
+  transform: translateY(-1px);
+}
+
+.bgm-toggle--playing {
+  color: #fff6d6;
+  border-color: rgba(242, 201, 76, 0.72);
+  background:
+    linear-gradient(180deg, rgba(156, 35, 27, 0.84), rgba(68, 30, 18, 0.84));
 }
 
 #app.app--action-scene ~ .bgm-toggle {
@@ -4160,6 +4489,426 @@ a {
 .view-zunyi .zunyi-topbar {
   position: relative;
   inset: auto;
+}
+
+.view-zunyi .zunyi-room--intro {
+  padding: 0;
+  overflow: hidden;
+}
+
+.view-zunyi .zunyi-room--intro::before {
+  display: none;
+}
+
+.view-zunyi .zunyi-room--intro .zunyi-room__lamp,
+.view-zunyi .zunyi-room--intro .zunyi-progress {
+  display: none;
+}
+
+.view-zunyi .zunyi-room--intro .zunyi-topbar {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 35;
+}
+
+.view-zunyi .zunyi-room--rewrite {
+  padding: 0;
+  overflow: hidden;
+}
+
+.view-zunyi .zunyi-room--rewrite::before,
+.view-zunyi .zunyi-room--rewrite .zunyi-room__lamp,
+.view-zunyi .zunyi-room--rewrite .zunyi-progress {
+  display: none;
+}
+
+.view-zunyi .zunyi-room--rewrite .zunyi-topbar {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 35;
+}
+
+.view-zunyi .zunyi-intro-scene {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  overflow: hidden;
+  background: #130d09;
+}
+
+.view-zunyi .zunyi-intro-scene__bg,
+.view-zunyi .zunyi-intro-scene__shade {
+  position: absolute;
+  inset: 0;
+}
+
+.view-zunyi .zunyi-intro-scene__bg {
+  background:
+    linear-gradient(180deg, rgba(18, 12, 8, 0.08), rgba(18, 12, 8, 0.34)),
+    url("/assets/levels/zunyi-turn/meeting-painting-wide.png") center / cover no-repeat;
+  filter: sepia(0.08) contrast(1.04) brightness(0.82);
+  transform: scale(1.03);
+}
+
+.view-zunyi .zunyi-intro-scene__shade {
+  background:
+    radial-gradient(circle at 50% 36%, transparent 0 28%, rgba(9, 7, 5, 0.24) 54%, rgba(9, 7, 5, 0.62) 100%),
+    linear-gradient(90deg, rgba(8, 6, 4, 0.78), rgba(8, 6, 4, 0.18) 42%, rgba(8, 6, 4, 0.7));
+}
+
+.view-zunyi .history-intro--zunyi {
+  background: rgba(8, 6, 4, 0.46);
+  backdrop-filter: none;
+}
+
+.view-zunyi .zunyi-video-bubble {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 10px 18px;
+  color: #f8e6a8;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid rgba(248, 230, 168, 0.44);
+  border-radius: 999px;
+  background: rgba(18, 13, 9, 0.58);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  animation: zunyi-video-bubble-float 2.8s ease-in-out infinite;
+}
+
+.view-zunyi .zunyi-video-bubble:hover {
+  color: #fff6d6;
+  border-color: rgba(242, 201, 76, 0.78);
+  background: rgba(111, 23, 18, 0.72);
+}
+
+@keyframes zunyi-video-bubble-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.view-zunyi .zunyi-video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.view-zunyi .zunyi-video-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(5, 4, 3, 0.76);
+  cursor: pointer;
+}
+
+.view-zunyi .zunyi-video-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(920px, calc(100vw - 48px));
+  padding: 16px;
+  border: 1px solid rgba(248, 230, 168, 0.32);
+  border-radius: 8px;
+  background: rgba(18, 13, 9, 0.94);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+}
+
+.view-zunyi .zunyi-video-modal__panel video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: min(72vh, 620px);
+  border-radius: 6px;
+  background: #000;
+}
+
+.view-zunyi .zunyi-video-modal__close {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 2;
+  padding: 8px 14px;
+  color: #f8e6a8;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(248, 230, 168, 0.38);
+  border-radius: 999px;
+  background: rgba(18, 13, 9, 0.82);
+  cursor: pointer;
+}
+
+.view-zunyi .zunyi-video-modal__close:hover {
+  border-color: rgba(242, 201, 76, 0.78);
+  background: rgba(111, 23, 18, 0.72);
+}
+
+.view-zunyi .zunyi-role-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6, 5, 4, 0.42);
+}
+
+.view-zunyi .zunyi-role-prompt__card {
+  width: min(420px, calc(100vw - 48px));
+  padding: 26px 28px;
+  text-align: center;
+  border: 1px solid rgba(248, 230, 168, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(55, 35, 22, 0.94), rgba(18, 13, 9, 0.96));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.view-zunyi .zunyi-role-prompt__card p {
+  margin: 0 0 10px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.view-zunyi .zunyi-role-prompt__card h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.45;
+}
+
+.view-zunyi .zunyi-role-prompt__card span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(237, 228, 205, 0.82);
+  line-height: 1.75;
+}
+
+.view-zunyi .zunyi-role-prompt__card button {
+  margin-top: 22px;
+  padding: 10px 24px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(242, 201, 76, 0.54);
+  border-radius: 999px;
+  background: rgba(156, 35, 27, 0.82);
+  cursor: pointer;
+}
+
+.view-zunyi .zunyi-role-prompt__card button:hover {
+  background: rgba(111, 23, 18, 0.9);
+}
+
+.view-zunyi .zunyi-rewrite-canvas {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #100b08;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__bg,
+.view-zunyi .zunyi-rewrite-canvas__shade {
+  position: absolute;
+  inset: 0;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__bg {
+  background:
+    linear-gradient(180deg, rgba(18, 12, 8, 0.06), rgba(18, 12, 8, 0.42)),
+    var(--zunyi-rewrite-bg) center / cover no-repeat;
+  filter: sepia(0.08) contrast(1.04) brightness(0.82);
+  transform: scale(1.02);
+}
+
+.view-zunyi .zunyi-rewrite-canvas__shade {
+  background:
+    radial-gradient(circle at 50% 42%, transparent 0 34%, rgba(9, 7, 5, 0.38) 72%, rgba(9, 7, 5, 0.68) 100%),
+    linear-gradient(90deg, rgba(8, 6, 4, 0.72), rgba(8, 6, 4, 0.16) 44%, rgba(8, 6, 4, 0.72));
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note {
+  position: absolute;
+  left: 50%;
+  bottom: 9vh;
+  z-index: 2;
+  width: min(460px, calc(100vw - 48px));
+  padding: 20px 24px;
+  text-align: center;
+  border: 1px solid rgba(248, 230, 168, 0.28);
+  border-radius: 8px;
+  background: rgba(18, 13, 9, 0.56);
+  transform: translateX(-50%);
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note p {
+  margin: 0 0 8px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note h2 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: 1.55;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note span {
+  display: block;
+  margin-top: 12px;
+  color: rgba(237, 228, 205, 0.84);
+  line-height: 1.75;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note button {
+  margin-top: 18px;
+  padding: 10px 24px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(242, 201, 76, 0.54);
+  border-radius: 999px;
+  background: rgba(156, 35, 27, 0.82);
+  cursor: pointer;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note button:hover {
+  background: rgba(111, 23, 18, 0.9);
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note--record {
+  width: min(720px, calc(100vw - 40px));
+  bottom: 5vh;
+  padding: 18px 20px;
+  background: rgba(18, 13, 9, 0.5);
+}
+
+.view-zunyi .zunyi-record-game {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  text-align: left;
+}
+
+.view-zunyi .zunyi-record-game__speech {
+  padding: 14px 16px;
+  border: 1px solid rgba(248, 230, 168, 0.2);
+  border-radius: 8px;
+  background: rgba(14, 10, 7, 0.52);
+}
+
+.view-zunyi .zunyi-record-game__speech small {
+  display: block;
+  margin-bottom: 8px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.view-zunyi .zunyi-record-game__speech strong {
+  display: block;
+  color: rgba(255, 246, 214, 0.92);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+.view-zunyi .zunyi-record-game__choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.view-zunyi .zunyi-record-game__choices button {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(72, 42, 25, 0.78);
+}
+
+.view-zunyi .zunyi-record-game__paper {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  color: #3b2417;
+  border: 1px solid rgba(81, 45, 22, 0.28);
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, rgba(122, 67, 30, 0.12) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, #f1dfb4, #d5b982);
+  box-shadow: inset 0 0 24px rgba(71, 38, 16, 0.14);
+}
+
+.view-zunyi .zunyi-record-game__paper strong {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+}
+
+.view-zunyi .zunyi-record-game__paper em {
+  min-height: 24px;
+  color: rgba(59, 36, 23, 0.42);
+  font-style: normal;
+  line-height: 1.65;
+}
+
+.view-zunyi .zunyi-record-game__paper em.is-written {
+  color: rgba(59, 36, 23, 0.88);
+}
+
+.view-zunyi .zunyi-record-game__feedback {
+  display: block;
+  color: rgba(237, 228, 205, 0.78);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .view-zunyi .zunyi-rewrite-canvas__note--record {
+    bottom: 3vh;
+    max-height: calc(100vh - 96px);
+    overflow: auto;
+  }
+
+  .view-zunyi .zunyi-record-game__choices {
+    grid-template-columns: 1fr;
+  }
 }
 
 .view-zunyi .zunyi-table {

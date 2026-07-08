@@ -1,3 +1,5 @@
+import { LUDING_ASSETS } from "../cinematicAssets.js";
+
 const ASSET_BASE = "assets/levels/luding-bridge";
 
 const KEYFRAMES = [
@@ -7,14 +9,16 @@ const KEYFRAMES = [
   { at: 90, bg: `${ASSET_BASE}/pov-arrival.jpg` },
 ];
 
+const INTRO_BG = `${ASSET_BASE}/reference/assault-painting-wide.png`;
 const SQUAD_BG = `${ASSET_BASE}/squad-assembly.jpg`;
+const DRAG_SOLDIER = `${ASSET_BASE}/props/assault-drag-soldier.png`;
 const TEAMMATE_ICON = `${ASSET_BASE}/teammate-icon.jpg`;
 const TEAMMATE_FALL = `${ASSET_BASE}/teammate-fall.png`;
 const VICTORY_IMAGE = `${ASSET_BASE}/bridge-victory.jpg`;
 
 // 坐标是在 squad-assembly.jpg 图片里的百分比位置：队伍后排 -> 桥头
-const PLAYER_START_POS = { x: 88, y: 45 };
-const SQUAD_SLOT_POS = { x: 44, y: 53 };
+const PLAYER_START_POS = { x: 84, y: 58 };
+const SQUAD_SLOT_POS = { x: 42, y: 56 };
 
 const NARRATIVE_BEATS = [
   { at: 2, text: "脚下的铁索还带着体温——是刚刚倒下的战友抓过的地方" },
@@ -33,7 +37,7 @@ const MAX_FIRE_GAP_MS = 1900;
 const FIRE_LIMIT = 9;
 
 export function preloadBridgeActionAssets() {
-  [SQUAD_BG, TEAMMATE_ICON, KEYFRAMES[0].bg].forEach(preloadImage);
+  [INTRO_BG, SQUAD_BG, DRAG_SOLDIER, TEAMMATE_ICON, KEYFRAMES[0].bg].forEach(preloadImage);
   idle(() => {
     [...KEYFRAMES.slice(1).map((frame) => frame.bg), VICTORY_IMAGE, TEAMMATE_FALL].forEach(preloadImage);
   });
@@ -45,8 +49,8 @@ export function renderBridgeAction(root, level) {
   return new Promise((resolve) => {
     root.innerHTML = `
       <div class="view view-bridge-action">
-        <div class="bridge-scene" id="bridge-scene">
-          <div class="bridge-scene__bg" id="bridge-bg" style="background-image: url('${KEYFRAMES[0].bg}')"></div>
+        <div class="bridge-scene bridge-scene--intro" id="bridge-scene">
+          <div class="bridge-scene__bg" id="bridge-bg" style="background-image: url('${INTRO_BG}')"></div>
           <div class="bridge-crossing-path" id="bridge-crossing-path" hidden>
             <span class="bridge-chain bridge-chain--left"></span>
             <span class="bridge-chain bridge-chain--right"></span>
@@ -70,28 +74,85 @@ export function renderBridgeAction(root, level) {
             <h2 class="history-intro__title">${level.title}</h2>
             <p class="history-intro__text">${level.scenario}</p>
             <button type="button" id="history-intro-start">开始行动</button>
+            <button class="bridge-video-bubble" type="button" id="bridge-video-open">点击查看相关视频</button>
+          </div>
+
+          <div class="bridge-video-modal" id="bridge-video-modal" role="dialog" aria-modal="true" aria-label="飞夺泸定桥相关视频" hidden>
+            <button class="bridge-video-modal__backdrop" type="button" id="bridge-video-backdrop" aria-label="关闭视频"></button>
+            <div class="bridge-video-modal__panel">
+              <button class="bridge-video-modal__close" type="button" id="bridge-video-close" aria-label="关闭视频">关闭</button>
+              <video id="bridge-video-player" controls playsinline src="${LUDING_ASSETS.cinematic.introVideo}">
+                当前浏览器不支持视频播放。
+              </video>
+            </div>
+          </div>
+
+          <div class="bridge-role-prompt" id="bridge-role-prompt" role="dialog" aria-modal="true" aria-label="身份提示">
+            <div class="bridge-role-prompt__card">
+              <p>身份确认</p>
+              <h3>今天，你是这场战役的突击队员。</h3>
+              <span>听清任务，报名上桥，在枪火和铁索之间夺下泸定桥。</span>
+              <button type="button" id="bridge-role-prompt-close">进入战场</button>
+            </div>
           </div>
 
           <div class="squad-select" id="squad-select" hidden>
             <div class="squad-select__bg" style="background-image: url('${SQUAD_BG}')"></div>
             <div class="squad-select__scrim"></div>
-            <p class="squad-select__title">团长喊话：桥板已经被敌人拆光，只剩下十三根光铁索！<br />但泸定桥，天黑之前必须拿下！谁愿意第一个上？</p>
-            <div class="squad-select__slot" id="squad-slot" style="left: ${SQUAD_SLOT_POS.x}%; top: ${SQUAD_SLOT_POS.y}%;">拖到这里</div>
+            <p class="squad-select__title">团长喊话：桥板已经被敌人拆光，只剩下十三根光铁索！<br />但泸定桥，在天黑之前必须拿下。这事关我们党、我们红军的前途命运，同志们，跟我一起上啊！</p>
+            <div class="squad-select__slot" id="squad-slot" style="left: ${SQUAD_SLOT_POS.x}%; top: ${SQUAD_SLOT_POS.y}%;">拖到桥头前方</div>
             <div class="squad-select__player" id="squad-player" style="left: ${PLAYER_START_POS.x}%; top: ${PLAYER_START_POS.y}%;">
-              <img src="${TEAMMATE_ICON}" alt="你" draggable="false" />
+              <img src="${DRAG_SOLDIER}" alt="你" draggable="false" />
             </div>
-            <p class="squad-select__hint">把画面里的"你"从队伍里拖到桥头位置，报名突击队</p>
+            <p class="squad-select__hint">你就是这名突击队员，请拖动他报名，随团长一起冲锋</p>
+          </div>
+
+          <div class="bridge-instruction" id="bridge-instruction" role="dialog" aria-modal="true" aria-label="行动说明" hidden>
+            <div class="bridge-instruction__card">
+              <p>行动说明</p>
+              <h3>你已经爬上了铁索。</h3>
+              <span>作为突击队员的你现在有 3 格体力值。用键盘上的左右箭头躲避来自不同方向的火力，按空格表示前进。希望你能成功到达对岸，帮助大家摆脱眼前的困境。</span>
+              <button type="button" id="bridge-instruction-start">开始爬行</button>
+            </div>
           </div>
         </div>
       </div>
     `;
 
+    document.querySelector("#bridge-role-prompt-close").addEventListener("click", () => {
+      document.querySelector("#bridge-role-prompt")?.remove();
+    });
+
+    const videoModal = document.querySelector("#bridge-video-modal");
+    const videoPlayer = document.querySelector("#bridge-video-player");
+    const closeVideo = () => {
+      videoPlayer.pause();
+      videoModal.hidden = true;
+    };
+
+    document.querySelector("#bridge-video-open").addEventListener("click", () => {
+      videoModal.hidden = false;
+      videoPlayer.currentTime = 0;
+      videoPlayer.play().catch(() => {});
+    });
+    document.querySelector("#bridge-video-close").addEventListener("click", closeVideo);
+    document.querySelector("#bridge-video-backdrop").addEventListener("click", closeVideo);
+
     document.querySelector("#history-intro-start").addEventListener("click", () => {
       KEYFRAMES.forEach((frame) => preloadImage(frame.bg));
+      closeVideo();
+      document.querySelector("#bridge-scene").classList.remove("bridge-scene--intro");
       document.querySelector("#history-intro").remove();
       const squadSelect = document.querySelector("#squad-select");
       squadSelect.hidden = false;
-      setupSquadSelect(() => startCrossing(resolve));
+      setupSquadSelect(() => {
+        const instruction = document.querySelector("#bridge-instruction");
+        instruction.hidden = false;
+        document.querySelector("#bridge-instruction-start").addEventListener("click", () => {
+          instruction.hidden = true;
+          startCrossing(resolve);
+        }, { once: true });
+      });
     });
   });
 }
@@ -133,6 +194,8 @@ function setupSquadSelect(onSelected) {
     offsetX = point.x - rect.left;
     offsetY = point.y - rect.top;
     player.style.position = "fixed";
+    player.style.transform = "none";
+    player.style.animation = "none";
     player.style.zIndex = "50";
     moveTo(point);
   }
@@ -163,8 +226,8 @@ function setupSquadSelect(onSelected) {
     if (overlap) {
       player.classList.add("squad-select__player--locked");
       const rect = slot.getBoundingClientRect();
-      player.style.left = `${rect.left}px`;
-      player.style.top = `${rect.top}px`;
+      player.style.left = `${rect.left + rect.width / 2 - playerRect.width / 2}px`;
+      player.style.top = `${rect.top + rect.height / 2 - playerRect.height / 2}px`;
       slot.textContent = "我去！";
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);

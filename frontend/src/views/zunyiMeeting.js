@@ -7,6 +7,11 @@ const STEPS = [
     prompt: "先听清楚这场会议为什么必须召开。",
   },
   {
+    id: "rewrite",
+    title: "会场记录",
+    prompt: "新的遵义会议游戏逻辑待接入。",
+  },
+  {
     id: "crisis",
     title: "一、整理当前局面",
     prompt: "点击一张桌上的史料，再点击右侧记录纸上的对应栏目。",
@@ -110,6 +115,84 @@ const DECISION_CARDS = [
 
 const DECISION_ORDER = ["criticize", "leadership", "north"];
 const ROUTE_POINTS = ["遵义会议", "四渡赤水", "巧渡金沙江", "飞夺泸定桥"];
+const MEETING_RECORDS = [
+  {
+    id: "lesson",
+    speaker: "会场发言一",
+    line: "第五次反“围剿”和长征初期的严重损失，不能只归因于敌人强大。我们必须认真总结自己的经验教训。",
+    answer: "总结失败教训",
+    choices: ["总结失败教训", "天气道路困难", "只记录敌人强大"],
+    written: "记录一：会议首先总结第五次反“围剿”失败和长征初期受挫的教训。",
+  },
+  {
+    id: "command",
+    speaker: "会场发言二",
+    line: "如果作战方法死板，指挥判断脱离实际，红军就会被敌人牵着走。军事指挥问题必须讲清楚。",
+    answer: "军事指挥问题",
+    choices: ["队伍不够勇敢", "军事指挥问题", "粮食不够充足"],
+    written: "记录二：会议重点讨论当时最紧迫的军事指挥和作战方法问题。",
+  },
+  {
+    id: "direction",
+    speaker: "会场发言三",
+    line: "只有调整领导和指挥方式，采取更灵活的行动，红军才可能从被动中重新争取主动。",
+    answer: "调整方向争取主动",
+    choices: ["继续原来打法", "原地长期休整", "调整方向争取主动"],
+    written: "记录三：会议推动党和红军在危急关头调整方向，开始重新争取主动。",
+  },
+];
+const REWRITE_SCENES = [
+  {
+    id: "arrival-crisis",
+    label: "第一幕 1/3",
+    title: "为什么必须开这次会？",
+    text: "长征刚开始时，中央红军连续遭到敌人围追堵截。特别是湘江战役后，队伍损失很大，大家都意识到：如果继续照旧走下去，红军会越来越危险。",
+    image: ZUNYI_ASSETS.cinematic.exteriorNight,
+  },
+  {
+    id: "arrival-question",
+    label: "第一幕 2/3",
+    title: "问题出在哪里？",
+    text: "当时最需要弄清楚的，不是谁勇不勇敢，而是前面的军事指挥和打法有没有问题。红军需要停下来认真讨论：为什么会被动，下一步怎样才能争取主动。",
+    image: ZUNYI_ASSETS.cinematic.exteriorNight,
+  },
+  {
+    id: "arrival-chance",
+    label: "第一幕 3/3",
+    title: "遵义给了短暂机会",
+    text: "1935 年 1 月，红军攻占贵州遵义，终于获得短暂休整。于是，中共中央在这里召开政治局扩大会议，重新总结经验，调整方向。这就是遵义会议召开的重要背景。",
+    image: ZUNYI_ASSETS.cinematic.exteriorNight,
+  },
+  {
+    id: "doorway-crisis",
+    label: "第二幕 1/3",
+    title: "会议即将开始",
+    text: "你来到会场门口，屋里的人神色凝重。第五次反“围剿”失利后，中央红军被迫开始长征；湘江战役又让队伍遭受严重损失，敌人的围追堵截还没有停止。",
+    image: ZUNYI_ASSETS.cinematic.doorwayEntry,
+  },
+  {
+    id: "doorway-turning-point",
+    label: "第二幕 2/3",
+    title: "已经到了关键关头",
+    text: "大家担忧的不只是一路行军的艰苦，更是党和红军接下来该往哪里走、怎样摆脱被动。如果再不能认真总结错误、调整方向，前途命运都会面临更大的危险。",
+    image: ZUNYI_ASSETS.cinematic.doorwayEntry,
+  },
+  {
+    id: "doorway-recorder",
+    label: "第二幕 3/3",
+    title: "记录员，请准备好",
+    text: "作为这场会议的小记录员，你要仔细听清每一次发言：哪些是在总结失败教训，哪些是在讨论军事指挥和组织调整。把这些记准确，才能理解遵义会议为什么是生死攸关的转折点。",
+    image: ZUNYI_ASSETS.cinematic.doorwayEntry,
+  },
+  {
+    id: "desk",
+    label: "第三幕",
+    title: "坐到会议桌前",
+    text: "纸笔已经摆好，发言声在屋里低低响起。请把每一句话里最重要的意思写进会议记录纸。",
+    image: ZUNYI_ASSETS.cinematic.recorderDesk,
+    game: "record",
+  },
+];
 
 export function renderZunyiMeeting(root, level) {
   return new Promise((resolve) => {
@@ -121,6 +204,12 @@ export function renderZunyiMeeting(root, level) {
       placed: {},
       decisions: [],
       completed: new Set(),
+      showVideo: false,
+      showRolePrompt: true,
+      rewriteScene: 0,
+      meetingRecordIndex: 0,
+      meetingRecords: [],
+      recordFeedback: "先听发言，再选择最应该写进记录纸的重点。",
       feedback: "你是会议小记录员。先把桌上的线索整理清楚，再写出会议判断。",
       hint: "小参谋：别急着背结论，先看见危机，再找原因。",
     };
@@ -134,7 +223,7 @@ function render(root, state) {
 
   root.innerHTML = `
     <div class="view-zunyi">
-      <div class="zunyi-room">
+      <div class="zunyi-room ${state.step === "intro" ? "zunyi-room--intro" : state.step === "rewrite" ? "zunyi-room--rewrite" : ""}">
         <div class="zunyi-room__lamp"></div>
         <div class="zunyi-topbar">
           <a class="zunyi-back" href="#/map">返回路线图</a>
@@ -143,7 +232,7 @@ function render(root, state) {
           </div>
         </div>
 
-        ${state.step === "intro" ? renderIntro(state) : renderStep(step, state)}
+        ${state.step === "intro" ? renderIntro(state) : state.step === "rewrite" ? renderRewriteCanvas(state) : renderStep(step, state)}
       </div>
     </div>
   `;
@@ -158,17 +247,115 @@ function progressClass(item, state) {
 }
 
 function renderIntro(state) {
+  const date = state.level.date || "1935 年 1 月 15 日至 17 日";
+  const location = state.level.location || "贵州遵义 · 遵义会议会址";
+
   return `
-    <section class="zunyi-story">
-      <div class="zunyi-story__visual zunyi-story__visual--meeting"></div>
-      <div class="zunyi-story__panel">
-        <p class="zunyi-story__tag">${state.level.date || "1935 年 1 月 15 日至 17 日"}</p>
-        <h2>${state.level.title || "遵义转折"}</h2>
-        <p>湘江之后，中央红军从 8.6 万人减少到约 3 万人。红军终于在遵义获得短暂休整，必须坐下来判断：问题到底出在哪里，下一步怎么走。</p>
-        <strong>会议记录员视角</strong>
-        <button class="zunyi-primary" type="button" data-next-step>开始记录</button>
+    <section class="zunyi-intro-scene">
+      <div class="zunyi-intro-scene__bg" aria-hidden="true"></div>
+      <div class="zunyi-intro-scene__shade" aria-hidden="true"></div>
+      <div class="history-intro history-intro--zunyi">
+        <p class="history-intro__eyebrow">${date} · ${location}</p>
+        <h2 class="history-intro__title">遵义会议</h2>
+        <p class="history-intro__text">
+          遵义会议是在第五次反“围剿”失败和长征初期严重受挫后召开的中共中央政治局扩大会议。会议集中总结军事指挥上的问题，批评博古、李德等人的错误军事指挥，增选毛泽东为中央政治局常委，并调整了中央军事领导。它使党和红军在极端危急的局面中开始重新掌握主动，成为长征和中国革命的重要转折。
+        </p>
+        <button type="button" id="history-intro-start" data-next-step>开始记录</button>
+        <button
+          class="zunyi-video-bubble"
+          type="button"
+          data-show-video
+        >
+          点击查看相关视频
+        </button>
       </div>
+      ${state.showVideo ? renderVideoModal() : ""}
+      ${state.showRolePrompt ? renderRolePrompt() : ""}
     </section>
+  `;
+}
+
+function renderRolePrompt() {
+  return `
+    <div class="zunyi-role-prompt" role="dialog" aria-modal="true" aria-label="身份提示">
+      <div class="zunyi-role-prompt__card">
+        <p>身份确认</p>
+        <h3>今天，你是这场会议的小记录员。</h3>
+        <span>请先听清楚会议为什么召开，再把关键判断写进记录纸。</span>
+        <button type="button" data-close-role-prompt>进入会议</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderVideoModal() {
+  return `
+    <div class="zunyi-video-modal" role="dialog" aria-modal="true" aria-label="遵义会议相关视频">
+      <button class="zunyi-video-modal__backdrop" type="button" data-close-video aria-label="关闭视频"></button>
+      <div class="zunyi-video-modal__panel">
+        <button class="zunyi-video-modal__close" type="button" data-close-video aria-label="关闭视频">关闭</button>
+        <video controls autoplay playsinline src="${ZUNYI_ASSETS.cinematic.introVideo}">
+          当前浏览器不支持视频播放。
+        </video>
+      </div>
+    </div>
+  `;
+}
+
+function renderRewriteCanvas(state) {
+  const scene = REWRITE_SCENES[state.rewriteScene] || REWRITE_SCENES[0];
+  const isLast = state.rewriteScene >= REWRITE_SCENES.length - 1;
+  const noteClass = scene.game === "record" ? "zunyi-rewrite-canvas__note zunyi-rewrite-canvas__note--record" : "zunyi-rewrite-canvas__note";
+
+  return `
+    <main class="zunyi-rewrite-canvas" style="--zunyi-rewrite-bg: url('${scene.image}')">
+      <div class="zunyi-rewrite-canvas__bg" aria-hidden="true"></div>
+      <div class="zunyi-rewrite-canvas__shade" aria-hidden="true"></div>
+      <section class="${noteClass}" aria-label="遵义会议记录互动">
+        <p>${scene.label}</p>
+        <h2>${scene.title}</h2>
+        <span>${scene.text}</span>
+        ${scene.game === "record" ? renderMeetingRecordGame(state) : isLast ? "" : `<button type="button" data-next-rewrite-scene>继续</button>`}
+      </section>
+    </main>
+  `;
+}
+
+function renderMeetingRecordGame(state) {
+  const record = MEETING_RECORDS[state.meetingRecordIndex];
+  const completed = state.meetingRecords.length >= MEETING_RECORDS.length;
+
+  if (completed) {
+    return `
+      <div class="zunyi-record-game">
+        <div class="zunyi-record-game__paper">
+          <strong>会议记录纸</strong>
+          ${MEETING_RECORDS.map((item) => `<em class="is-written">${item.written}</em>`).join("")}
+        </div>
+        <small class="zunyi-record-game__feedback">你把关键判断记录完整了：这场会议正在把危急局面中的问题、原因和方向写清楚。</small>
+        <button type="button" data-finish-rewrite>收好记录纸</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="zunyi-record-game">
+      <article class="zunyi-record-game__speech">
+        <small>${record.speaker}</small>
+        <strong>${record.line}</strong>
+      </article>
+      <div class="zunyi-record-game__choices" aria-label="选择记录重点">
+        ${record.choices.map((choice) => `<button type="button" data-record-choice="${choice}">${choice}</button>`).join("")}
+      </div>
+      <div class="zunyi-record-game__paper">
+        <strong>会议记录纸</strong>
+        ${MEETING_RECORDS.map((item) => {
+          const written = state.meetingRecords.includes(item.id);
+          return `<em class="${written ? "is-written" : ""}">${written ? item.written : "等待记录..."}</em>`;
+        }).join("")}
+      </div>
+      <small class="zunyi-record-game__feedback">${state.recordFeedback}</small>
+    </div>
   `;
 }
 
@@ -382,9 +569,54 @@ function labelForDecision(id) {
 function attachEvents(root, state) {
   root.querySelector("[data-next-step]")?.addEventListener("click", () => {
     state.completed.add("intro");
-    state.step = "crisis";
-    state.feedback = "选择一张史料，再点记录纸上的栏目。";
+    state.step = "rewrite";
+    state.showVideo = false;
     render(root, state);
+  });
+
+  root.querySelector("[data-show-video]")?.addEventListener("click", () => {
+    state.showVideo = true;
+    render(root, state);
+  });
+
+  root.querySelectorAll("[data-close-video]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.showVideo = false;
+      render(root, state);
+    });
+  });
+
+  root.querySelector("[data-close-role-prompt]")?.addEventListener("click", () => {
+    state.showRolePrompt = false;
+    render(root, state);
+  });
+
+  root.querySelector("[data-next-rewrite-scene]")?.addEventListener("click", () => {
+    state.rewriteScene = Math.min(REWRITE_SCENES.length - 1, state.rewriteScene + 1);
+    render(root, state);
+  });
+
+  root.querySelectorAll("[data-record-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const record = MEETING_RECORDS[state.meetingRecordIndex];
+      if (!record) return;
+
+      if (button.dataset.recordChoice !== record.answer) {
+        state.recordFeedback = "这条还不是发言里最关键的意思。再听一遍，重点在会议要解决的问题和方向。";
+        render(root, state);
+        return;
+      }
+
+      state.meetingRecords.push(record.id);
+      state.meetingRecordIndex = Math.min(MEETING_RECORDS.length, state.meetingRecordIndex + 1);
+      state.recordFeedback = "记录正确。继续听下一句发言。";
+      render(root, state);
+    });
+  });
+
+  root.querySelector("[data-finish-rewrite]")?.addEventListener("click", () => {
+    state.completed.add("rewrite");
+    state.resolve();
   });
 
   root.querySelectorAll("[data-card]").forEach((button) => {

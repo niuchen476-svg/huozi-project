@@ -49,7 +49,7 @@ export async function renderMapView(root) {
   root.innerHTML = `
     <div class="view view-map view-map--fullscreen">
       <a class="map-back-link" href="#/">← 返回首页</a>
-      <div class="map-hint">点击关卡图钉，开始挑战吧！</div>
+      <div class="map-hint">点击关卡图钉，开始或重玩挑战吧！</div>
       <div class="route-map-image">
         <img class="route-map-image__bg" src="${MAP_IMAGE_SRC}" alt="长征路线图" decoding="async" fetchpriority="high" />
         ${sorted.map((level, index) => renderPin(level, statusById[level.id], index)).join("")}
@@ -97,7 +97,7 @@ function computeStatuses(sortedLevels, progress) {
 
 function renderPin(level, status, index) {
   const statusLabel = {
-    completed: "已通关 · 证据链已封存",
+    completed: "已通关 · 可重新挑战",
     unlocked: "档案已解密 · 可进入核验",
     locked: "尚未解锁",
   }[status];

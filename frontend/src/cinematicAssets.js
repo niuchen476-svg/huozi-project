@@ -1,7 +1,7 @@
 export const ZUNYI_ASSETS = {
   cinematic: {
-    introVideo: "/assets/levels/zunyi-turn/videos/zunyi-intro-01.mp4",
-    exteriorNight: "/assets/levels/zunyi-turn/site-exterior.png",
+    introVideo: "/assets/levels/zunyi-turn/videos/zunyi-intro-02.mp4",
+    exteriorNight: "/assets/levels/zunyi-turn/dora-exterior.png",
     doorwayEntry: "/assets/levels/zunyi-turn/dora-doorway.png",
     meetingRoomWide: "/assets/levels/zunyi-turn/meeting-painting-wide.png",
     recorderDesk: "/assets/levels/zunyi-turn/dora-desk.png",

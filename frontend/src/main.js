@@ -9,6 +9,7 @@ function route() {
   const hash = window.location.hash.slice(1) || "/";
   const levelMatch = hash.match(/^\/level\/(.+)$/);
 
+  app.classList.remove("app--action-scene");
   app.classList.toggle("app--fullbleed", hash === "/map" || hash === "/");
 
   if (levelMatch) {
