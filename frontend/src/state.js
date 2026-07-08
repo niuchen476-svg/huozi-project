@@ -19,6 +19,16 @@ export function markCompleted(levelId) {
   localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
 }
 
+export function resetLevelProgress(levelId) {
+  const progress = getProgress();
+  delete progress[levelId];
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+
+  const bridgeProgress = readJSON(BRIDGE_KEY);
+  delete bridgeProgress[levelId];
+  localStorage.setItem(BRIDGE_KEY, JSON.stringify(bridgeProgress));
+}
+
 export function hasCrossedBridge(levelId) {
   return !!readJSON(BRIDGE_KEY)[levelId];
 }

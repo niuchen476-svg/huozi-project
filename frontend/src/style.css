@@ -753,6 +753,8 @@ a {
   z-index: 14;
   transform: translateX(-50%);
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 14px;
   width: min(650px, calc(100vw - 32px));
@@ -800,6 +802,32 @@ a {
   white-space: nowrap;
   color: var(--color-paper);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
+}
+
+.campaign-3d__inventory {
+  flex: 0 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+}
+
+.campaign-3d__artifact {
+  padding: 3px 9px;
+  border: 1px solid rgba(237, 228, 205, 0.38);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(237, 228, 205, 0.84);
+  background: rgba(16, 14, 12, 0.46);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+}
+
+.campaign-3d__artifact--collected {
+  color: #f8e6a8;
+  border-color: rgba(242, 201, 76, 0.72);
+  background: rgba(88, 59, 18, 0.72);
 }
 
 .campaign-3d__warning {
@@ -854,6 +882,11 @@ a {
 
 .campaign-3d__caption--success {
   color: #d7edc2;
+}
+
+.campaign-3d__caption--collect {
+  color: #f8e6a8;
+  font-weight: 700;
 }
 
 .campaign-3d__caption--fail,
@@ -938,6 +971,14 @@ a {
 
   .campaign-3d__integrity {
     font-size: 0.9rem;
+  }
+
+  .campaign-3d__inventory {
+    justify-content: flex-start;
+  }
+
+  .campaign-3d__artifact {
+    font-size: 0.7rem;
   }
 
   .campaign-3d__warning {
@@ -1157,6 +1198,219 @@ a {
   line-height: 2.1;
   margin: 0;
   color: var(--color-ink);
+}
+
+.mission-challenge__prompt {
+  margin: 0 0 16px;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.mission-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mission-choice-grid--sequence {
+  margin-top: 14px;
+}
+
+.dossier__inference .mission-choice {
+  min-height: 86px;
+  margin: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  text-align: left;
+  letter-spacing: 0;
+  color: var(--color-ink);
+  background: #fbf7ea;
+  border: 1px solid rgba(42, 36, 32, 0.18);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.dossier__inference .mission-choice:hover {
+  color: var(--color-ink);
+  background: #f3ead1;
+}
+
+.dossier__inference .mission-choice--selected,
+.dossier__inference .mission-choice--selected:hover {
+  color: var(--color-paper);
+  background: var(--color-red);
+  border-color: var(--color-red-deep);
+}
+
+.dossier__inference .mission-choice:disabled {
+  cursor: default;
+  opacity: 0.82;
+}
+
+.mission-choice__label {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.mission-choice__detail {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: inherit;
+  opacity: 0.78;
+}
+
+.mission-challenge__bar {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-ink-soft);
+  font-size: 0.9rem;
+}
+
+.mission-challenge__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dossier__inference .mission-challenge__bar button {
+  margin-top: 0;
+}
+
+.dossier__inference .mission-challenge__bar button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.mission-sequence-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mission-sequence-slot {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  text-align: center;
+  border: 1px dashed rgba(42, 36, 32, 0.3);
+  border-radius: var(--radius);
+  color: rgba(85, 73, 60, 0.72);
+  background: rgba(251, 247, 234, 0.66);
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.mission-sequence-slot--filled {
+  color: var(--color-red-deep);
+  border-style: solid;
+  border-color: rgba(156, 35, 27, 0.45);
+  background: #f3ead1;
+}
+
+.challenge-panel {
+  margin-top: 16px;
+}
+
+.challenge-feedback {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.challenge-feedback--error {
+  color: var(--color-red-deep);
+  background: rgba(156, 35, 27, 0.08);
+  border: 1px solid rgba(156, 35, 27, 0.18);
+}
+
+.challenge-complete {
+  padding: 18px;
+  border: 1px solid rgba(42, 36, 32, 0.18);
+  border-radius: var(--radius);
+  background: var(--color-paper-deep);
+}
+
+.challenge-complete__eyebrow {
+  margin: 0 0 4px;
+  color: var(--color-red);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.challenge-complete h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+}
+
+.challenge-complete p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.94rem;
+}
+
+.level-complete-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.dossier__inference .level-complete-actions button,
+.level-complete-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dossier__inference .level-complete-actions button {
+  margin-top: 0;
+}
+
+.level-complete-actions a {
+  color: var(--color-red-deep);
+  border: 1px solid rgba(156, 35, 27, 0.25);
+  background: rgba(251, 247, 234, 0.65);
+}
+
+@media (max-width: 560px) {
+  .mission-choice-grid,
+  .mission-sequence-slots {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-challenge__bar,
+  .mission-challenge__actions,
+  .level-complete-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mission-challenge__bar button,
+  .mission-challenge__actions button,
+  .level-complete-actions button,
+  .level-complete-actions a {
+    width: 100%;
+  }
 }
 
 /* ---------- 背景音乐按钮 ---------- */

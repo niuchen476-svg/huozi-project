@@ -32,6 +32,11 @@ const RUIJIN_MISSION = {
     { at: 38, text: "机关、后勤、电台、伤员都在队列里，速度不能只按冲锋来算" },
     { at: 70, text: "前方是于都河，过了河，就没有轻易回头的路" },
   ],
+  collectibles: [
+    { id: "ruijin-pack", name: "行军背包", kind: "backpack", at: 22, x: -0.68 },
+    { id: "ruijin-letter", name: "家书", kind: "letter", at: 52, x: 0.58 },
+    { id: "ruijin-map", name: "苏区地图", kind: "map", at: 82, x: -0.35 },
+  ],
   advanceStep: 6,
   hitLimit: 3,
   dodgeWindowMs: 980,

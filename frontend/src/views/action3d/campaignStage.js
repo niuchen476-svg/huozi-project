@@ -18,6 +18,7 @@ export function renderCampaignAction3d(root, level, config) {
               </div>
             </div>
             <div class="campaign-3d__integrity" id="campaign-integrity"></div>
+            <div class="campaign-3d__inventory" id="campaign-inventory"></div>
           </div>
 
           <div class="campaign-3d__warning" id="campaign-warning" hidden></div>
@@ -45,6 +46,7 @@ export function renderCampaignAction3d(root, level, config) {
       hud: root.querySelector("#campaign-hud"),
       progress: root.querySelector("#campaign-progress"),
       integrity: root.querySelector("#campaign-integrity"),
+      inventory: root.querySelector("#campaign-inventory"),
       warning: root.querySelector("#campaign-warning"),
       caption: root.querySelector("#campaign-caption"),
       hint: root.querySelector("#campaign-hint"),
@@ -62,6 +64,8 @@ export function renderCampaignAction3d(root, level, config) {
     let dodgeTimeout = null;
     let hazardTimeout = null;
     const shownBeats = new Set();
+    const collectibles = config.collectibles || [];
+    const collectedArtifacts = new Set();
 
     function startMission() {
       nodes.intro.remove();
@@ -70,7 +74,7 @@ export function renderCampaignAction3d(root, level, config) {
       active = true;
       stage.setActive(true);
       updateHud();
-      showHint("空格键前进，方向警示出现时按对应方向；也可以使用下方按钮");
+      showHint("沿路收齐物品后再冲向终点；方向警示出现时及时闪避");
       scheduleHazard();
       window.addEventListener("keydown", onKeyDown);
     }
@@ -79,6 +83,8 @@ export function renderCampaignAction3d(root, level, config) {
       nodes.progress.style.width = `${progress}%`;
       nodes.integrity.textContent = `${config.integrityLabel} ${"●".repeat(config.hitLimit - hits)}${"○".repeat(hits)}`;
       stage.setProgress(progress);
+      collectDueArtifacts();
+      updateInventory();
 
       const beat = config.beats.find((item) => progress >= item.at && !shownBeats.has(item.at));
       if (beat) {
@@ -106,12 +112,54 @@ export function renderCampaignAction3d(root, level, config) {
       }, 2600);
     }
 
+    function updateInventory() {
+      if (!collectibles.length) {
+        nodes.inventory.hidden = true;
+        return;
+      }
+      nodes.inventory.hidden = false;
+      nodes.inventory.innerHTML = collectibles
+        .map((item) => {
+          const done = collectedArtifacts.has(item.id);
+          return `<span class="campaign-3d__artifact ${done ? "campaign-3d__artifact--collected" : ""}">${done ? "✓" : "○"} ${item.name}</span>`;
+        })
+        .join("");
+    }
+
+    function collectDueArtifacts() {
+      collectibles.forEach((item) => {
+        if (progress < item.at || collectedArtifacts.has(item.id)) return;
+        collectedArtifacts.add(item.id);
+        stage.collectItem(item.id);
+        showCaption(`拾取：${item.name}`, "collect", 1600);
+      });
+    }
+
+    function hasAllArtifacts() {
+      return collectedArtifacts.size >= collectibles.length;
+    }
+
+    function missingArtifactNames() {
+      return collectibles
+        .filter((item) => !collectedArtifacts.has(item.id))
+        .map((item) => item.name)
+        .join("、");
+    }
+
     function advance() {
       if (!active || finished) return;
       progress = Math.min(100, progress + config.advanceStep);
       stage.step();
       updateHud();
-      if (progress >= 100) winMission();
+      if (progress >= 100) {
+        if (hasAllArtifacts()) {
+          winMission();
+        } else {
+          progress = 96;
+          updateHud();
+          showHint(`还缺：${missingArtifactNames()}。收齐后才能完成最后任务`);
+        }
+      }
     }
 
     function scheduleHazard() {
@@ -171,9 +219,10 @@ export function renderCampaignAction3d(root, level, config) {
         hits = 0;
         finished = false;
         shownBeats.clear();
+        collectedArtifacts.clear();
         stage.reset();
         updateHud();
-        showHint("重新组织队形：空格键前进，方向警示出现时及时闪避");
+        showHint("重新组织队形：收齐物品，避开危险，再向终点推进");
         scheduleHazard();
       }, 2500);
     }
@@ -228,8 +277,9 @@ function createCampaignStage(canvas, config) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(54, 1, 0.1, 80);
-  camera.position.set(0, 3.2, 7.4);
-  camera.lookAt(0, 0.7, -4.2);
+  camera.position.set(0, 1.08, 2.35);
+  camera.lookAt(0, 0.84, -1.85);
+  scene.add(camera);
 
   const objects = {
     animated: [],
@@ -238,6 +288,10 @@ function createCampaignStage(canvas, config) {
   };
 
   config.build(scene, objects);
+  objects.firstPersonRig = createFirstPersonRig();
+  camera.add(objects.firstPersonRig);
+  objects.collectibles = createCollectibleArtifacts(config.collectibles || []);
+  objects.collectibles.forEach((item) => scene.add(item));
 
   let active = false;
   let raf = null;
@@ -260,12 +314,19 @@ function createCampaignStage(canvas, config) {
 
     elapsed = (performance.now() - startedAt) / 1000;
     config.animate(objects, elapsed, active);
+    animateCollectibles(objects, elapsed);
 
     const progressOffset = objects.progress / 100;
-    camera.position.z = THREE.MathUtils.lerp(7.5, 5.9, progressOffset);
-    camera.position.x = Math.sin(elapsed * 0.65) * 0.04 + (Math.random() - 0.5) * shake;
-    camera.position.y = 3.2 + Math.sin(elapsed * 0.9) * 0.025 + Math.random() * shake * 0.35;
-    camera.lookAt(0, 0.65, THREE.MathUtils.lerp(-3.6, -6.6, progressOffset));
+    const cameraZ = THREE.MathUtils.lerp(2.35, -7.05, progressOffset);
+    const stride = active ? Math.sin(elapsed * 5.6) : Math.sin(elapsed * 1.2) * 0.25;
+    camera.position.x = Math.sin(elapsed * 0.9) * 0.07 + (Math.random() - 0.5) * shake;
+    camera.position.y = 1.08 + stride * 0.018 + Math.random() * shake * 0.22;
+    camera.position.z = cameraZ + Math.sin(elapsed * 2.2) * 0.025;
+    camera.lookAt(camera.position.x + Math.sin(elapsed * 0.5) * 0.05, 0.84 + stride * 0.01, cameraZ - 4.2);
+    if (objects.firstPersonRig) {
+      objects.firstPersonRig.position.y = -0.43 + Math.sin(elapsed * 5.6) * (active ? 0.018 : 0.006);
+      objects.firstPersonRig.rotation.z = Math.sin(elapsed * 4.8) * (active ? 0.025 : 0.008);
+    }
     shake *= 0.86;
 
     renderer.render(scene, camera);
@@ -283,7 +344,7 @@ function createCampaignStage(canvas, config) {
       objects.progress = value;
       const t = value / 100;
       if (objects.column) {
-        objects.column.position.z = THREE.MathUtils.lerp(2.35, -7.55, t);
+        objects.column.position.z = THREE.MathUtils.lerp(3.05, -6.2, t);
         objects.column.position.x = Math.sin(t * Math.PI * 1.4) * 0.22;
       }
       if (objects.goal) {
@@ -313,6 +374,12 @@ function createCampaignStage(canvas, config) {
         burst.userData.startedAt = elapsed;
       }
     },
+    collectItem(id) {
+      const item = objects.collectibles?.find((entry) => entry.userData.id === id);
+      if (!item) return;
+      item.visible = false;
+      item.userData.collected = true;
+    },
     reset() {
       this.clearThreat();
       objects.progress = 0;
@@ -322,6 +389,11 @@ function createCampaignStage(canvas, config) {
       }
       Object.values(objects.bursts || {}).forEach((burst) => {
         burst.visible = false;
+      });
+      objects.collectibles?.forEach((item) => {
+        item.visible = true;
+        item.userData.collected = false;
+        item.position.y = item.userData.baseY;
       });
     },
     win() {
@@ -335,14 +407,201 @@ function createCampaignStage(canvas, config) {
       scene.traverse((object) => {
         if (object.geometry) object.geometry.dispose();
         if (Array.isArray(object.material)) {
-          object.material.forEach((material) => material.dispose());
+          object.material.forEach((material) => {
+            if (material.map) material.map.dispose();
+            material.dispose();
+          });
         } else if (object.material) {
+          if (object.material.map) object.material.map.dispose();
           object.material.dispose();
         }
       });
       renderer.dispose();
     },
   };
+}
+
+function createFirstPersonRig() {
+  const group = new THREE.Group();
+  group.position.set(0, -0.43, -0.75);
+  const robeMaterial = new THREE.MeshStandardMaterial({ color: 0x5b1718, roughness: 0.8 });
+  const armorMaterial = new THREE.MeshStandardMaterial({ color: 0x15191d, metalness: 0.36, roughness: 0.44 });
+  const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xd6a27a, roughness: 0.68 });
+  const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xc8a04c, metalness: 0.58, roughness: 0.32 });
+
+  [-1, 1].forEach((side) => {
+    const upperArm = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.12, 0.44), armorMaterial);
+    upperArm.position.set(side * 0.34, -0.04, -0.16);
+    upperArm.rotation.set(0.2, side * 0.2, side * 0.2);
+    group.add(upperArm);
+
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.5, 10), robeMaterial);
+    sleeve.position.set(side * 0.24, -0.18, -0.45);
+    sleeve.rotation.set(1.12, side * 0.22, side * 0.32);
+    group.add(sleeve);
+
+    const bracer = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.075, 0.28, 10), armorMaterial);
+    bracer.position.set(side * 0.18, -0.26, -0.74);
+    bracer.rotation.set(1.16, side * 0.18, side * 0.2);
+    group.add(bracer);
+
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.085, 14, 10), skinMaterial);
+    hand.scale.set(1, 0.68, 1.25);
+    hand.position.set(side * 0.13, -0.31, -0.94);
+    hand.rotation.z = side * 0.2;
+    group.add(hand);
+
+    for (let i = 0; i < 3; i += 1) {
+      const rivet = new THREE.Mesh(new THREE.SphereGeometry(0.016, 8, 6), goldMaterial);
+      rivet.position.set(side * (0.17 + i * 0.018), -0.23 + i * 0.025, -0.65);
+      group.add(rivet);
+    }
+  });
+
+  return group;
+}
+
+function createCollectibleArtifacts(items) {
+  return items.map(createCollectibleArtifact);
+}
+
+function createCollectibleArtifact(item) {
+  const group = new THREE.Group();
+  const artifactZ = THREE.MathUtils.lerp(0.9, -6.55, item.at / 100);
+  const x = item.x ?? 0;
+  group.position.set(x, 0.34, artifactZ);
+  group.userData = {
+    id: item.id,
+    baseY: group.position.y,
+    collected: false,
+  };
+
+  const glow = new THREE.Mesh(
+    new THREE.TorusGeometry(0.34, 0.018, 8, 36),
+    new THREE.MeshBasicMaterial({ color: 0xf2c94c, transparent: true, opacity: 0.55, depthWrite: false })
+  );
+  glow.rotation.x = Math.PI / 2;
+  glow.position.y = -0.25;
+  group.add(glow);
+
+  if (item.kind === "letter") {
+    group.add(createLetterArtifact());
+  } else if (item.kind === "map") {
+    group.add(createMapArtifact());
+  } else if (item.kind === "medical") {
+    group.add(createMedicalArtifact());
+  } else {
+    group.add(createBackpackArtifact());
+  }
+
+  const label = makeArtifactLabel(item.name);
+  label.position.set(0, 0.44, 0);
+  group.add(label);
+  return group;
+}
+
+function createBackpackArtifact() {
+  const group = new THREE.Group();
+  const cloth = new THREE.MeshStandardMaterial({ color: 0x6d5136, roughness: 0.78 });
+  const strap = new THREE.MeshStandardMaterial({ color: 0x2f241b, roughness: 0.82 });
+  const pack = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.42, 0.22), cloth);
+  pack.castShadow = true;
+  group.add(pack);
+
+  [-0.1, 0.1].forEach((x) => {
+    const belt = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.46, 0.245), strap);
+    belt.position.x = x;
+    belt.castShadow = true;
+    group.add(belt);
+  });
+
+  const flap = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.12, 0.25), cloth);
+  flap.position.y = 0.17;
+  flap.castShadow = true;
+  group.add(flap);
+  return group;
+}
+
+function createLetterArtifact() {
+  const group = new THREE.Group();
+  const paper = new THREE.MeshStandardMaterial({ color: 0xe8ddc2, roughness: 0.72, side: THREE.DoubleSide });
+  const sealMaterial = new THREE.MeshBasicMaterial({ color: 0x9c231b });
+  const letter = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.3), paper);
+  letter.rotation.x = -0.25;
+  letter.castShadow = true;
+  group.add(letter);
+
+  const fold = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.02), new THREE.MeshBasicMaterial({ color: 0xb9a986, side: THREE.DoubleSide }));
+  fold.position.z = 0.006;
+  fold.rotation.z = -0.6;
+  group.add(fold);
+
+  const seal = new THREE.Mesh(new THREE.CircleGeometry(0.045, 18), sealMaterial);
+  seal.position.set(0.08, -0.02, 0.012);
+  group.add(seal);
+  return group;
+}
+
+function createMapArtifact() {
+  const group = new THREE.Group();
+  const mapMaterial = new THREE.MeshStandardMaterial({ color: 0xddcfa9, roughness: 0.72, side: THREE.DoubleSide });
+  const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x9c231b, side: THREE.DoubleSide });
+  const map = new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.34), mapMaterial);
+  map.rotation.x = -0.22;
+  group.add(map);
+
+  for (let i = 0; i < 3; i += 1) {
+    const line = new THREE.Mesh(new THREE.PlaneGeometry(0.28 - i * 0.04, 0.018), lineMaterial);
+    line.position.set(-0.04 + i * 0.05, 0.08 - i * 0.08, 0.012);
+    line.rotation.z = 0.35 - i * 0.4;
+    group.add(line);
+  }
+  return group;
+}
+
+function createMedicalArtifact() {
+  const group = new THREE.Group();
+  const bagMaterial = new THREE.MeshStandardMaterial({ color: 0xd8d3c2, roughness: 0.72 });
+  const crossMaterial = new THREE.MeshBasicMaterial({ color: 0x9c231b });
+  const bag = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.3, 0.22), bagMaterial);
+  bag.castShadow = true;
+  group.add(bag);
+
+  const crossA = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.045, 0.235), crossMaterial);
+  const crossB = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.22, 0.235), crossMaterial);
+  [crossA, crossB].forEach((part) => {
+    part.position.z = -0.002;
+    group.add(part);
+  });
+  return group;
+}
+
+function makeArtifactLabel(label) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 80;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(42, 36, 32, 0.78)";
+  ctx.fillRect(18, 15, 220, 46);
+  ctx.fillStyle = "#ede4cd";
+  ctx.font = "bold 30px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, canvas.width / 2, 39);
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
+  return new THREE.Mesh(new THREE.PlaneGeometry(1.12, 0.35), material);
+}
+
+function animateCollectibles(objects, elapsed) {
+  objects.collectibles?.forEach((item, index) => {
+    if (!item.visible || item.userData.collected) return;
+    item.position.y = item.userData.baseY + Math.sin(elapsed * 2.2 + index) * 0.05;
+    item.rotation.y += 0.012;
+    const glow = item.children[0];
+    if (glow?.material) glow.material.opacity = 0.42 + Math.sin(elapsed * 3.4 + index) * 0.12;
+  });
 }
 
 export function createMarchColumn() {

@@ -30,6 +30,11 @@ const XIANGJIANG_MISSION = {
     { at: 42, text: "有人架桥，有人阻击，有人把最后的时间留给主力" },
     { at: 76, text: "每向前一步，代价都在队伍里留下空位" },
   ],
+  collectibles: [
+    { id: "xiangjiang-pack", name: "行军背包", kind: "backpack", at: 24, x: -0.62 },
+    { id: "xiangjiang-letter", name: "战地书信", kind: "letter", at: 52, x: 0.62 },
+    { id: "xiangjiang-kit", name: "急救包", kind: "medical", at: 80, x: -0.28 },
+  ],
   advanceStep: 5,
   hitLimit: 3,
   dodgeWindowMs: 860,
