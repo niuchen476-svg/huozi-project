@@ -25,11 +25,12 @@ const NARRATIVE_BEATS = [
 const HIT_LINES = ["一名战士中弹，坠入湍急的大渡河", "小心！", "撑住，就快到了！"];
 
 const HIT_LIMIT = 3;
-const ADVANCE_STEP = 5;
+const ADVANCE_STEP = 3.2;
+const ADVANCE_COOLDOWN_MS = 260;
 const DODGE_WINDOW_MS = 850;
-const MIN_FIRE_GAP_MS = 1400;
-const MAX_FIRE_GAP_MS = 2600;
-const FIRE_LIMIT = 5;
+const MIN_FIRE_GAP_MS = 1100;
+const MAX_FIRE_GAP_MS = 1900;
+const FIRE_LIMIT = 9;
 
 export function preloadBridgeActionAssets() {
   [SQUAD_BG, TEAMMATE_ICON, KEYFRAMES[0].bg].forEach(preloadImage);
@@ -46,6 +47,11 @@ export function renderBridgeAction(root, level) {
       <div class="view view-bridge-action">
         <div class="bridge-scene" id="bridge-scene">
           <div class="bridge-scene__bg" id="bridge-bg" style="background-image: url('${KEYFRAMES[0].bg}')"></div>
+          <div class="bridge-crossing-path" id="bridge-crossing-path" hidden>
+            <span class="bridge-chain bridge-chain--left"></span>
+            <span class="bridge-chain bridge-chain--right"></span>
+            <img class="bridge-crawler" id="bridge-crawler" src="${TEAMMATE_ICON}" alt="突击队员" draggable="false" />
+          </div>
           <div class="bridge-scene__vignette"></div>
 
           <div class="bridge-hud" id="bridge-hud" hidden>
@@ -184,6 +190,8 @@ function startCrossing(resolve) {
   const squadSelect = document.querySelector("#squad-select");
   const hud = document.querySelector("#bridge-hud");
   const bg = document.querySelector("#bridge-bg");
+  const crossingPath = document.querySelector("#bridge-crossing-path");
+  const crawler = document.querySelector("#bridge-crawler");
   const progressFill = document.querySelector("#bridge-progress-fill");
   const hitsEl = document.querySelector("#bridge-hits");
   const warningEl = document.querySelector("#bridge-warning");
@@ -192,6 +200,7 @@ function startCrossing(resolve) {
 
   squadSelect.remove();
   hud.hidden = false;
+  crossingPath.hidden = false;
   bg.classList.add("bridge-scene__bg--sway");
 
   let progress = 0;
@@ -201,11 +210,13 @@ function startCrossing(resolve) {
   let dodgeTimeout = null;
   let fireTimeout = null;
   let firedCount = 0;
+  let lastAdvanceAt = 0;
   const shownBeats = new Set();
 
   function updateHud() {
     progressFill.style.width = `${progress}%`;
     hitsEl.textContent = "●".repeat(HIT_LIMIT - hits) + "○".repeat(hits);
+    crawler.style.setProperty("--bridge-progress", progress);
 
     const frame = [...KEYFRAMES].reverse().find((k) => progress >= k.at);
     if (frame) bg.style.backgroundImage = `url(${frame.bg})`;
@@ -253,6 +264,12 @@ function startCrossing(resolve) {
     bg.classList.add("bridge-scene__bg--jolt");
   }
 
+  function animateCrawl() {
+    crawler.classList.remove("bridge-crawler--crawl");
+    void crawler.offsetWidth;
+    crawler.classList.add("bridge-crawler--crawl");
+  }
+
   function scheduleFire() {
     if (firedCount >= FIRE_LIMIT) return;
     const gap = MIN_FIRE_GAP_MS + Math.random() * (MAX_FIRE_GAP_MS - MIN_FIRE_GAP_MS);
@@ -267,6 +284,7 @@ function startCrossing(resolve) {
     warningEl.hidden = false;
     warningEl.className = `bridge-warning bridge-warning--${side}`;
     warningEl.textContent = side === "left" ? "◀ 左侧火力，按 ←" : "右侧火力，按 → ▶";
+    crawler.classList.add("bridge-crawler--brace");
 
     dodgeTimeout = setTimeout(() => {
       if (awaitingDodge) {
@@ -274,6 +292,7 @@ function startCrossing(resolve) {
       }
       warningEl.hidden = true;
       awaitingDodge = null;
+      crawler.classList.remove("bridge-crawler--brace");
       scheduleFire();
     }, DODGE_WINDOW_MS);
   }
@@ -303,9 +322,10 @@ function startCrossing(resolve) {
       firedCount = 0;
       finished = false;
       shownBeats.clear();
+      lastAdvanceAt = 0;
       updateHud();
       scheduleFire();
-      showHint("空格键前进，方向警示出现时按对应方向闪避");
+      showHint("一下一下按空格爬行；火力出现时先按方向键闪避");
     }, 2400);
   }
 
@@ -329,8 +349,20 @@ function startCrossing(resolve) {
 
     if (event.code === "Space" || event.key === " ") {
       event.preventDefault();
+      if (event.repeat) return;
+
+      if (awaitingDodge) {
+        showHint("火力封锁中，先按对应方向键闪避！");
+        return;
+      }
+
+      const now = performance.now();
+      if (now - lastAdvanceAt < ADVANCE_COOLDOWN_MS) return;
+      lastAdvanceAt = now;
+
       progress = Math.min(100, progress + ADVANCE_STEP);
       jolt();
+      animateCrawl();
       updateHud();
       if (progress >= 100) winCrossing();
       return;
@@ -342,6 +374,8 @@ function startCrossing(resolve) {
         clearTimeout(dodgeTimeout);
         warningEl.hidden = true;
         awaitingDodge = null;
+        crawler.classList.remove("bridge-crawler--brace");
+        showHint("躲开了，继续向前爬！");
         scheduleFire();
       }
     }
@@ -350,6 +384,6 @@ function startCrossing(resolve) {
   window.addEventListener("keydown", onKeyDown);
 
   updateHud();
-  showHint("空格键前进，方向警示出现时按对应方向闪避");
+  showHint("一下一下按空格爬行；方向警示出现时先闪避");
   scheduleFire();
 }

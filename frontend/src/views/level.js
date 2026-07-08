@@ -1,11 +1,13 @@
 import { fetchLevel, preloadLevel, submitReflection } from "../api.js";
 import { markCompleted, resetLevelProgress, hasCrossedBridge, markBridgeCrossed } from "../state.js";
 import { preloadBridgeActionAssets, renderBridgeAction } from "./bridgeAction.js";
+import { renderZunyiMeeting } from "./zunyiMeeting.js";
 
 const ACTION_SCENES = {
   "ruijin-departure": renderRuijinDepartureAction3dLazy,
   "xiangjiang-battle": renderXiangjiangBattleAction3dLazy,
   "luding-bridge": renderBridgeAction,
+  "zunyi-turn": renderZunyiMeeting,
 };
 
 const actionSceneModulePromises = {};
@@ -105,14 +107,21 @@ export async function renderLevelView(root, levelId) {
   }
 
   const actionScene = ACTION_SCENES[levelId];
-  const replayAction = REPLAY_ACTION_LEVELS.has(levelId);
+  const replayAction = REPLAY_ACTION_LEVELS.has(levelId) || levelId === "zunyi-turn";
   const playedAction = actionScene && (replayAction || !hasCrossedBridge(levelId));
 
   if (playedAction) {
     app.classList.add("app--fullbleed", "app--action-scene");
     await actionScene(root, level);
-    if (!replayAction) markBridgeCrossed(levelId);
     app.classList.remove("app--fullbleed", "app--action-scene");
+
+    if (levelId === "zunyi-turn") {
+      markCompleted(levelId);
+      window.location.hash = "#/map";
+      return;
+    }
+
+    if (!replayAction) markBridgeCrossed(levelId);
   }
 
   const specialChallenge = SPECIAL_CHALLENGES[levelId];

@@ -1,12 +1,14 @@
 const API_BASE = "/api";
-const DATA_BASE = `${import.meta.env.BASE_URL}data`;
+const viteEnv = import.meta.env || {};
+const runtimeBase = window.__BASE_PATH__ || viteEnv.BASE_URL || "/";
+const DATA_BASE = `${runtimeBase}data`;
 const REFLECT_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/reflect";
 const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 
 // 生产构建（GitHub Pages 静态托管）没有 Express 后端，
 // 关卡数据改为读取打包进 frontend/public/data 的静态 JSON，
 // AI 点评生成改为调用 Supabase Edge Function。
-const STATIC_MODE = import.meta.env.PROD;
+const STATIC_MODE = window.__STATIC_MODE__ === true || viteEnv.PROD === true;
 let levelsIndexPromise = null;
 const levelPromises = new Map();
 
