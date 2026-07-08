@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+
+      video {
+        width: 960px;
+        height: 540px;
+        object-fit: contain;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" muted playsinline preload="auto" src="./inspiration-gameplay.mp4"></video>
+    <script>
+      const target = Number(new URLSearchParams(location.search).get("t") || 1);
+      const video = document.querySelector("#video");
+      video.addEventListener("loadedmetadata", () => {
+        video.currentTime = Math.min(target, Math.max(0, video.duration - 0.2));
+      });
+      video.addEventListener("seeked", () => {
+        document.body.dataset.ready = "true";
+      });
+    </script>
+  </body>
+</html>

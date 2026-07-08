@@ -72,6 +72,10 @@ function computeStatuses(sortedLevels, progress) {
       statusById[level.id] = "completed";
       return;
     }
+    if (level.id === "zunyi-turn" || level.id === "luding-bridge") {
+      statusById[level.id] = "unlocked";
+      return;
+    }
     const previousReady = readyLevels[index - 1];
     const previousDone = !previousReady || progress[previousReady.id] === "completed";
     statusById[level.id] = previousDone ? "unlocked" : "locked";

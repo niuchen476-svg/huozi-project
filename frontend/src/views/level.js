@@ -1,9 +1,11 @@
 import { fetchLevel, submitReflection } from "../api.js";
-import { markCompleted, hasCrossedBridge, markBridgeCrossed } from "../state.js";
+import { markCompleted } from "../state.js";
 import { renderBridgeAction } from "./bridgeAction.js";
+import { renderZunyiMeeting } from "./zunyiMeeting.js";
 
 const ACTION_SCENES = {
   "luding-bridge": renderBridgeAction,
+  "zunyi-turn": renderZunyiMeeting,
 };
 
 const POEM_FORMS = ["七律", "绝句", "词"];
@@ -31,13 +33,18 @@ export async function renderLevelView(root, levelId) {
   }
 
   const actionScene = ACTION_SCENES[levelId];
-  const playedAction = actionScene && !hasCrossedBridge(levelId);
+  const playedAction = !!actionScene;
 
   if (playedAction) {
     app.classList.add("app--fullbleed");
     await actionScene(root, level);
-    markBridgeCrossed(levelId);
     app.classList.remove("app--fullbleed");
+    markCompleted(levelId);
+
+    if (levelId === "zunyi-turn") {
+      window.location.hash = "#/map";
+      return;
+    }
   }
 
   root.innerHTML = `
@@ -47,7 +54,7 @@ export async function renderLevelView(root, levelId) {
       <header class="level-header">
         <p class="level-header__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
         <h1>${level.title}</h1>
-        ${playedAction ? `<p class="level-header__debrief">刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。</p>` : ""}
+        ${playedAction ? `<p class="level-header__debrief">${getDebriefText(levelId)}</p>` : ""}
         <p class="level-header__scenario">${level.scenario}</p>
       </header>
 
@@ -100,6 +107,13 @@ function renderCard(card) {
       <p class="archive-card__text">${card.translation || card.rawText}</p>
     </article>
   `;
+}
+
+function getDebriefText(levelId) {
+  if (levelId === "zunyi-turn") {
+    return "刚才你整理了会议记录。现在可以看看史料卡，再写下你对这次转折的理解。";
+  }
+  return "刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。";
 }
 
 async function handleSubmit(levelId) {

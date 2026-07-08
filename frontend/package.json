@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:pages": "vite build --base=/huozi-project/",
-    "preview": "vite preview"
+    "dev": "node scripts/dev-server.mjs",
+    "build": "node scripts/build-static.mjs",
+    "build:pages": "node scripts/build-static.mjs --pages",
+    "preview": "node scripts/dev-server.mjs --dist"
   },
   "devDependencies": {
     "vite": "^5.4.0"
