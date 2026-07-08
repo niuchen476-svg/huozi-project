@@ -911,6 +911,76 @@ a {
   text-align: center;
 }
 
+.campaign-3d__letter {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.46);
+}
+
+.campaign-3d__letter[hidden] {
+  display: none;
+}
+
+.campaign-3d__letter-paper {
+  width: min(460px, calc(100vw - 48px));
+  min-height: 360px;
+  padding: 26px 30px 22px;
+  border: 1px solid rgba(116, 78, 42, 0.5);
+  background:
+    linear-gradient(90deg, rgba(126, 91, 50, 0.12), transparent 16%, transparent 84%, rgba(126, 91, 50, 0.12)),
+    #eadfc3;
+  color: #4b281c;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.48);
+}
+
+.campaign-3d__letter-eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #8a4c29;
+}
+
+.campaign-3d__letter-paper h3 {
+  margin: 0 0 18px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  color: #642f20;
+}
+
+.campaign-3d__letter-lines {
+  display: grid;
+  gap: 7px;
+  min-height: 170px;
+  padding: 16px 12px;
+  border-top: 1px solid rgba(116, 78, 42, 0.26);
+  border-bottom: 1px solid rgba(116, 78, 42, 0.26);
+}
+
+.campaign-3d__letter-lines p {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 3vw, 1.45rem);
+  line-height: 1.45;
+}
+
+.campaign-3d__letter-source,
+.campaign-3d__letter-timer {
+  margin: 12px 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: rgba(75, 40, 28, 0.78);
+}
+
+.campaign-3d__letter-timer {
+  font-weight: 700;
+  color: #8a2e22;
+}
+
 .campaign-3d__controls {
   position: absolute;
   left: 50%;
@@ -937,6 +1007,12 @@ a {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.campaign-3d__controls button:disabled {
+  cursor: wait;
+  opacity: 0.52;
+  transform: none;
 }
 
 .campaign-3d__controls button[data-command="left"],

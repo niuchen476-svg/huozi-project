@@ -18,24 +18,37 @@ const SIDE_LABEL = {
 
 const RUIJIN_MISSION = {
   theme: "ruijin",
-  progressLabel: "突围进度",
+  progressLabel: "桥头距离",
   integrityLabel: "隐蔽",
-  introButton: "夜色出发",
-  advanceLabel: "压低队形前进",
+  introButton: "从草地出发",
+  advanceLabel: "沿草地前进",
   dodgeLine: "队伍贴着山影绕开了灯束",
   failLine: "探照灯扫到队伍，必须退回林线重新隐蔽",
-  winLines: ["于都河方向的薄雾亮了，队伍没有回头。", "长征的第一夜，就这样从沉默里开始。"],
+  winLines: ["前方木板渡桥已经搭好，队伍刚好赶到桥头。", "收齐物品，跟上前队，开始过桥。"],
   hitLines: ["灯束擦过队尾，行军速度被迫放慢", "封锁线枪声逼近，队伍短暂散开", "物资车陷进泥地，后队停下了脚步"],
   warning: (side) => `探照灯扫向${SIDE_LABEL[side]}侧，按 ${side === "left" ? "←" : "→"} 绕行`,
   beats: [
-    { at: 8, text: "身后的瑞金渐渐看不见，只剩草鞋踩过湿土的声音" },
-    { at: 38, text: "机关、后勤、电台、伤员都在队列里，速度不能只按冲锋来算" },
-    { at: 70, text: "前方是于都河，过了河，就没有轻易回头的路" },
+    { at: 8, text: "你在队伍中间，脚下还是湿草和泥土" },
+    { at: 36, text: "机关、后勤、电台、伤员都在队列里，速度不能只按冲锋来算" },
+    { at: 74, text: "桥头木板隐约出现，先把沿路物品都收好" },
   ],
   collectibles: [
-    { id: "ruijin-pack", name: "行军背包", kind: "backpack", at: 22, x: -0.68 },
-    { id: "ruijin-letter", name: "家书", kind: "letter", at: 52, x: 0.58 },
-    { id: "ruijin-map", name: "苏区地图", kind: "map", at: 82, x: -0.35 },
+    { id: "ruijin-pack", name: "行军背包", kind: "backpack", at: 18, x: -0.68 },
+    {
+      id: "ruijin-letter",
+      name: "红军家书",
+      kind: "letter",
+      at: 46,
+      x: 0.58,
+      letter: {
+        title: "易冠美家书摘录",
+        shortTitle: "红军家书",
+        sourceName: "文艺报《十封红军家信》",
+        sourceUrl: "https://wyb.chinawriter.com.cn/content/202102/03/content58104.html",
+        lines: ["母亲大人膝下敬禀", "现在身体平安", "不必挂念", "争取革命首先胜利"],
+      },
+    },
+    { id: "ruijin-map", name: "苏区地图", kind: "map", at: 74, x: -0.35 },
   ],
   advanceStep: 6,
   hitLimit: 3,
@@ -65,7 +78,12 @@ function buildRuijinScene(scene, objects) {
   ground.receiveShadow = true;
   scene.add(ground);
 
-  const road = makePlane(3.2, 34, 0x5b4931, 1);
+  const grass = makePlane(10, 34, 0x354125, 0.96);
+  grass.position.set(0, -0.02, -8);
+  grass.receiveShadow = true;
+  scene.add(grass);
+
+  const road = makePlane(2.45, 34, 0x5b4931, 1);
   road.position.set(0, 0.002, -8);
   road.receiveShadow = true;
   scene.add(road);
@@ -76,6 +94,16 @@ function buildRuijinScene(scene, objects) {
     stone.position.set(i % 2 === 0 ? -1.55 : 1.55, 0.035, 5 - i * 1.35);
     stone.castShadow = true;
     scene.add(stone);
+  }
+
+  const bridgeMaterial = new THREE.MeshStandardMaterial({ color: 0x7a5b36, roughness: 0.74 });
+  for (let i = 0; i < 12; i += 1) {
+    const plank = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.08, 0.22), bridgeMaterial);
+    plank.position.set(i % 2 === 0 ? -0.04 : 0.04, 0.055, -6.5 - i * 0.24);
+    plank.rotation.y = (i % 3 - 1) * 0.035;
+    plank.castShadow = true;
+    plank.receiveShadow = true;
+    scene.add(plank);
   }
 
   for (let i = 0; i < 18; i += 1) {
@@ -108,7 +136,7 @@ function buildRuijinScene(scene, objects) {
   objects.column.position.set(0, 0, 2.35);
   scene.add(objects.column);
 
-  objects.goal = createRiverGate("于都河");
+  objects.goal = createRiverGate("木板渡桥");
   objects.goal.position.set(0, 0.03, -8.2);
   scene.add(objects.goal);
   objects.goalFlag = objects.goal.getObjectByName("goalFlag");

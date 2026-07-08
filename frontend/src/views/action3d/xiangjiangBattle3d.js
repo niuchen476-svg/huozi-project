@@ -3,7 +3,7 @@ import {
   animateBursts,
   createBurst,
   createGroundWarning,
-  createRiverColumn,
+  createMarchColumn,
   createRiverGate,
   makePlane,
   renderCampaignAction3d,
@@ -16,24 +16,37 @@ const SIDE_LABEL = {
 
 const XIANGJIANG_MISSION = {
   theme: "xiangjiang",
-  progressLabel: "渡江进度",
+  progressLabel: "桥头距离",
   integrityLabel: "队形",
-  introButton: "抢渡湘江",
-  advanceLabel: "向渡口推进",
-  dodgeLine: "掩护火力压住了落点，队伍抢过一段江滩",
+  introButton: "从草地出发",
+  advanceLabel: "穿过草地",
+  dodgeLine: "队伍压低身体，从弹坑旁绕了过去",
   failLine: "江滩火力过密，队伍撤回堤岸重新组织",
-  winLines: ["最后一批战士冲上西岸，湘江仍在身后轰鸣。", "突破封锁的代价，被每一个数字记住。"],
-  hitLines: ["炮弹落在江滩，掩护队形被撕开一角", "浮桥猛烈摇晃，后队被迫停顿", "敌军火力压上来，渡口又少了一分余地"],
+  winLines: ["湘江浮桥就在脚下，队伍刚好赶到桥头。", "收齐物品，跟上前队，开始过桥。"],
+  hitLines: ["炮弹落在草坡边，队形被撕开一角", "桥头方向被火力压住，后队被迫停顿", "敌军火力压上来，渡口又少了一分余地"],
   warning: (side) => `炮火落向${SIDE_LABEL[side]}翼，按 ${side === "left" ? "←" : "→"} 闪避`,
   beats: [
-    { at: 10, text: "湘江不是背景，是横在队伍面前的第四道封锁线" },
+    { at: 10, text: "你还在桥前草地上，湘江的水声在前方越来越近" },
     { at: 42, text: "有人架桥，有人阻击，有人把最后的时间留给主力" },
-    { at: 76, text: "每向前一步，代价都在队伍里留下空位" },
+    { at: 76, text: "浮桥已经看得清楚，先把最后的物品收好" },
   ],
   collectibles: [
-    { id: "xiangjiang-pack", name: "行军背包", kind: "backpack", at: 24, x: -0.62 },
-    { id: "xiangjiang-letter", name: "战地书信", kind: "letter", at: 52, x: 0.62 },
-    { id: "xiangjiang-kit", name: "急救包", kind: "medical", at: 80, x: -0.28 },
+    { id: "xiangjiang-pack", name: "行军背包", kind: "backpack", at: 20, x: -0.62 },
+    {
+      id: "xiangjiang-letter",
+      name: "红军儿子家书",
+      kind: "letter",
+      at: 48,
+      x: 0.62,
+      letter: {
+        title: "红军儿子家书摘录",
+        shortTitle: "红军家书",
+        sourceName: "人民政协网《家书抵万金》",
+        sourceUrl: "https://www.rmzxw.com.cn/c/2017-08-03/1698037.shtml",
+        lines: ["父亲母亲：", "你们好！", "想念你们的心思", "时刻不曾间断", "红军儿子敬上"],
+      },
+    },
+    { id: "xiangjiang-kit", name: "急救包", kind: "medical", at: 78, x: -0.28 },
   ],
   advanceStep: 5,
   hitLimit: 3,
@@ -58,30 +71,43 @@ function buildXiangjiangScene(scene, objects) {
   sun.castShadow = true;
   scene.add(sun);
 
-  const nearBank = makePlane(24, 10, 0x5a4a2d, 1);
-  nearBank.position.set(0, -0.04, 3.8);
-  nearBank.receiveShadow = true;
-  scene.add(nearBank);
+  const grassland = makePlane(24, 20, 0x4f5a36, 1);
+  grassland.position.set(0, -0.04, 0.2);
+  grassland.receiveShadow = true;
+  scene.add(grassland);
+
+  const muddyTrack = makePlane(3.1, 18, 0x5a4a2d, 1);
+  muddyTrack.position.set(0, -0.025, 0.1);
+  muddyTrack.receiveShadow = true;
+  scene.add(muddyTrack);
 
   const farBank = makePlane(24, 12, 0x4d5131, 1);
-  farBank.position.set(0, -0.04, -9.2);
+  farBank.position.set(0, -0.04, -13.8);
   farBank.receiveShadow = true;
   scene.add(farBank);
 
   const river = makePlane(24, 12.8, 0x244f62, 0.86, true);
-  river.position.set(0, -0.02, -3.5);
+  river.position.set(0, -0.02, -10.2);
   river.receiveShadow = true;
   scene.add(river);
   objects.river = river;
 
   const plankMaterial = new THREE.MeshStandardMaterial({ color: 0x6d5136, roughness: 0.72, metalness: 0.02 });
-  for (let i = 0; i < 24; i += 1) {
+  for (let i = 0; i < 22; i += 1) {
     const plank = new THREE.Mesh(new THREE.BoxGeometry(2.25, 0.08, 0.18), plankMaterial);
-    plank.position.set(i % 2 === 0 ? -0.08 : 0.08, 0.05, 2.2 - i * 0.42);
+    plank.position.set(i % 2 === 0 ? -0.08 : 0.08, 0.05, -6.25 - i * 0.28);
     plank.rotation.y = (i % 3 - 1) * 0.05;
     plank.castShadow = true;
     plank.receiveShadow = true;
     scene.add(plank);
+  }
+
+  const grassMaterial = new THREE.MeshStandardMaterial({ color: 0x65713f, roughness: 0.9 });
+  for (let i = 0; i < 28; i += 1) {
+    const tuft = new THREE.Mesh(new THREE.ConeGeometry(0.12 + (i % 3) * 0.03, 0.42, 5), grassMaterial);
+    tuft.position.set((i % 2 === 0 ? -1 : 1) * (1.65 + (i % 6) * 0.55), 0.16, 5.2 - i * 0.36);
+    tuft.rotation.y = i * 0.7;
+    scene.add(tuft);
   }
 
   for (let i = 0; i < 14; i += 1) {
@@ -90,17 +116,17 @@ function buildXiangjiangScene(scene, objects) {
       new THREE.ConeGeometry(1.1 + (i % 4) * 0.35, 1.6 + (i % 3) * 0.45, 6),
       new THREE.MeshStandardMaterial({ color: i % 2 === 0 ? 0x3d4128 : 0x463829, roughness: 0.9 })
     );
-    ridge.position.set(side * (4.8 + (i % 4) * 0.8), 0.55, 3.8 - i * 1.1);
+    ridge.position.set(side * (4.8 + (i % 4) * 0.8), 0.55, 3.8 - i * 1.25);
     ridge.castShadow = true;
     scene.add(ridge);
   }
 
-  objects.column = createRiverColumn();
+  objects.column = createMarchColumn();
   objects.column.position.set(0, 0, 2.35);
   scene.add(objects.column);
 
-  objects.goal = createRiverGate("西岸");
-  objects.goal.position.set(0, 0.03, -8.15);
+  objects.goal = createRiverGate("湘江浮桥");
+  objects.goal.position.set(0, 0.03, -8.25);
   scene.add(objects.goal);
   objects.goalFlag = objects.goal.getObjectByName("goalFlag");
   objects.goalFlag.visible = false;

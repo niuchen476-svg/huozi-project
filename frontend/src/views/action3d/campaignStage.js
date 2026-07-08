@@ -24,6 +24,15 @@ export function renderCampaignAction3d(root, level, config) {
           <div class="campaign-3d__warning" id="campaign-warning" hidden></div>
           <div class="campaign-3d__caption" id="campaign-caption" hidden></div>
           <div class="campaign-3d__hint" id="campaign-hint" hidden></div>
+          <div class="campaign-3d__letter" id="campaign-letter" hidden>
+            <div class="campaign-3d__letter-paper">
+              <p class="campaign-3d__letter-eyebrow">拾取书信</p>
+              <h3 id="campaign-letter-title"></h3>
+              <div class="campaign-3d__letter-lines" id="campaign-letter-lines"></div>
+              <p class="campaign-3d__letter-source" id="campaign-letter-source"></p>
+              <p class="campaign-3d__letter-timer" id="campaign-letter-timer"></p>
+            </div>
+          </div>
 
           <div class="campaign-3d__controls" id="campaign-controls" hidden>
             <button type="button" data-command="left" aria-label="向左闪避">←</button>
@@ -50,6 +59,11 @@ export function renderCampaignAction3d(root, level, config) {
       warning: root.querySelector("#campaign-warning"),
       caption: root.querySelector("#campaign-caption"),
       hint: root.querySelector("#campaign-hint"),
+      letter: root.querySelector("#campaign-letter"),
+      letterTitle: root.querySelector("#campaign-letter-title"),
+      letterLines: root.querySelector("#campaign-letter-lines"),
+      letterSource: root.querySelector("#campaign-letter-source"),
+      letterTimer: root.querySelector("#campaign-letter-timer"),
       controls: root.querySelector("#campaign-controls"),
       intro: root.querySelector("#campaign-intro"),
       start: root.querySelector("#campaign-start"),
@@ -60,9 +74,12 @@ export function renderCampaignAction3d(root, level, config) {
     let hits = 0;
     let finished = false;
     let active = false;
+    let pausedForLetter = false;
     let awaitingDodge = null;
     let dodgeTimeout = null;
     let hazardTimeout = null;
+    let letterTimeout = null;
+    let letterInterval = null;
     const shownBeats = new Set();
     const collectibles = config.collectibles || [];
     const collectedArtifacts = new Set();
@@ -73,6 +90,7 @@ export function renderCampaignAction3d(root, level, config) {
       nodes.controls.hidden = false;
       active = true;
       stage.setActive(true);
+      setControlsDisabled(false);
       updateHud();
       showHint("沿路收齐物品后再冲向终点；方向警示出现时及时闪避");
       scheduleHazard();
@@ -126,13 +144,61 @@ export function renderCampaignAction3d(root, level, config) {
         .join("");
     }
 
+    function setControlsDisabled(disabled) {
+      nodes.controls.querySelectorAll("button").forEach((button) => {
+        button.disabled = disabled;
+      });
+    }
+
     function collectDueArtifacts() {
       collectibles.forEach((item) => {
         if (progress < item.at || collectedArtifacts.has(item.id)) return;
         collectedArtifacts.add(item.id);
         stage.collectItem(item.id);
-        showCaption(`拾取：${item.name}`, "collect", 1600);
+        if (item.kind === "letter" && item.letter) {
+          showLetter(item);
+        } else {
+          showCaption(`拾取：${item.name}`, "collect", 1600);
+        }
       });
+    }
+
+    function showLetter(item) {
+      pausedForLetter = true;
+      stage.setActive(false);
+      setControlsDisabled(true);
+      clearTimeout(hazardTimeout);
+      clearHazard();
+      clearTimeout(letterTimeout);
+      clearInterval(letterInterval);
+
+      nodes.letterTitle.textContent = item.letter.title || item.name;
+      nodes.letterLines.replaceChildren();
+      item.letter.lines.forEach((line) => {
+        const p = document.createElement("p");
+        p.textContent = line;
+        nodes.letterLines.appendChild(p);
+      });
+      nodes.letterSource.textContent = item.letter.sourceName ? `资料来源：${item.letter.sourceName}` : "";
+      nodes.letter.hidden = false;
+
+      const startedAt = performance.now();
+      const updateTimer = () => {
+        const remaining = Math.max(0, Math.ceil((5000 - (performance.now() - startedAt)) / 1000));
+        nodes.letterTimer.textContent = `${remaining} 秒后继续前进`;
+      };
+      updateTimer();
+      letterInterval = setInterval(updateTimer, 200);
+      letterTimeout = setTimeout(() => {
+        clearInterval(letterInterval);
+        nodes.letter.hidden = true;
+        pausedForLetter = false;
+        stage.setActive(true);
+        setControlsDisabled(false);
+        showCaption(`收好：${item.name}`, "collect", 1300);
+        showHint("继续沿草地向桥头前进");
+        scheduleHazard();
+      }, 5000);
     }
 
     function hasAllArtifacts() {
@@ -147,7 +213,7 @@ export function renderCampaignAction3d(root, level, config) {
     }
 
     function advance() {
-      if (!active || finished) return;
+      if (!active || finished || pausedForLetter) return;
       progress = Math.min(100, progress + config.advanceStep);
       stage.step();
       updateHud();
@@ -164,13 +230,13 @@ export function renderCampaignAction3d(root, level, config) {
 
     function scheduleHazard() {
       clearTimeout(hazardTimeout);
-      if (!active || finished) return;
+      if (!active || finished || pausedForLetter) return;
       const gap = config.minHazardGapMs + Math.random() * (config.maxHazardGapMs - config.minHazardGapMs);
       hazardTimeout = setTimeout(fireHazard, gap);
     }
 
     function fireHazard() {
-      if (!active || finished) return;
+      if (!active || finished || pausedForLetter) return;
       const side = Math.random() < 0.5 ? "left" : "right";
       awaitingDodge = side;
       nodes.warning.hidden = false;
@@ -193,7 +259,7 @@ export function renderCampaignAction3d(root, level, config) {
     }
 
     function dodge(side) {
-      if (!active || finished || !awaitingDodge) return;
+      if (!active || finished || pausedForLetter || !awaitingDodge) return;
       if (side === awaitingDodge) {
         clearHazard();
         showCaption(config.dodgeLine, "success", 1300);
@@ -218,6 +284,11 @@ export function renderCampaignAction3d(root, level, config) {
         progress = 0;
         hits = 0;
         finished = false;
+        pausedForLetter = false;
+        clearTimeout(letterTimeout);
+        clearInterval(letterInterval);
+        nodes.letter.hidden = true;
+        setControlsDisabled(false);
         shownBeats.clear();
         collectedArtifacts.clear();
         stage.reset();
@@ -231,6 +302,8 @@ export function renderCampaignAction3d(root, level, config) {
       finished = true;
       active = false;
       clearTimeout(hazardTimeout);
+      clearTimeout(letterTimeout);
+      clearInterval(letterInterval);
       clearHazard();
       nodes.controls.hidden = true;
       window.removeEventListener("keydown", onKeyDown);
@@ -246,6 +319,7 @@ export function renderCampaignAction3d(root, level, config) {
     }
 
     function onKeyDown(event) {
+      if (pausedForLetter) return;
       if (event.code === "Space" || event.key === " ") {
         event.preventDefault();
         advance();
@@ -474,6 +548,7 @@ function createCollectibleArtifact(item) {
     id: item.id,
     baseY: group.position.y,
     collected: false,
+    item,
   };
 
   const glow = new THREE.Mesh(
@@ -485,7 +560,7 @@ function createCollectibleArtifact(item) {
   group.add(glow);
 
   if (item.kind === "letter") {
-    group.add(createLetterArtifact());
+    group.add(createLetterArtifact(item.letter));
   } else if (item.kind === "map") {
     group.add(createMapArtifact());
   } else if (item.kind === "medical") {
@@ -522,24 +597,60 @@ function createBackpackArtifact() {
   return group;
 }
 
-function createLetterArtifact() {
+function createLetterArtifact(letterData) {
   const group = new THREE.Group();
-  const paper = new THREE.MeshStandardMaterial({ color: 0xe8ddc2, roughness: 0.72, side: THREE.DoubleSide });
+  const paper = new THREE.MeshStandardMaterial({
+    map: makeLetterTexture(letterData),
+    color: 0xffffff,
+    roughness: 0.72,
+    side: THREE.DoubleSide,
+  });
   const sealMaterial = new THREE.MeshBasicMaterial({ color: 0x9c231b });
-  const letter = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.3), paper);
+  const letter = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.44), paper);
   letter.rotation.x = -0.25;
   letter.castShadow = true;
   group.add(letter);
 
-  const fold = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.02), new THREE.MeshBasicMaterial({ color: 0xb9a986, side: THREE.DoubleSide }));
-  fold.position.z = 0.006;
+  const fold = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.018), new THREE.MeshBasicMaterial({ color: 0xb9a986, side: THREE.DoubleSide }));
+  fold.position.set(0, 0.04, 0.006);
   fold.rotation.z = -0.6;
   group.add(fold);
 
-  const seal = new THREE.Mesh(new THREE.CircleGeometry(0.045, 18), sealMaterial);
-  seal.position.set(0.08, -0.02, 0.012);
+  const seal = new THREE.Mesh(new THREE.CircleGeometry(0.04, 18), sealMaterial);
+  seal.position.set(0.19, -0.13, 0.012);
   group.add(seal);
   return group;
+}
+
+function makeLetterTexture(letterData) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 360;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#eadfc3";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "rgba(124, 95, 57, 0.5)";
+  ctx.lineWidth = 5;
+  ctx.strokeRect(14, 14, canvas.width - 28, canvas.height - 28);
+  ctx.fillStyle = "rgba(102, 70, 38, 0.22)";
+  ctx.fillRect(34, 58, canvas.width - 68, 2);
+  ctx.fillRect(34, 126, canvas.width - 68, 2);
+  ctx.fillRect(34, 194, canvas.width - 68, 2);
+  ctx.fillStyle = "#5f2b1d";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "bold 28px serif";
+  ctx.fillText(letterData?.shortTitle || letterData?.title || "红军书信", canvas.width / 2, 42);
+  ctx.font = "24px serif";
+  const lines = letterData?.lines || [];
+  const top = lines.length > 4 ? 94 : 112;
+  const gap = lines.length > 4 ? 42 : 52;
+  lines.forEach((line, index) => {
+    ctx.fillText(line, canvas.width / 2, top + index * gap);
+  });
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.anisotropy = 4;
+  return texture;
 }
 
 function createMapArtifact() {
