@@ -363,7 +363,7 @@ function attachSequenceChallenge(root, levelId, challenge) {
   update();
 }
 
-function completeSpecialChallenge(root, levelId, challenge) {
+async function completeSpecialChallenge(root, levelId, challenge) {
   markCompleted(levelId);
   const panel = root.querySelector("#challenge-panel");
   panel.innerHTML = `
@@ -378,6 +378,8 @@ function completeSpecialChallenge(root, levelId, challenge) {
     </div>
   `;
   panel.querySelector("[data-restart-level]")?.addEventListener("click", () => restartLevel(root, levelId));
+  const showedFragment = await showArchiveFragmentReward(root, levelId);
+  if (showedFragment) window.location.hash = "#/map";
 }
 
 function restartLevel(root, levelId) {

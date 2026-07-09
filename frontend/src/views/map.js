@@ -56,7 +56,7 @@ export async function renderMapView(root) {
       <div class="map-hint">点击关卡图钉，开始或重玩挑战吧！</div>
       <button class="archive-bag-button" type="button" data-open-archive-bag aria-label="打开档案袋">
         <span class="archive-bag-button__icon" aria-hidden="true"></span>
-        <span>档案袋</span>
+        <span>碎片收集</span>
         <strong>${collectedArchiveFragments.length}/${archiveFragments.length}</strong>
       </button>
       <div class="route-map-image">
@@ -138,12 +138,26 @@ function renderPin(level, status, index, fragments) {
 }
 
 function renderFragmentMapEffects(fragments) {
-  const directionFragment = fragments.find((fragment) => fragment.effect === "zunyi-chishui-route");
-  if (!directionFragment?.collected) return "";
+  const collectedEffects = new Set(fragments.filter((fragment) => fragment.collected).map((fragment) => fragment.effect));
+  const lines = [];
+
+  if (collectedEffects.has("ruijin-xiangjiang-route")) {
+    lines.push(`<path class="route-fragment-line route-fragment-line--departure" d="M 75 84 C 69 80, 62 81, 57 84" />`);
+  }
+
+  if (collectedEffects.has("xiangjiang-zunyi-route")) {
+    lines.push(`<path class="route-fragment-line route-fragment-line--xiangjiang" d="M 57 84 C 52 78, 48 72, 42 66" />`);
+  }
+
+  if (collectedEffects.has("zunyi-chishui-route")) {
+    lines.push(`<path class="route-fragment-line route-fragment-line--direction" d="M 42 66 C 41 62, 39 60, 38 58" />`);
+  }
+
+  if (!lines.length) return "";
 
   return `
     <svg class="route-fragment-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <path class="route-fragment-line route-fragment-line--direction" d="M 42 66 C 41 62, 39 60, 38 58" />
+      ${lines.join("")}
     </svg>
   `;
 }
@@ -152,7 +166,7 @@ function renderArchiveBagPanel(fragments) {
   const firstCollected = fragments.find((fragment) => fragment.collected);
   const detail = firstCollected
     ? firstCollected.fact
-    : "完成遵义会议、飞夺泸定桥等关卡后，档案碎片会收入这里。";
+    : "完成瑞金出发、湘江血战等关卡后，档案碎片会收入这里。";
 
   return `
     <div class="archive-bag-panel" data-archive-bag-panel hidden>
@@ -161,7 +175,7 @@ function renderArchiveBagPanel(fragments) {
         <div class="archive-bag-panel__header">
           <div>
             <p>长征档案行</p>
-            <h2>档案袋</h2>
+            <h2>碎片收集</h2>
           </div>
           <button type="button" data-close-archive-bag>关闭</button>
         </div>

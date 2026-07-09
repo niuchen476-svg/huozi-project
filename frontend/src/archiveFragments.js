@@ -2,6 +2,28 @@ import { collectArchiveFragment, getArchiveFragments } from "./state.js";
 
 export const ARCHIVE_FRAGMENTS = [
   {
+    id: "departure-map-fragment",
+    levelId: "ruijin-departure",
+    group: "瑞金出发碎片",
+    name: "出发碎片",
+    visual: "一角苏区地图和行军背包布片，带红色出发线。",
+    rewardText: "你完成了关键物资取舍，让队伍在艰难出发前保住继续前进的力量。",
+    mapHint: "地图上瑞金到湘江方向的路线被点亮，提示长征已经启程。",
+    fact: "1934年10月，中央红军主力从瑞金、于都等地集结出发，开始战略转移。",
+    effect: "ruijin-xiangjiang-route",
+  },
+  {
+    id: "river-crossing-fragment",
+    levelId: "xiangjiang-battle",
+    group: "湘江血战碎片",
+    name: "渡江碎片",
+    visual: "一块被江水浸湿的桥板残片，刻着渡口行动线。",
+    rewardText: "你排定了抢渡行动，让渡口、通路、阻击和主力渡江接成一线。",
+    mapHint: "地图上湘江到遵义方向的路线被点亮，提示队伍穿过惨烈考验继续前行。",
+    fact: "湘江战役是长征初期最惨烈的战斗之一，红军付出巨大代价后继续向西转移。",
+    effect: "xiangjiang-zunyi-route",
+  },
+  {
     id: "direction-fragment",
     levelId: "zunyi-turn",
     group: "遵义会议碎片",
@@ -52,7 +74,7 @@ export function collectArchiveFragmentForLevel(levelId) {
 
 export function showArchiveFragmentReward(root, levelId) {
   const fragment = collectArchiveFragmentForLevel(levelId);
-  if (!fragment) return Promise.resolve();
+  if (!fragment) return Promise.resolve(false);
 
   return new Promise((resolve) => {
     const overlay = document.createElement("div");
@@ -82,7 +104,7 @@ export function showArchiveFragmentReward(root, levelId) {
       overlay.classList.remove("archive-fragment-reward--visible");
       window.setTimeout(() => {
         overlay.remove();
-        resolve();
+        resolve(true);
       }, 180);
     });
   });
@@ -92,8 +114,37 @@ export function renderArchiveFragmentVisual(fragment, options = {}) {
   const stateClass = options.collected === false ? " archive-fragment-visual--locked" : "";
   return `
     <div class="archive-fragment-visual archive-fragment-visual--${fragment.id}${stateClass}" aria-hidden="true">
-      ${fragment.id === "direction-fragment" ? renderDirectionFragment() : renderIronChainFragment()}
+      ${renderFragmentVisualInner(fragment.id)}
     </div>
+  `;
+}
+
+function renderFragmentVisualInner(fragmentId) {
+  if (fragmentId === "departure-map-fragment") return renderDepartureMapFragment();
+  if (fragmentId === "river-crossing-fragment") return renderRiverCrossingFragment();
+  if (fragmentId === "direction-fragment") return renderDirectionFragment();
+  if (fragmentId === "iron-chain-fragment") return renderIronChainFragment();
+  return "";
+}
+
+function renderDepartureMapFragment() {
+  return `
+    <span class="archive-fragment-visual__map-paper"></span>
+    <span class="archive-fragment-visual__route-thread"></span>
+    <span class="archive-fragment-visual__route-dot archive-fragment-visual__route-dot--start"></span>
+    <span class="archive-fragment-visual__route-dot archive-fragment-visual__route-dot--end"></span>
+    <span class="archive-fragment-visual__cloth-tab"></span>
+    <strong>启程</strong>
+  `;
+}
+
+function renderRiverCrossingFragment() {
+  return `
+    <span class="archive-fragment-visual__river"></span>
+    <span class="archive-fragment-visual__crossing-plank"></span>
+    <span class="archive-fragment-visual__crossing-mark archive-fragment-visual__crossing-mark--one"></span>
+    <span class="archive-fragment-visual__crossing-mark archive-fragment-visual__crossing-mark--two"></span>
+    <strong>渡江</strong>
   `;
 }
 

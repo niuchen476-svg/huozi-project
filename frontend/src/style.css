@@ -329,6 +329,15 @@ a {
   animation: route-fragment-pulse 2s ease-in-out infinite;
 }
 
+.route-fragment-line--departure {
+  stroke: #f0b44b;
+}
+
+.route-fragment-line--xiangjiang {
+  stroke: #f6d86f;
+  stroke-width: 1.25;
+}
+
 @keyframes route-fragment-pulse {
   0%,
   100% {
@@ -608,6 +617,146 @@ a {
 .archive-fragment-visual--locked {
   filter: grayscale(1);
   opacity: 0.42;
+}
+
+.archive-fragment-visual--departure-map-fragment {
+  background:
+    linear-gradient(135deg, rgba(156, 35, 27, 0.08), transparent 34%),
+    #ead7ad;
+  clip-path: polygon(4% 14%, 78% 0, 98% 18%, 90% 86%, 58% 100%, 8% 88%, 0 42%);
+  box-shadow: 0 10px 18px rgba(42, 36, 32, 0.22);
+}
+
+.archive-fragment-visual--departure-map-fragment::before {
+  content: "";
+  position: absolute;
+  inset: 10px 13px 16px 12px;
+  background:
+    linear-gradient(28deg, transparent 43%, rgba(85, 73, 60, 0.2) 44%, rgba(85, 73, 60, 0.2) 46%, transparent 47%),
+    linear-gradient(112deg, transparent 45%, rgba(85, 73, 60, 0.16) 46%, rgba(85, 73, 60, 0.16) 48%, transparent 49%);
+  border: 1px solid rgba(85, 73, 60, 0.22);
+}
+
+.archive-fragment-visual__map-paper {
+  position: absolute;
+  left: 13px;
+  top: 14px;
+  width: 68px;
+  height: 54px;
+  background: rgba(250, 239, 205, 0.72);
+  border: 1px solid rgba(85, 73, 60, 0.22);
+  transform: rotate(-8deg);
+}
+
+.archive-fragment-visual__route-thread {
+  position: absolute;
+  left: 27px;
+  top: 39px;
+  width: 53px;
+  height: 22px;
+  border-top: 4px solid var(--color-red);
+  border-radius: 50%;
+  transform: rotate(-17deg);
+}
+
+.archive-fragment-visual__route-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: var(--color-red-deep);
+  border: 2px solid #f4d88f;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(42, 36, 32, 0.28);
+}
+
+.archive-fragment-visual__route-dot--start {
+  left: 25px;
+  top: 43px;
+}
+
+.archive-fragment-visual__route-dot--end {
+  left: 73px;
+  top: 33px;
+}
+
+.archive-fragment-visual__cloth-tab {
+  position: absolute;
+  right: 8px;
+  bottom: 13px;
+  width: 31px;
+  height: 38px;
+  background: linear-gradient(135deg, #7b6f52, #b99a63);
+  border: 1px solid rgba(42, 36, 32, 0.24);
+  transform: rotate(12deg);
+}
+
+.archive-fragment-visual--departure-map-fragment strong,
+.archive-fragment-visual--river-crossing-fragment strong {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  color: var(--color-red-deep);
+  font-family: var(--font-serif);
+  font-size: 1.16rem;
+  transform: translateX(-50%) rotate(-5deg);
+  text-shadow: 0 1px 0 rgba(255, 248, 222, 0.8);
+}
+
+.archive-fragment-visual--river-crossing-fragment {
+  background:
+    linear-gradient(145deg, rgba(63, 77, 89, 0.16), rgba(42, 36, 32, 0.04)),
+    #dfc494;
+  clip-path: polygon(14% 0, 92% 10%, 100% 70%, 74% 98%, 16% 92%, 0 34%);
+  box-shadow: 0 10px 18px rgba(42, 36, 32, 0.22);
+}
+
+.archive-fragment-visual__river {
+  position: absolute;
+  left: 7px;
+  top: 18px;
+  width: 92px;
+  height: 43px;
+  background:
+    radial-gradient(circle at 23% 58%, rgba(255, 255, 255, 0.48) 0 9%, transparent 10%),
+    radial-gradient(circle at 61% 42%, rgba(255, 255, 255, 0.42) 0 8%, transparent 9%),
+    linear-gradient(135deg, #637f88, #3f5d67 54%, #75949a);
+  clip-path: polygon(0 26%, 100% 0, 88% 74%, 12% 100%);
+  opacity: 0.9;
+}
+
+.archive-fragment-visual__crossing-plank {
+  position: absolute;
+  left: 22px;
+  top: 42px;
+  width: 68px;
+  height: 17px;
+  background: linear-gradient(90deg, #7c5435, #c49b62 48%, #6d482f);
+  border: 1px solid rgba(42, 36, 32, 0.28);
+  transform: rotate(-12deg);
+  box-shadow: 0 4px 8px rgba(42, 36, 32, 0.22);
+}
+
+.archive-fragment-visual__crossing-mark {
+  position: absolute;
+  display: block;
+  height: 4px;
+  background: var(--color-red);
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(42, 36, 32, 0.24);
+}
+
+.archive-fragment-visual__crossing-mark--one {
+  left: 26px;
+  top: 31px;
+  width: 46px;
+  transform: rotate(20deg);
+}
+
+.archive-fragment-visual__crossing-mark--two {
+  left: 38px;
+  top: 64px;
+  width: 39px;
+  transform: rotate(-18deg);
 }
 
 .archive-fragment-visual--direction-fragment {
