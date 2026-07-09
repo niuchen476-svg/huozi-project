@@ -1,5 +1,6 @@
 const PROGRESS_KEY = "changzheng-progress";
 const BRIDGE_KEY = "changzheng-bridge-progress";
+const ARCHIVE_FRAGMENTS_KEY = "changzheng-archive-fragments";
 
 function readJSON(key) {
   try {
@@ -37,4 +38,16 @@ export function markBridgeCrossed(levelId) {
   const data = readJSON(BRIDGE_KEY);
   data[levelId] = true;
   localStorage.setItem(BRIDGE_KEY, JSON.stringify(data));
+}
+
+export function getArchiveFragments() {
+  return readJSON(ARCHIVE_FRAGMENTS_KEY);
+}
+
+export function collectArchiveFragment(fragmentId) {
+  const fragments = getArchiveFragments();
+  const alreadyCollected = Boolean(fragments[fragmentId]);
+  fragments[fragmentId] = true;
+  localStorage.setItem(ARCHIVE_FRAGMENTS_KEY, JSON.stringify(fragments));
+  return !alreadyCollected;
 }

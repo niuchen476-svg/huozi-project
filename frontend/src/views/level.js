@@ -2,6 +2,7 @@ import { fetchLevel, preloadLevel, submitReflection } from "../api.js";
 import { markCompleted, resetLevelProgress, hasCrossedBridge, markBridgeCrossed } from "../state.js";
 import { preloadBridgeActionAssets, renderBridgeAction } from "./bridgeAction.js";
 import { renderZunyiMeeting } from "./zunyiMeeting.js";
+import { showArchiveFragmentReward } from "../archiveFragments.js";
 
 const ACTION_SCENES = {
   "ruijin-departure": renderRuijinDepartureAction3dLazy,
@@ -118,6 +119,14 @@ export async function renderLevelView(root, levelId) {
 
     if (levelId === "zunyi-turn") {
       markCompleted(levelId);
+      await showArchiveFragmentReward(root, levelId);
+      window.location.hash = "#/map";
+      return;
+    }
+
+    if (levelId === "luding-bridge" && actionResult !== "skipped") {
+      markCompleted(levelId);
+      await showArchiveFragmentReward(root, levelId);
       window.location.hash = "#/map";
       return;
     }
