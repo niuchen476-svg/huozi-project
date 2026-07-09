@@ -79,7 +79,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "第五次反“围剿”后的压力",
         "rawText": "1933年至1934年，国民党军对中央苏区实行堡垒推进和经济封锁，红军在第五次反“围剿”中陷入被动，中央苏区回旋余地不断缩小。",
         "translation": "中央苏区面对军事围堵和物资封锁，原地坚守的代价越来越高，战略转移成为保存主力的重要选择。",
-        "image": "/assets/levels/ruijin-departure/cards/01-pressure.jpg",
+        "image": "/assets/levels/ruijin-departure/cards/01-pressure.jpg?v=story-20260709",
         "keyPoints": [
           "军事围堵",
           "经济封锁",
@@ -91,7 +91,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "从瑞金、于都一带集结出发",
         "rawText": "1934年10月，中央红军主力和中央机关从瑞金、于都等中央苏区核心区域集结转移，夜间隐蔽行动，跨过于都河后踏上西进道路。",
         "translation": "出发地点不是单一城门，而是以瑞金、于都一带为核心的集结转移；夜色、渡河和隐蔽行动构成了开端的真实压力。",
-        "image": "/assets/levels/ruijin-departure/cards/02-assembly.jpg",
+        "image": "/assets/levels/ruijin-departure/cards/02-assembly.jpg?v=story-20260709",
         "keyPoints": [
           "集结转移",
           "夜间行动",
@@ -103,7 +103,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "八万余人的沉重队列",
         "rawText": "长征开始时，中央红军约八万六千余人随主力转移，队伍中既有作战部队，也有机关、后勤、医疗、电台和文件物资。",
         "translation": "这支队伍不只是战斗纵队，还承担着机关、后勤、通信和医疗任务；速度、隐蔽和物资取舍相互拉扯。",
-        "image": "/assets/levels/ruijin-departure/cards/03-column.jpg",
+        "image": "/assets/levels/ruijin-departure/cards/03-column.jpg?v=story-20260709",
         "keyPoints": [
           "约八万六千余人",
           "后勤负担",
@@ -115,7 +115,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "告别中央苏区",
         "rawText": "红军离开中央苏区时，许多群众送别亲人和队伍；这一夜既是军事转移，也是根据地、家庭与战士之间的沉重告别。",
         "translation": "瑞金出发的情绪不只是“启程”，还有对根据地和亲人的告别，这让战略选择背后的代价更加具体。",
-        "image": "/assets/levels/ruijin-departure/cards/04-farewell.jpg",
+        "image": "/assets/levels/ruijin-departure/cards/04-farewell.jpg?v=story-20260709",
         "keyPoints": [
           "群众送别",
           "根据地告别",
@@ -156,7 +156,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "第四道封锁线",
         "rawText": "湘江一线是中央红军长征初期必须突破的关键封锁线。敌军企图利用湘江与周边山地、渡口形成围堵，阻断红军西进。",
         "translation": "湘江不是普通河流障碍，而是与敌军封锁线叠加在一起的战略关口；能否及时渡江直接关系主力存亡。",
-        "image": "/assets/levels/xiangjiang-battle/cards/01-blockade.jpg",
+        "image": "/assets/levels/xiangjiang-battle/cards/01-blockade.jpg?v=story-20260709",
         "keyPoints": [
           "湘江封锁线",
           "渡口争夺",
@@ -168,7 +168,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "抢渡与掩护",
         "rawText": "红军先头部队抢占渡口，工兵和战士在炮火下搭设、修复渡江通路，阻击部队在两翼和后方苦战，掩护中央纵队与大部队过江。",
         "translation": "渡江不是单点冲锋，而是抢渡、架桥、阻击、掩护同时展开；任何一个环节被击穿，都可能让队伍被压在江东。",
-        "image": "/assets/levels/xiangjiang-battle/cards/02-crossing.jpg",
+        "image": "/assets/levels/xiangjiang-battle/cards/02-crossing.jpg?v=story-20260709",
         "keyPoints": [
           "抢占渡口",
           "搭设通路",
@@ -180,7 +180,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "从八万六千余人到三万余人",
         "rawText": "湘江战役后，中央红军人数由长征出发时的八万六千余人锐减到三万余人左右，许多红军战士牺牲在渡江与阻击战中。",
         "translation": "“惨烈”可以被数字看见：大幅减员说明这场战斗不仅改变了队伍规模，也改变了后来对战略指挥的反思。",
-        "image": "/assets/levels/xiangjiang-battle/cards/03-cost.jpg",
+        "image": "/assets/levels/xiangjiang-battle/cards/03-cost.jpg?v=story-20260709",
         "keyPoints": [
           "八万六千余人",
           "三万余人左右",
@@ -192,7 +192,7 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
         "title": "通向遵义前的沉重反思",
         "rawText": "湘江血战的惨重损失，使红军内部对当时的战略指挥和行军方式产生深刻反思，也为后来遵义会议的召开积累了现实压力。",
         "translation": "湘江的意义不只在于突围成功，更在于惨痛损失推动了红军对路线、指挥和机动作战方式的重新思考。",
-        "image": "/assets/levels/xiangjiang-battle/cards/04-reflection.jpg",
+        "image": "/assets/levels/xiangjiang-battle/cards/04-reflection.jpg?v=story-20260709",
         "keyPoints": [
           "战略反思",
           "指挥问题",

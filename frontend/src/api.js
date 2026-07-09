@@ -13,7 +13,7 @@ let levelsIndexPromise = null;
 const levelPromises = new Map();
 
 function fetchJson(url, errorMessage) {
-  return fetch(url, { cache: STATIC_MODE ? "force-cache" : "default" }).then((res) => {
+  return fetch(url, { cache: STATIC_MODE ? "no-cache" : "default" }).then((res) => {
     if (!res.ok) throw new Error(errorMessage);
     return res.json();
   });
