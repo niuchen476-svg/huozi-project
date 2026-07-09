@@ -1,4 +1,22 @@
 const AUDIO_SRC = "/assets/audio/theme.mp3";
+let suspendedByMedia = false;
+
+export function suspendBgmForMedia() {
+  const audio = document.querySelector("#bgm");
+  if (!audio || audio.paused) {
+    suspendedByMedia = false;
+    return;
+  }
+  suspendedByMedia = true;
+  audio.pause();
+}
+
+export function resumeBgmAfterMedia() {
+  const audio = document.querySelector("#bgm");
+  if (!audio || !suspendedByMedia) return;
+  suspendedByMedia = false;
+  audio.play().catch(() => {});
+}
 
 export function setupBgm() {
   const audio = document.querySelector("#bgm");

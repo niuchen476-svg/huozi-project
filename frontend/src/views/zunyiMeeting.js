@@ -1,4 +1,5 @@
 import { ZUNYI_ASSETS } from "../cinematicAssets.js";
+import { resumeBgmAfterMedia, suspendBgmForMedia } from "../bgm.js";
 
 const STEPS = [
   {
@@ -115,30 +116,86 @@ const DECISION_CARDS = [
 
 const DECISION_ORDER = ["criticize", "leadership", "north"];
 const ROUTE_POINTS = ["遵义会议", "四渡赤水", "巧渡金沙江", "飞夺泸定桥"];
+const ZUNYI_FRAGMENT = {
+  id: "zunyi-direction",
+  title: "方向碎片",
+  mark: "转折",
+  image: "/assets/fragments/fragment-zunyi-direction.png",
+  text: "你记录下了遵义会议的关键判断。它会放进档案袋，和后面“四渡赤水”“飞夺泸定桥”的路线线索连在一起，说明红军怎样一步步重新争取主动。",
+  gallery: [
+    {
+      image: "/assets/levels/zunyi-turn/site-exterior.png",
+      zoomImage: "/assets/levels/zunyi-turn/site-exterior.png",
+      title: "会址外景",
+    },
+    {
+      image: "/assets/levels/zunyi-turn/meeting-room-map.png",
+      zoomImage: "/assets/levels/zunyi-turn/meeting-room-map.png",
+      title: "会场线索",
+    },
+    {
+      image: "/assets/levels/zunyi-turn/handwriting-closeup.png",
+      zoomImage: "/assets/levels/zunyi-turn/handwriting-closeup.png",
+      title: "记录细节",
+    },
+  ],
+};
 const MEETING_RECORDS = [
   {
     id: "lesson",
     speaker: "会场发言一",
-    line: "第五次反“围剿”和长征初期的严重损失，不能只归因于敌人强大。我们必须认真总结自己的经验教训。",
+    line: "红军损失很大，不能只怪敌人强。我们要认真总结，前面的指挥和打法哪里出了问题。",
     answer: "总结失败教训",
     choices: ["总结失败教训", "天气道路困难", "只记录敌人强大"],
-    written: "记录一：会议首先总结第五次反“围剿”失败和长征初期受挫的教训。",
+    written: "记录一：会议认真总结第五次反“围剿”失败和长征初期受挫的教训。",
+    wrongFeedback: "这句发言不是在说天气，也不是只说敌人强。它最重要的是：先把失败教训总结清楚。",
+    sourceCard: {
+      title: "《关于反对敌人五次围剿的总结》的决议",
+      text: "这份《决议》重点总结第五次反“围剿”和长征初期的失败教训，指出错误不是为了削弱团结，而是为了把问题讲清楚、把队伍重新凝聚起来。",
+      image: "/assets/levels/zunyi-turn/source/zunyi-record-summary-cover.png",
+      zoomImage: "/assets/levels/zunyi-turn/source/zunyi-record-summary-pages.png",
+      sourceName: "《关于反对敌人五次围剿的总结》的决议",
+      excerpt: "党在揭发了这种错误之后，不是削弱而是加强了。",
+      credit: "中央档案馆藏遵义会议相关决议文献",
+      note: "这份《决议》篇幅很长，核心是总结错误军事指挥带来的损失，并强调揭发错误是为了加强党和红军的团结。",
+    },
   },
   {
     id: "command",
     speaker: "会场发言二",
-    line: "如果作战方法死板，指挥判断脱离实际，红军就会被敌人牵着走。军事指挥问题必须讲清楚。",
+    line: "如果指挥脱离实际，打法太死板，红军就会一直被敌人牵着走。",
     answer: "军事指挥问题",
-    choices: ["队伍不够勇敢", "军事指挥问题", "粮食不够充足"],
+    choices: ["战士不够勇敢", "军事指挥问题", "粮食不够充足"],
     written: "记录二：会议重点讨论当时最紧迫的军事指挥和作战方法问题。",
+    wrongFeedback: "这句发言不是批评战士，也不是只讲物资。它指向的是当时最紧迫的军事指挥问题。",
+    sourceCard: {
+      title: "军事指挥和作战方法",
+      text: "遵义会议集中讨论当时最紧迫的军事问题，批评脱离实际的指挥和死板打法。",
+      image: "/assets/levels/zunyi-turn/meeting-manuscript.png",
+      sourceName: "《（乙）遵义政治局扩大会议》（陈云手稿）",
+      excerpt: "检阅在反对五次‘围剿’中与西征中军事指挥上的经验与教训。",
+      credit: "中央档案馆藏《（乙）遵义政治局扩大会议》手稿",
+      note: "这说明遵义会议不是简单开会，而是在认真总结军事指挥上的经验和教训。",
+    },
   },
   {
     id: "direction",
     speaker: "会场发言三",
-    line: "只有调整领导和指挥方式，采取更灵活的行动，红军才可能从被动中重新争取主动。",
-    answer: "调整方向争取主动",
-    choices: ["继续原来打法", "原地长期休整", "调整方向争取主动"],
-    written: "记录三：会议推动党和红军在危急关头调整方向，开始重新争取主动。",
+    line: "这次会议增选毛泽东同志为中央政治局常委，让他参加中央军事指挥的领导工作。红军要用更灵活的办法，重新争取主动。",
+    answer: "调整领导，争取主动",
+    choices: ["继续原来打法", "原地长期休整", "调整领导，争取主动"],
+    written: "记录三：会议增选毛泽东同志为中央政治局常委，推动红军调整领导和指挥方式，重新争取主动。",
+    wrongFeedback: "会议不是要继续原来的打法，也不是原地停下来。关键是调整领导和指挥方式，重新争取主动。",
+    sourceCard: {
+      title: "重要组织调整",
+      text: "会议增选毛泽东同志为中央政治局常委，并让他参加中央军事指挥的领导工作，红军开始重新争取主动。",
+      image: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-detail.png",
+      zoomImage: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-thumb.png",
+      sourceName: "遵义会议后的重要组织调整",
+      excerpt: "增选毛泽东同志为中央政治局常委，并让他参加中央军事指挥的领导工作。",
+      credit: "根据遵义会议相关史实整理",
+      note: "这条史实要表达的是领导和军事指挥方式的调整。对小记录员来说，重点不是背人名，而是理解红军为什么能重新争取主动。",
+    },
   },
 ];
 const REWRITE_SCENES = [
@@ -209,6 +266,12 @@ export function renderZunyiMeeting(root, level) {
       rewriteScene: 0,
       meetingRecordIndex: 0,
       meetingRecords: [],
+      archivedSources: [],
+      lastWrittenRecord: null,
+      activeSourceCard: null,
+      zoomSourceCard: null,
+      zoomArchiveImage: null,
+      showFragment: false,
       recordFeedback: "先听发言，再选择最应该写进记录纸的重点。",
       feedback: "你是会议小记录员。先把桌上的线索整理清楚，再写出会议判断。",
       hint: "小参谋：别急着背结论，先看见危机，再找原因。",
@@ -234,6 +297,9 @@ function render(root, state) {
 
         ${state.step === "intro" ? renderIntro(state) : state.step === "rewrite" ? renderRewriteCanvas(state) : renderStep(step, state)}
       </div>
+      ${state.showFragment ? renderArchiveFragment(ZUNYI_FRAGMENT) : ""}
+      ${state.zoomSourceCard ? renderSourceCardZoom(state.zoomSourceCard) : ""}
+      ${state.zoomArchiveImage ? renderArchiveImageZoom(state.zoomArchiveImage) : ""}
     </div>
   `;
 
@@ -311,6 +377,7 @@ function renderRewriteCanvas(state) {
     <main class="zunyi-rewrite-canvas" style="--zunyi-rewrite-bg: url('${scene.image}')">
       <div class="zunyi-rewrite-canvas__bg" aria-hidden="true"></div>
       <div class="zunyi-rewrite-canvas__shade" aria-hidden="true"></div>
+      ${scene.game === "record" ? renderMeetingSpeakerBubble(state) : ""}
       <section class="${noteClass}" aria-label="遵义会议记录互动">
         <p>${scene.label}</p>
         <h2>${scene.title}</h2>
@@ -321,16 +388,36 @@ function renderRewriteCanvas(state) {
   `;
 }
 
+function renderMeetingSpeakerBubble(state) {
+  const record = MEETING_RECORDS[state.meetingRecordIndex];
+  if (!["lesson", "command", "direction"].includes(record?.id)) return "";
+  const positionClass = record.id === "command"
+    ? "zunyi-meeting-speaker-bubble--left"
+    : record.id === "direction"
+      ? "zunyi-meeting-speaker-bubble--right"
+      : "zunyi-meeting-speaker-bubble--center";
+
+  return `
+    <article class="zunyi-meeting-speaker-bubble ${positionClass}" aria-label="${record.speaker}">
+      <small>${record.speaker}</small>
+      <strong>${record.line}</strong>
+    </article>
+  `;
+}
+
 function renderMeetingRecordGame(state) {
   const record = MEETING_RECORDS[state.meetingRecordIndex];
-  const completed = state.meetingRecords.length >= MEETING_RECORDS.length;
+  const completed = state.meetingRecords.length >= MEETING_RECORDS.length && !state.activeSourceCard;
 
   if (completed) {
     return `
       <div class="zunyi-record-game">
         <div class="zunyi-record-game__paper">
           <strong>会议记录纸</strong>
+          <b class="zunyi-record-game__status">会议记录完成</b>
           ${MEETING_RECORDS.map((item) => `<em class="is-written">${item.written}</em>`).join("")}
+          ${renderArchivedSourceTags(state)}
+          <b class="zunyi-record-game__stamp">记录归档</b>
         </div>
         <small class="zunyi-record-game__feedback">你把关键判断记录完整了：这场会议正在把危急局面中的问题、原因和方向写清楚。</small>
         <button type="button" data-finish-rewrite>收好记录纸</button>
@@ -340,21 +427,161 @@ function renderMeetingRecordGame(state) {
 
   return `
     <div class="zunyi-record-game">
-      <article class="zunyi-record-game__speech">
-        <small>${record.speaker}</small>
-        <strong>${record.line}</strong>
-      </article>
-      <div class="zunyi-record-game__choices" aria-label="选择记录重点">
-        ${record.choices.map((choice) => `<button type="button" data-record-choice="${choice}">${choice}</button>`).join("")}
-      </div>
+      ${["lesson", "command", "direction"].includes(record.id) ? "" : `
+        <article class="zunyi-record-game__speech">
+          <small>${record.speaker}</small>
+          <strong>${record.line}</strong>
+        </article>
+      `}
+      ${state.activeSourceCard ? renderSourceCard(state.activeSourceCard) : `
+        <div class="zunyi-record-game__choices" aria-label="选择记录重点">
+          ${record.choices.map((choice) => `<button type="button" data-record-choice="${choice}">${choice}</button>`).join("")}
+        </div>
+      `}
       <div class="zunyi-record-game__paper">
         <strong>会议记录纸</strong>
         ${MEETING_RECORDS.map((item) => {
           const written = state.meetingRecords.includes(item.id);
-          return `<em class="${written ? "is-written" : ""}">${written ? item.written : "等待记录..."}</em>`;
+          const fresh = state.lastWrittenRecord === item.id;
+          return `<em class="${written ? "is-written" : ""} ${fresh ? "is-fresh-written" : ""}">${written ? item.written : "等待记录..."}</em>`;
         }).join("")}
+        ${renderArchivedSourceTags(state)}
       </div>
       <small class="zunyi-record-game__feedback">${state.recordFeedback}</small>
+    </div>
+  `;
+}
+
+function renderArchivedSourceTags(state) {
+  if (!state.archivedSources.length) return "";
+
+  return `
+    <div class="zunyi-record-game__archives" aria-label="已归档史料">
+      ${state.archivedSources.map((id, index) => {
+        const item = MEETING_RECORDS.find((record) => record.id === id);
+        return `<span>史料${index + 1}已归档：${item?.sourceCard.title || "相关史料"}</span>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderSourceCard(card) {
+  return `
+    <article class="zunyi-source-card" aria-label="史料补充">
+      <button class="zunyi-source-card__image" type="button" data-zoom-source-card aria-label="放大查看史料">
+        <img src="${card.image}" alt="" />
+        <span>点击放大查看</span>
+      </button>
+      <div class="zunyi-source-card__body">
+        <small>史料补充</small>
+        <h3>${card.title}</h3>
+        <p>${card.text}</p>
+        <span class="zunyi-source-card__tip">点左侧图片可放大查看史料</span>
+        <button type="button" data-collect-source-card>收进记录夹</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderSourceCardZoom(card) {
+  const image = card.zoomImage || card.image;
+
+  return `
+    <div class="zunyi-source-zoom" role="dialog" aria-modal="true" aria-label="史料放大查看">
+      <button class="zunyi-source-zoom__backdrop" type="button" data-close-source-zoom aria-label="关闭史料查看"></button>
+      <article class="zunyi-source-zoom__card">
+        <button class="zunyi-source-zoom__close" type="button" data-close-source-zoom aria-label="关闭史料查看">关闭</button>
+        <div class="zunyi-source-zoom__image" style="background-image: url('${image}')"></div>
+        <div class="zunyi-source-zoom__body">
+          <small>史料补充</small>
+          <h2>${card.title}</h2>
+          ${renderSourceDetail(card)}
+        </div>
+      </article>
+    </div>
+  `;
+}
+
+function renderSourceDetail(card) {
+  return `
+    <div class="zunyi-source-detail">
+      <section>
+        <h3>史料名称</h3>
+        <p>${card.sourceName}</p>
+      </section>
+      <section>
+        <h3>原文摘录</h3>
+        <blockquote>“${card.excerpt}”</blockquote>
+        <cite>——${card.credit}</cite>
+      </section>
+      <p class="zunyi-source-detail__note">${card.note}</p>
+    </div>
+  `;
+}
+
+function renderArchiveFragment(fragment) {
+  return `
+    <div class="archive-fragment" role="dialog" aria-modal="true" aria-label="获得档案碎片">
+      <div class="archive-fragment__card">
+        <p class="archive-fragment__eyebrow">获得档案碎片</p>
+        ${renderArchiveFragmentPiece(fragment, "paper")}
+        <h2>${fragment.title}</h2>
+        <p class="archive-fragment__text">${fragment.text}</p>
+        ${renderArchiveFragmentGallery(fragment)}
+        <button type="button" data-collect-fragment>收进档案袋</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderArchiveFragmentPiece(fragment, type) {
+  if (fragment.image) {
+    return `
+      <div class="archive-fragment__piece archive-fragment__piece--image archive-fragment__piece--${type}">
+        <img src="${fragment.image}" alt="${fragment.title}" />
+      </div>
+    `;
+  }
+
+  return `
+    <div class="archive-fragment__piece archive-fragment__piece--${type}">
+      <span>${fragment.mark}</span>
+    </div>
+  `;
+}
+
+function renderArchiveFragmentGallery(fragment) {
+  if (!fragment.gallery?.length) return "";
+
+  return `
+    <div class="archive-fragment__gallery" aria-label="会址云端一览">
+      <small>会址云端一览</small>
+      <p>点击图片，可以放大查看会址与记录细节。</p>
+      <div>
+        ${fragment.gallery.map((item, index) => `
+          <figure>
+            <button type="button" data-archive-image="${index}" aria-label="放大查看${item.title}">
+              <img src="${item.image}" alt="${item.title}" />
+            </button>
+            <figcaption>${item.title}</figcaption>
+          </figure>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderArchiveImageZoom(item) {
+  const image = item.zoomImage || item.image;
+
+  return `
+    <div class="archive-image-zoom" role="dialog" aria-modal="true" aria-label="${item.title}放大查看">
+      <button class="archive-image-zoom__backdrop" type="button" data-close-archive-image aria-label="关闭图片查看"></button>
+      <article class="archive-image-zoom__card">
+        <button class="archive-image-zoom__close" type="button" data-close-archive-image aria-label="关闭图片查看">关闭</button>
+        <img src="${image}" alt="${item.title}" />
+        <p>${item.title}</p>
+      </article>
     </div>
   `;
 }
@@ -571,10 +798,12 @@ function attachEvents(root, state) {
     state.completed.add("intro");
     state.step = "rewrite";
     state.showVideo = false;
+    resumeBgmAfterMedia();
     render(root, state);
   });
 
   root.querySelector("[data-show-video]")?.addEventListener("click", () => {
+    suspendBgmForMedia();
     state.showVideo = true;
     render(root, state);
   });
@@ -582,6 +811,7 @@ function attachEvents(root, state) {
   root.querySelectorAll("[data-close-video]").forEach((button) => {
     button.addEventListener("click", () => {
       state.showVideo = false;
+      resumeBgmAfterMedia();
       render(root, state);
     });
   });
@@ -599,23 +829,72 @@ function attachEvents(root, state) {
   root.querySelectorAll("[data-record-choice]").forEach((button) => {
     button.addEventListener("click", () => {
       const record = MEETING_RECORDS[state.meetingRecordIndex];
-      if (!record) return;
+      if (!record || state.activeSourceCard) return;
 
       if (button.dataset.recordChoice !== record.answer) {
-        state.recordFeedback = "这条还不是发言里最关键的意思。再听一遍，重点在会议要解决的问题和方向。";
+        state.recordFeedback = record.wrongFeedback || "这条还不是发言里最关键的意思。再听一遍，重点在会议要解决的问题和方向。";
         render(root, state);
         return;
       }
 
       state.meetingRecords.push(record.id);
-      state.meetingRecordIndex = Math.min(MEETING_RECORDS.length, state.meetingRecordIndex + 1);
-      state.recordFeedback = "记录正确。继续听下一句发言。";
+      state.lastWrittenRecord = record.id;
+      state.activeSourceCard = record.sourceCard;
+      state.recordFeedback = "记录正确。先把这份相关史料收进记录夹。";
+      render(root, state);
+    });
+  });
+
+  root.querySelector("[data-collect-source-card]")?.addEventListener("click", () => {
+    const currentRecord = MEETING_RECORDS[state.meetingRecordIndex];
+    if (currentRecord && !state.archivedSources.includes(currentRecord.id)) {
+      state.archivedSources.push(currentRecord.id);
+    }
+    state.activeSourceCard = null;
+    state.zoomSourceCard = null;
+    state.meetingRecordIndex = Math.min(MEETING_RECORDS.length, state.meetingRecordIndex + 1);
+    state.recordFeedback = state.meetingRecordIndex >= MEETING_RECORDS.length
+      ? "三份史料已经归档，会议记录可以收好了。"
+      : "史料已归档。继续听下一句发言。";
+    render(root, state);
+  });
+
+  root.querySelector("[data-zoom-source-card]")?.addEventListener("click", () => {
+    state.zoomSourceCard = state.activeSourceCard;
+    render(root, state);
+  });
+
+  root.querySelectorAll("[data-close-source-zoom]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.zoomSourceCard = null;
+      render(root, state);
+    });
+  });
+
+  root.querySelectorAll("[data-archive-image]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const image = ZUNYI_FRAGMENT.gallery?.[Number(button.dataset.archiveImage)];
+      if (!image) return;
+      state.zoomArchiveImage = image;
+      render(root, state);
+    });
+  });
+
+  root.querySelectorAll("[data-close-archive-image]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.zoomArchiveImage = null;
       render(root, state);
     });
   });
 
   root.querySelector("[data-finish-rewrite]")?.addEventListener("click", () => {
     state.completed.add("rewrite");
+    state.showFragment = true;
+    render(root, state);
+  });
+
+  root.querySelector("[data-collect-fragment]")?.addEventListener("click", () => {
+    saveArchiveFragment(ZUNYI_FRAGMENT.id);
     state.resolve();
   });
 
@@ -683,8 +962,18 @@ function attachEvents(root, state) {
 
   root.querySelector("[data-finish]")?.addEventListener("click", () => {
     state.completed.add("route");
-    state.resolve();
+    state.showFragment = true;
+    render(root, state);
   });
+}
+
+function saveArchiveFragment(id) {
+  const key = "huozi.archiveFragments";
+  const fragments = JSON.parse(window.localStorage.getItem(key) || "[]");
+  if (!fragments.includes(id)) {
+    fragments.push(id);
+    window.localStorage.setItem(key, JSON.stringify(fragments));
+  }
 }
 
 function placeSelectedCard(root, state, zoneId) {
