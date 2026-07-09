@@ -31,6 +31,7 @@ export function renderCampaignAction3d(root, level, config) {
               <div class="campaign-3d__letter-lines" id="campaign-letter-lines"></div>
               <p class="campaign-3d__letter-source" id="campaign-letter-source"></p>
               <p class="campaign-3d__letter-timer" id="campaign-letter-timer"></p>
+              <button class="campaign-3d__letter-continue" type="button" id="campaign-letter-continue">收好继续</button>
             </div>
           </div>
 
@@ -44,7 +45,10 @@ export function renderCampaignAction3d(root, level, config) {
             <p class="history-intro__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
             <h2 class="history-intro__title">${level.title}</h2>
             <p class="history-intro__text">${level.scenario}</p>
-            <button type="button" id="campaign-start">${config.introButton}</button>
+            <div class="campaign-3d__intro-actions">
+              <button type="button" id="campaign-start">${config.introButton}</button>
+              <button type="button" id="campaign-skip">直接查看档案</button>
+            </div>
           </div>
         </div>
       </div>
@@ -64,9 +68,11 @@ export function renderCampaignAction3d(root, level, config) {
       letterLines: root.querySelector("#campaign-letter-lines"),
       letterSource: root.querySelector("#campaign-letter-source"),
       letterTimer: root.querySelector("#campaign-letter-timer"),
+      letterContinue: root.querySelector("#campaign-letter-continue"),
       controls: root.querySelector("#campaign-controls"),
       intro: root.querySelector("#campaign-intro"),
       start: root.querySelector("#campaign-start"),
+      skip: root.querySelector("#campaign-skip"),
     };
 
     const stage = createCampaignStage(nodes.canvas, config);
@@ -95,6 +101,18 @@ export function renderCampaignAction3d(root, level, config) {
       showHint("沿路收齐物品后再冲向终点；方向警示出现时及时闪避");
       scheduleHazard();
       window.addEventListener("keydown", onKeyDown);
+    }
+
+    function skipMission() {
+      finished = true;
+      active = false;
+      clearTimeout(hazardTimeout);
+      clearTimeout(letterTimeout);
+      clearInterval(letterInterval);
+      clearHazard();
+      window.removeEventListener("keydown", onKeyDown);
+      stage.cleanup();
+      resolve("skipped");
     }
 
     function updateHud() {
@@ -190,15 +208,20 @@ export function renderCampaignAction3d(root, level, config) {
       updateTimer();
       letterInterval = setInterval(updateTimer, 200);
       letterTimeout = setTimeout(() => {
-        clearInterval(letterInterval);
-        nodes.letter.hidden = true;
-        pausedForLetter = false;
-        stage.setActive(true);
-        setControlsDisabled(false);
-        showCaption(`收好：${item.name}`, "collect", 1300);
-        showHint("继续沿草地向桥头前进");
-        scheduleHazard();
+        closeLetter(item);
       }, 5000);
+    }
+
+    function closeLetter(item) {
+      clearTimeout(letterTimeout);
+      clearInterval(letterInterval);
+      nodes.letter.hidden = true;
+      pausedForLetter = false;
+      stage.setActive(true);
+      setControlsDisabled(false);
+      showCaption(`收好：${item.name}`, "collect", 1300);
+      showHint("继续向桥头前进");
+      scheduleHazard();
     }
 
     function hasAllArtifacts() {
@@ -333,6 +356,11 @@ export function renderCampaignAction3d(root, level, config) {
     }
 
     nodes.start.addEventListener("click", startMission);
+    nodes.skip.addEventListener("click", skipMission);
+    nodes.letterContinue.addEventListener("click", () => {
+      const item = collectibles.find((entry) => entry.kind === "letter" && collectedArtifacts.has(entry.id));
+      if (item && pausedForLetter) closeLetter(item);
+    });
     nodes.controls.querySelectorAll("[data-command]").forEach((button) => {
       button.addEventListener("click", () => {
         const command = button.dataset.command;
@@ -354,6 +382,10 @@ function createCampaignStage(canvas, config) {
   camera.position.set(0, 1.08, 2.35);
   camera.lookAt(0, 0.84, -1.85);
   scene.add(camera);
+
+  const nearFill = new THREE.PointLight(0xffd6a0, 0.72, 4.2);
+  nearFill.position.set(0, 0.74, 0.18);
+  camera.add(nearFill);
 
   const objects = {
     animated: [],
@@ -500,8 +532,10 @@ function createFirstPersonRig() {
   group.position.set(0, -0.43, -0.75);
   const robeMaterial = new THREE.MeshStandardMaterial({ color: 0x5b1718, roughness: 0.8 });
   const armorMaterial = new THREE.MeshStandardMaterial({ color: 0x15191d, metalness: 0.36, roughness: 0.44 });
+  const scaleMaterial = new THREE.MeshStandardMaterial({ color: 0x22282b, metalness: 0.5, roughness: 0.34 });
   const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xd6a27a, roughness: 0.68 });
   const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xc8a04c, metalness: 0.58, roughness: 0.32 });
+  const wrapMaterial = new THREE.MeshStandardMaterial({ color: 0x765d45, roughness: 0.82 });
 
   [-1, 1].forEach((side) => {
     const upperArm = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.12, 0.44), armorMaterial);
@@ -518,6 +552,22 @@ function createFirstPersonRig() {
     bracer.position.set(side * 0.18, -0.26, -0.74);
     bracer.rotation.set(1.16, side * 0.18, side * 0.2);
     group.add(bracer);
+
+    for (let row = 0; row < 3; row += 1) {
+      for (let col = 0; col < 3; col += 1) {
+        const scale = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.018, 0.055), scaleMaterial);
+        scale.position.set(side * (0.19 + col * 0.025), -0.19 - row * 0.04, -0.61 - row * 0.025);
+        scale.rotation.set(1.1, side * 0.1, side * 0.24);
+        group.add(scale);
+      }
+    }
+
+    for (let i = 0; i < 3; i += 1) {
+      const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.083 - i * 0.004, 0.006, 6, 18), wrapMaterial);
+      wrap.position.set(side * 0.18, -0.21 - i * 0.045, -0.73 + i * 0.012);
+      wrap.rotation.set(1.17, side * 0.18, side * 0.2);
+      group.add(wrap);
+    }
 
     const hand = new THREE.Mesh(new THREE.SphereGeometry(0.085, 14, 10), skinMaterial);
     hand.scale.set(1, 0.68, 1.25);
@@ -782,9 +832,13 @@ function createSoldier(scale = 1) {
   const robeDarkMaterial = new THREE.MeshStandardMaterial({ color: 0x351014, roughness: 0.82 });
   const armorMaterial = new THREE.MeshStandardMaterial({ color: 0x171b1f, metalness: 0.38, roughness: 0.42 });
   const helmetMaterial = new THREE.MeshStandardMaterial({ color: 0x262a2d, metalness: 0.48, roughness: 0.36 });
+  const scaleMaterial = new THREE.MeshStandardMaterial({ color: 0x23282b, metalness: 0.52, roughness: 0.32 });
   const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xc9a14c, metalness: 0.72, roughness: 0.28 });
   const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xd6a27a, roughness: 0.66 });
   const plumeMaterial = new THREE.MeshStandardMaterial({ color: 0xaa2c25, roughness: 0.62 });
+  const leatherMaterial = new THREE.MeshStandardMaterial({ color: 0x4b3020, roughness: 0.78 });
+  const canvasMaterial = new THREE.MeshStandardMaterial({ color: 0x6d5b3b, roughness: 0.86 });
+  const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x17110d });
 
   function addMesh(mesh, position, rotation = null) {
     mesh.position.set(position[0] * scale, position[1] * scale, position[2] * scale);
@@ -812,19 +866,63 @@ function createSoldier(scale = 1) {
   const belt = new THREE.Mesh(new THREE.BoxGeometry(0.37 * scale, 0.055 * scale, 0.08 * scale), armorMaterial);
   addMesh(belt, [0, 0.28, -0.02]);
 
+  const beltBuckle = new THREE.Mesh(new THREE.BoxGeometry(0.06 * scale, 0.04 * scale, 0.018 * scale), goldMaterial);
+  addMesh(beltBuckle, [0, 0.28, -0.072]);
+
+  for (let row = 0; row < 4; row += 1) {
+    const cols = row % 2 === 0 ? 4 : 5;
+    for (let col = 0; col < cols; col += 1) {
+      const x = (col - (cols - 1) / 2) * 0.055;
+      const y = 0.57 - row * 0.07;
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(0.047 * scale, 0.052 * scale, 0.014 * scale), scaleMaterial);
+      addMesh(plate, [x, y, -0.151], [0.05, 0, (col - (cols - 1) / 2) * 0.035]);
+      const lowerLip = new THREE.Mesh(new THREE.BoxGeometry(0.043 * scale, 0.006 * scale, 0.018 * scale), goldMaterial);
+      addMesh(lowerLip, [x, y - 0.024, -0.161]);
+    }
+  }
+
+  for (let row = 0; row < 3; row += 1) {
+    for (let col = 0; col < 4; col += 1) {
+      const x = (col - 1.5) * 0.058;
+      const y = 0.53 - row * 0.065;
+      const backPlate = new THREE.Mesh(new THREE.BoxGeometry(0.046 * scale, 0.05 * scale, 0.014 * scale), scaleMaterial);
+      addMesh(backPlate, [x, y, 0.142], [-0.05, 0, (col - 1.5) * 0.028]);
+      const backLip = new THREE.Mesh(new THREE.BoxGeometry(0.04 * scale, 0.006 * scale, 0.018 * scale), goldMaterial);
+      addMesh(backLip, [x, y - 0.023, 0.153]);
+    }
+  }
+
   [-0.07, 0.07].forEach((x) => {
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.025 * scale, 0.03 * scale, 0.26 * scale, 8), armorMaterial);
     addMesh(leg, [x, -0.15, 0]);
+    for (let i = 0; i < 3; i += 1) {
+      const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.033 * scale, 0.0045 * scale, 6, 16), leatherMaterial);
+      addMesh(wrap, [x, -0.07 - i * 0.055, 0], [Math.PI / 2, 0, 0]);
+    }
     const boot = new THREE.Mesh(new THREE.BoxGeometry(0.07 * scale, 0.035 * scale, 0.12 * scale), armorMaterial);
     addMesh(boot, [x, -0.29, -0.035]);
+    const bootStrap = new THREE.Mesh(new THREE.BoxGeometry(0.075 * scale, 0.01 * scale, 0.125 * scale), leatherMaterial);
+    addMesh(bootStrap, [x, -0.265, -0.035]);
   });
 
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.105 * scale, 16, 10), skinMaterial);
   addMesh(head, [0, 0.69, -0.015]);
 
+  [-0.035, 0.035].forEach((x) => {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.009 * scale, 8, 6), eyeMaterial);
+    addMesh(eye, [x, 0.705, -0.108]);
+  });
+
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.013 * scale, 0.04 * scale, 8), skinMaterial);
+  addMesh(nose, [0, 0.68, -0.125], [Math.PI / 2, 0, 0]);
+
   const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.128 * scale, 16, 8), helmetMaterial);
   helmet.scale.y = 0.62;
   addMesh(helmet, [0, 0.77, -0.005]);
+
+  const helmetBand = new THREE.Mesh(new THREE.TorusGeometry(0.118 * scale, 0.01 * scale, 8, 30), armorMaterial);
+  helmetBand.scale.y = 0.38;
+  addMesh(helmetBand, [0, 0.753, -0.006], [Math.PI / 2, 0, 0]);
 
   const visor = new THREE.Mesh(new THREE.BoxGeometry(0.2 * scale, 0.035 * scale, 0.028 * scale), armorMaterial);
   addMesh(visor, [0, 0.735, -0.115]);
@@ -849,6 +947,11 @@ function createSoldier(scale = 1) {
   [-1, 1].forEach((side) => {
     const shoulder = new THREE.Mesh(new THREE.BoxGeometry(0.15 * scale, 0.07 * scale, 0.12 * scale), armorMaterial);
     addMesh(shoulder, [side * 0.18, 0.58, -0.01], [0, 0, side * 0.18]);
+
+    for (let i = 0; i < 3; i += 1) {
+      const shoulderScale = new THREE.Mesh(new THREE.BoxGeometry(0.13 * scale, 0.028 * scale, 0.105 * scale), scaleMaterial);
+      addMesh(shoulderScale, [side * 0.19, 0.55 - i * 0.03, -0.02], [0, side * 0.04, side * (0.22 + i * 0.05)]);
+    }
 
     const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.035 * scale, 0.04 * scale, 0.34 * scale, 8), armorMaterial);
     addMesh(upperArm, [side * 0.255, 0.43, -0.01], [0, 0, side * 0.66]);
@@ -890,6 +993,29 @@ function createSoldier(scale = 1) {
     const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.04 * scale, 0.13 * scale, 0.035 * scale), fringeMaterial);
     addMesh(fringe, [x, -0.19, -0.075]);
   });
+
+  const bedroll = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * scale, 0.07 * scale, 0.32 * scale, 12), canvasMaterial);
+  addMesh(bedroll, [0, 0.45, 0.145], [0, 0, Math.PI / 2]);
+
+  [-0.08, 0.08].forEach((x) => {
+    const rollStrap = new THREE.Mesh(new THREE.TorusGeometry(0.071 * scale, 0.005 * scale, 6, 16), leatherMaterial);
+    addMesh(rollStrap, [x, 0.45, 0.145], [0, Math.PI / 2, 0]);
+  });
+
+  [-1, 1].forEach((side) => {
+    const shoulderStrap = new THREE.Mesh(new THREE.BoxGeometry(0.035 * scale, 0.42 * scale, 0.018 * scale), leatherMaterial);
+    addMesh(shoulderStrap, [side * 0.105, 0.38, 0.155], [0, 0, side * 0.18]);
+    for (let i = 0; i < 3; i += 1) {
+      const strapRivet = new THREE.Mesh(new THREE.SphereGeometry(0.008 * scale, 8, 6), goldMaterial);
+      addMesh(strapRivet, [side * 0.11, 0.49 - i * 0.09, 0.168]);
+    }
+  });
+
+  const rifleStock = new THREE.Mesh(new THREE.BoxGeometry(0.035 * scale, 0.09 * scale, 0.12 * scale), leatherMaterial);
+  addMesh(rifleStock, [-0.18, 0.34, 0.12], [0.18, 0.18, -0.55]);
+
+  const rifleBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * scale, 0.008 * scale, 0.64 * scale, 8), armorMaterial);
+  addMesh(rifleBarrel, [-0.12, 0.56, 0.1], [0.62, 0.16, -0.58]);
 
   return group;
 }
