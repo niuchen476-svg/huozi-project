@@ -34,18 +34,14 @@ function loadAction3dModule(levelId) {
 
 export function preloadLevelResources(levelId) {
   preloadLevel(levelId);
-  if (levelId === "ruijin-departure" || levelId === "xiangjiang-battle") {
-    loadAction3dModule(levelId)?.catch(() => {
-      delete actionSceneModulePromises[levelId];
-    });
-  }
   if (levelId === "luding-bridge") {
     preloadBridgeActionAssets();
   }
 }
 
 const POEM_FORMS = ["七律", "绝句", "词"];
-const REPLAY_ACTION_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle", "luding-bridge"]);
+const DIRECT_ENTRY_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle"]);
+const REPLAY_ACTION_LEVELS = new Set(["luding-bridge"]);
 
 const SPECIAL_CHALLENGES = {
   "ruijin-departure": {
@@ -106,7 +102,7 @@ export async function renderLevelView(root, levelId) {
     return;
   }
 
-  const actionScene = ACTION_SCENES[levelId];
+  const actionScene = DIRECT_ENTRY_LEVELS.has(levelId) ? null : ACTION_SCENES[levelId];
   const replayAction = REPLAY_ACTION_LEVELS.has(levelId) || levelId === "zunyi-turn";
   const playedAction = actionScene && (replayAction || !hasCrossedBridge(levelId));
 

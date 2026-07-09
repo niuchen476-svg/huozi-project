@@ -3,6 +3,7 @@ import { getProgress } from "../state.js";
 import { preloadLevelResources } from "./level.js";
 
 const MAP_IMAGE_SRC = "assets/map/route.jpg";
+const INSTANT_ENTRY_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle"]);
 
 // 坐标为在地图图片中的百分比位置（横向 x% / 纵向 y%），对应图上的星标/地名：
 // 瑞金 → 湘江战役 → 遵义会议 → 四渡赤水（标签处）→ 强渡大渡河/飞夺泸定桥 → 翻越夹金山/两河口会议 → 会宁会师
@@ -68,9 +69,13 @@ export async function renderMapView(root) {
     });
   });
 
+  sorted
+    .filter((level) => INSTANT_ENTRY_LEVELS.has(level.id) && statusById[level.id] !== "locked")
+    .forEach((level) => preloadLevelResources(level.id));
+
   idle(() => {
     sorted
-      .filter((level) => statusById[level.id] !== "locked")
+      .filter((level) => statusById[level.id] !== "locked" && !INSTANT_ENTRY_LEVELS.has(level.id))
       .forEach((level) => preloadLevelResources(level.id));
   });
 }
