@@ -26,9 +26,12 @@ const NARRATIVE_BEATS = [
   { at: 68, text: "敌人点燃了桥头的煤油和木板——大火封住了最后一段路" },
 ];
 
-const HIT_LINES = ["一名战士中弹，坠入湍急的大渡河", "小心！", "撑住，就快到了！"];
+const ATTACK_DIRECTIONS = {
+  left: { arrow: "←", label: "敌军向左扫射", escape: "right", escapeLabel: "向右躲" },
+  right: { arrow: "→", label: "敌军向右扫射", escape: "left", escapeLabel: "向左躲" },
+};
 
-const HIT_LIMIT = 3;
+const HIT_LIMIT = 1;
 const ADVANCE_STEP = 3.2;
 const ADVANCE_COOLDOWN_MS = 260;
 const DODGE_WINDOW_MS = 850;
@@ -66,8 +69,18 @@ export function renderBridgeAction(root, level) {
           </div>
 
           <div class="bridge-warning" id="bridge-warning" hidden></div>
+          <div class="bridge-attack" id="bridge-attack" hidden>
+            <span>敌军攻击方向</span>
+            <strong id="bridge-attack-arrow">→</strong>
+            <small id="bridge-attack-help">向反方向躲避</small>
+          </div>
           <div class="bridge-caption" id="bridge-caption" hidden></div>
           <div class="bridge-hint" id="bridge-hint" hidden></div>
+          <div class="bridge-controls" id="bridge-controls" hidden aria-label="过桥键盘">
+            <button type="button" data-bridge-command="left" aria-label="向左躲">←</button>
+            <button class="bridge-controls__advance" type="button" data-bridge-command="advance">前进</button>
+            <button type="button" data-bridge-command="right" aria-label="向右躲">→</button>
+          </div>
 
           <div class="history-intro" id="history-intro">
             <p class="history-intro__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
@@ -111,7 +124,7 @@ export function renderBridgeAction(root, level) {
             <div class="bridge-instruction__card">
               <p>行动说明</p>
               <h3>你已经爬上了铁索。</h3>
-              <span>作为突击队员的你现在有 3 格体力值。用键盘上的左右箭头躲避来自不同方向的火力，按空格表示前进。希望你能成功到达对岸，帮助大家摆脱眼前的困境。</span>
+              <span>按空格或右下角“前进”沿铁索爬行。顶部出现敌军攻击箭头时，立刻按反方向键躲避：箭头向左就向右逃，箭头向右就向左逃。没躲开就要重新过桥。</span>
               <button type="button" id="bridge-instruction-start">开始爬行</button>
             </div>
           </div>
@@ -258,18 +271,23 @@ function startCrossing(resolve) {
   const progressFill = document.querySelector("#bridge-progress-fill");
   const hitsEl = document.querySelector("#bridge-hits");
   const warningEl = document.querySelector("#bridge-warning");
+  const attackEl = document.querySelector("#bridge-attack");
+  const attackArrowEl = document.querySelector("#bridge-attack-arrow");
+  const attackHelpEl = document.querySelector("#bridge-attack-help");
   const captionEl = document.querySelector("#bridge-caption");
   const hintEl = document.querySelector("#bridge-hint");
+  const controlsEl = document.querySelector("#bridge-controls");
 
   squadSelect.remove();
   hud.hidden = false;
   crossingPath.hidden = false;
+  controlsEl.hidden = false;
   bg.classList.add("bridge-scene__bg--sway");
 
   let progress = 0;
   let hits = 0;
   let finished = false;
-  let awaitingDodge = null; // "left" | "right" | null
+  let awaitingDodge = null; // { attackDirection: "left" | "right", escapeDirection: "left" | "right" } | null
   let dodgeTimeout = null;
   let fireTimeout = null;
   let firedCount = 0;
@@ -278,7 +296,7 @@ function startCrossing(resolve) {
 
   function updateHud() {
     progressFill.style.width = `${progress}%`;
-    hitsEl.textContent = "●".repeat(HIT_LIMIT - hits) + "○".repeat(hits);
+    hitsEl.textContent = hits ? "重新过桥" : "失误即重来";
     crawler.style.setProperty("--bridge-progress", progress);
 
     const frame = [...KEYFRAMES].reverse().find((k) => progress >= k.at);
@@ -342,29 +360,39 @@ function startCrossing(resolve) {
   function fireShot() {
     if (finished) return;
     firedCount += 1;
-    const side = Math.random() < 0.5 ? "left" : "right";
-    awaitingDodge = side;
+    const attackDirection = Math.random() < 0.5 ? "left" : "right";
+    const attack = ATTACK_DIRECTIONS[attackDirection];
+    awaitingDodge = {
+      attackDirection,
+      escapeDirection: attack.escape,
+    };
+    attackEl.className = `bridge-attack bridge-attack--${attackDirection}`;
+    attackArrowEl.textContent = attack.arrow;
+    attackHelpEl.textContent = `${attack.label}，${attack.escapeLabel}`;
+    attackEl.hidden = false;
     warningEl.hidden = false;
-    warningEl.className = `bridge-warning bridge-warning--${side}`;
-    warningEl.textContent = side === "left" ? "◀ 左侧火力，按 ←" : "右侧火力，按 → ▶";
+    warningEl.className = `bridge-warning bridge-warning--${attack.escape}`;
+    warningEl.textContent = `${attack.arrow} 敌军攻击，按${attack.escape === "left" ? " ← " : " → "}反方向逃`;
     crawler.classList.add("bridge-crawler--brace");
 
     dodgeTimeout = setTimeout(() => {
       if (awaitingDodge) {
-        registerHit();
+        registerHit("没来得及反方向躲开，重新过桥！");
+        return;
       }
       warningEl.hidden = true;
+      attackEl.hidden = true;
       awaitingDodge = null;
       crawler.classList.remove("bridge-crawler--brace");
       scheduleFire();
     }, DODGE_WINDOW_MS);
   }
 
-  function registerHit() {
+  function registerHit(message = "被火力扫中，重新过桥！") {
     hits += 1;
     scene.classList.add("bridge-scene--flash");
     setTimeout(() => scene.classList.remove("bridge-scene--flash"), 200);
-    showCaption(HIT_LINES[Math.floor(Math.random() * HIT_LINES.length)], "hit", 1800);
+    showCaption(message, "hit", 1800);
     spawnFallingTeammate();
     updateHud();
 
@@ -378,7 +406,8 @@ function startCrossing(resolve) {
     clearTimeout(fireTimeout);
     clearTimeout(dodgeTimeout);
     warningEl.hidden = true;
-    showCaption("冲锋受阻，敢死队重新集结——再来一次", "fail", 2200);
+    attackEl.hidden = true;
+    showCaption("冲锋受阻，突击队重新集结——再过一次桥", "fail", 2200);
     setTimeout(() => {
       progress = 0;
       hits = 0;
@@ -388,7 +417,7 @@ function startCrossing(resolve) {
       lastAdvanceAt = 0;
       updateHud();
       scheduleFire();
-      showHint("一下一下按空格爬行；火力出现时先按方向键闪避");
+      showHint("继续前进；看到顶部箭头时，按反方向躲避");
     }, 2400);
   }
 
@@ -397,7 +426,12 @@ function startCrossing(resolve) {
     clearTimeout(fireTimeout);
     clearTimeout(dodgeTimeout);
     warningEl.hidden = true;
+    attackEl.hidden = true;
+    controlsEl.hidden = true;
     window.removeEventListener("keydown", onKeyDown);
+    controlsEl.querySelectorAll("[data-bridge-command]").forEach((button) => {
+      button.removeEventListener("click", onControlClick);
+    });
     bg.classList.remove("bridge-scene__bg--sway");
     bg.style.backgroundImage = `url(${VICTORY_IMAGE})`;
     showCaption("两小时激战，泸定城，拿下了。", "victory", 2600);
@@ -407,46 +441,79 @@ function startCrossing(resolve) {
     setTimeout(resolve, 4600);
   }
 
+  function advance() {
+    if (finished) return;
+
+    if (awaitingDodge) {
+      showHint("火力箭头出现了，先按反方向躲开！");
+      return;
+    }
+
+    const now = performance.now();
+    if (now - lastAdvanceAt < ADVANCE_COOLDOWN_MS) return;
+    lastAdvanceAt = now;
+
+    progress = Math.min(100, progress + ADVANCE_STEP);
+    jolt();
+    animateCrawl();
+    updateHud();
+    if (progress >= 100) winCrossing();
+  }
+
+  function dodge(direction) {
+    if (!awaitingDodge || finished) return;
+
+    if (direction !== awaitingDodge.escapeDirection) {
+      clearTimeout(dodgeTimeout);
+      warningEl.hidden = true;
+      attackEl.hidden = true;
+      awaitingDodge = null;
+      crawler.classList.remove("bridge-crawler--brace");
+      registerHit("方向错了！敌军箭头往哪边打，就要往反方向逃。");
+      return;
+    }
+
+    clearTimeout(dodgeTimeout);
+    warningEl.hidden = true;
+    attackEl.hidden = true;
+    awaitingDodge = null;
+    crawler.classList.remove("bridge-crawler--brace");
+    crawler.classList.add(`bridge-crawler--dodge-${direction}`);
+    setTimeout(() => crawler.classList.remove(`bridge-crawler--dodge-${direction}`), 260);
+    showHint("躲开了，继续向前爬！");
+    scheduleFire();
+  }
+
   function onKeyDown(event) {
     if (finished) return;
 
     if (event.code === "Space" || event.key === " ") {
       event.preventDefault();
-      if (event.repeat) return;
-
-      if (awaitingDodge) {
-        showHint("火力封锁中，先按对应方向键闪避！");
-        return;
-      }
-
-      const now = performance.now();
-      if (now - lastAdvanceAt < ADVANCE_COOLDOWN_MS) return;
-      lastAdvanceAt = now;
-
-      progress = Math.min(100, progress + ADVANCE_STEP);
-      jolt();
-      animateCrawl();
-      updateHud();
-      if (progress >= 100) winCrossing();
+      if (!event.repeat) advance();
       return;
     }
 
-    if (awaitingDodge && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
-      const side = event.key === "ArrowLeft" ? "left" : "right";
-      if (side === awaitingDodge) {
-        clearTimeout(dodgeTimeout);
-        warningEl.hidden = true;
-        awaitingDodge = null;
-        crawler.classList.remove("bridge-crawler--brace");
-        showHint("躲开了，继续向前爬！");
-        scheduleFire();
-      }
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault();
+      dodge(event.key === "ArrowLeft" ? "left" : "right");
     }
   }
 
+  function onControlClick(event) {
+    const command = event.currentTarget.dataset.bridgeCommand;
+    if (command === "advance") {
+      advance();
+      return;
+    }
+    dodge(command);
+  }
+
   window.addEventListener("keydown", onKeyDown);
+  controlsEl.querySelectorAll("[data-bridge-command]").forEach((button) => {
+    button.addEventListener("click", onControlClick);
+  });
 
   updateHud();
-  showHint("一下一下按空格爬行；方向警示出现时先闪避");
+  showHint("按空格或右下角前进；顶部箭头出现时按反方向躲避");
   scheduleFire();
 }

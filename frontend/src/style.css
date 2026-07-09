@@ -1110,6 +1110,14 @@ a {
   filter: sepia(0.2) contrast(1.16) brightness(0.86);
 }
 
+.bridge-crawler--dodge-left {
+  transform: translate(-78%, -4px) rotate(-18deg) scale(0.96);
+}
+
+.bridge-crawler--dodge-right {
+  transform: translate(-22%, -4px) rotate(12deg) scale(0.96);
+}
+
 @keyframes bridge-crawl {
   0% {
     transform: translate(-50%, 4px) rotate(-11deg) scale(0.98);
@@ -1181,6 +1189,89 @@ a {
   right: 6%;
 }
 
+.bridge-attack[hidden] {
+  display: none;
+}
+
+.bridge-attack {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  z-index: 24;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: min(360px, calc(100vw - 32px));
+  padding: 10px 18px 12px;
+  color: #fff6d6;
+  background: rgba(38, 22, 16, 0.82);
+  border: 1px solid rgba(242, 201, 76, 0.48);
+  border-radius: 6px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+  animation: bridge-attack-drop 0.18s ease-out both;
+}
+
+.bridge-attack span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #f2c94c;
+}
+
+.bridge-attack strong {
+  font-family: var(--font-serif);
+  font-size: clamp(2.7rem, 9vw, 4.8rem);
+  line-height: 0.9;
+  color: #fff;
+  text-shadow: 0 0 14px rgba(242, 201, 76, 0.66), 0 3px 12px rgba(0, 0, 0, 0.72);
+}
+
+.bridge-attack small {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: rgba(237, 228, 205, 0.9);
+}
+
+.bridge-attack--left strong {
+  animation: bridge-attack-arrow-left 0.5s ease-in-out infinite;
+}
+
+.bridge-attack--right strong {
+  animation: bridge-attack-arrow-right 0.5s ease-in-out infinite;
+}
+
+@keyframes bridge-attack-drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes bridge-attack-arrow-left {
+  0%,
+  100% {
+    transform: translateX(8px);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes bridge-attack-arrow-right {
+  0%,
+  100% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
 @keyframes bridge-warning-pulse {
   0%,
   100% {
@@ -1230,6 +1321,73 @@ a {
   background: rgba(0, 0, 0, 0.4);
   padding: 6px 16px;
   border-radius: 999px;
+}
+
+.bridge-controls[hidden] {
+  display: none;
+}
+
+.bridge-controls {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  z-index: 28;
+  display: grid;
+  grid-template-columns: 52px 76px 52px;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(15, 12, 10, 0.58);
+  border: 1px solid rgba(237, 228, 205, 0.22);
+  border-radius: 8px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+}
+
+.bridge-controls button {
+  height: 50px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: rgba(237, 228, 205, 0.15);
+  border: 1px solid rgba(237, 228, 205, 0.34);
+  border-radius: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bridge-controls button:hover,
+.bridge-controls button:focus-visible {
+  background: rgba(242, 201, 76, 0.28);
+  border-color: rgba(242, 201, 76, 0.78);
+  outline: none;
+}
+
+.bridge-controls button:active {
+  transform: translateY(2px);
+}
+
+.bridge-controls__advance {
+  font-size: 0.98rem !important;
+  letter-spacing: 0.08em;
+  background: rgba(156, 35, 27, 0.76) !important;
+}
+
+@media (max-width: 560px) {
+  .bridge-attack {
+    top: 48px;
+    padding: 8px 12px 10px;
+  }
+
+  .bridge-controls {
+    right: 12px;
+    bottom: 14px;
+    grid-template-columns: 46px 68px 46px;
+    gap: 6px;
+  }
+
+  .bridge-controls button {
+    height: 46px;
+  }
 }
 
 .bridge-teammate-fall {
