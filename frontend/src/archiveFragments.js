@@ -29,7 +29,6 @@ export const ARCHIVE_FRAGMENTS = [
     group: "遵义会议碎片",
     name: "方向碎片",
     visual: "一角会议记录纸，带墨迹和“转折”字样。",
-    image: "/assets/fragments/fragment-zunyi-direction.png",
     rewardText: "你记录下了关键判断。红军在危急关头重新看清方向。",
     mapHint: "地图上从遵义到赤水一段路线变亮，提示“重新争取主动”。",
     fact: "遵义会议集中总结长征初期军事指挥问题，使红军开始重新掌握主动。",
@@ -41,7 +40,6 @@ export const ARCHIVE_FRAGMENTS = [
     group: "飞夺泸定桥碎片",
     name: "铁索碎片",
     visual: "一段铁索和桥板残片。",
-    image: "/assets/fragments/fragment-luding-chain.png",
     rewardText: "你跟随突击队冲过铁索，帮助红军打开前进通道。",
     mapHint: "地图上泸定桥节点亮起，说明队伍突破险关。",
     fact: "飞夺泸定桥打通了红军北上通道，是长征突破险关的重要一战。",
@@ -114,14 +112,6 @@ export function showArchiveFragmentReward(root, levelId) {
 
 export function renderArchiveFragmentVisual(fragment, options = {}) {
   const stateClass = options.collected === false ? " archive-fragment-visual--locked" : "";
-  if (fragment.image) {
-    return `
-      <div class="archive-fragment-visual archive-fragment-visual--image archive-fragment-visual--${fragment.id}${stateClass}" aria-hidden="true">
-        <img src="${fragment.image}" alt="" />
-      </div>
-    `;
-  }
-
   return `
     <div class="archive-fragment-visual archive-fragment-visual--${fragment.id}${stateClass}" aria-hidden="true">
       ${renderFragmentVisualInner(fragment.id)}
