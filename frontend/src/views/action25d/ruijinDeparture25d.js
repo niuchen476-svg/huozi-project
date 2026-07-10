@@ -1,52 +1,95 @@
-import { renderCampaignAction25d } from "./campaignStage25d.js";
-
-const SIDE_LABEL = {
-  left: "左",
-  right: "右",
-};
+import { renderHistoricalMission25d } from "./historicalMission25d.js";
 
 const RUIJIN_MISSION = {
   theme: "ruijin",
-  progressLabel: "桥头距离",
-  integrityLabel: "隐蔽",
-  goalLabel: "木板渡桥",
-  introButton: "从草地出发",
-  advanceLabel: "沿草地前进",
-  dodgeLine: "队伍贴着山影绕开了灯束",
-  failLine: "探照灯扫到队伍，必须退回林线重新隐蔽",
-  winLines: ["前方木板渡桥已经搭好，队伍刚好赶到桥头。", "收齐物品，跟上前队，开始过桥。"],
-  hitLines: ["灯束擦过队尾，行军速度被迫放慢", "封锁线枪声逼近，队伍短暂散开", "物资车陷进泥地，后队停下了脚步"],
-  warning: (side) => `探照灯扫向${SIDE_LABEL[side]}侧，按 ${side === "left" ? "←" : "→"} 绕行`,
-  beats: [
-    { at: 8, text: "你在队伍中间，脚下还是湿草和泥土" },
-    { at: 36, text: "机关、后勤、电台、伤员都在队列里，速度不能只按冲锋来算" },
-    { at: 74, text: "桥头木板隐约出现，先把沿路物品都收好" },
-  ],
-  collectibles: [
-    { id: "ruijin-pack", name: "行军背包", kind: "backpack", at: 18, x: -0.68 },
+  introButton: "进入秘密转移现场",
+  completionTitle: "队伍已经跨过长征第一渡",
+  completionText:
+    "你把通信、医疗和机要物资编入队列，在群众守密与夜色掩护下完成转移，并按渡口号令接应各支队伍。中央红军由此离开中央苏区，踏上漫长的战略转移。",
+  scenes: [
     {
-      id: "ruijin-letter",
-      name: "红军家书",
-      kind: "letter",
-      at: 46,
-      x: 0.58,
-      letter: {
-        title: "易冠美家书摘录",
-        shortTitle: "红军家书",
-        sourceName: "文艺报《十封红军家信》",
-        sourceUrl: "https://wyb.chinawriter.com.cn/content/202102/03/content58104.html",
-        lines: ["母亲大人膝下敬禀", "现在身体平安", "不必挂念", "争取革命首先胜利"],
+      id: "ruijin-assembly",
+      type: "collect",
+      shortTitle: "秘密集结",
+      date: "1934年10月10日起",
+      title: "从瑞金向于都秘密集结",
+      narrative:
+        "中央机关和红军部队从瑞金、会昌等地分批向于都转移。队列中不只有作战人员，还要带上维持指挥、通信和救护所必需的器材。",
+      fact:
+        "10月10日傍晚，两个纵队分别从瑞金、会昌等地向于都开进；各部队在严密保密中陆续完成集结。",
+      objective: "把机要、通信和医疗物资编入转移队列",
+      completeTitle: "转移队列编组完成",
+      completeText: "机要文件、电台和医疗器材已经进入队列，部队可以保持联络并照护伤员。",
+      image: "assets/levels/ruijin-departure/cards/03-column.jpg?v=mission-20260710",
+      imageAlt: "红军通信、医疗和后勤队伍在赣南山路上集结转移",
+      imagePosition: "center",
+      source: {
+        label: "中央纪委国家监委网站《为什么30万人能保守一个秘密》",
+        url: "https://www.bjsupervision.gov.cn/ywyl/201712/t20171207_46251.html",
+      },
+      items: [
+        { id: "radio", label: "电台与电池", detail: "维持纵队联络", x: 12, y: 61 },
+        { id: "medical", label: "担架与药箱", detail: "接应伤员病号", x: 38, y: 69 },
+        { id: "documents", label: "机要文件箱", detail: "保存命令与地图", x: 76, y: 50 },
+      ],
+    },
+    {
+      id: "ruijin-stealth",
+      type: "stealth",
+      shortTitle: "守密转移",
+      date: "1934年10月中旬",
+      title: "把八万余人的行动藏进夜色",
+      narrative:
+        "大部队必须分批、隐蔽地接近于都。沿途群众协助运输、安置伤员并严守消息，队伍尽量利用夜色行动，避免暴露集结方向。",
+      fact:
+        "中央红军主力约八万六千人集中在于都一县休整和准备；直到顺利渡河，敌军仍未掌握这一大规模转移。",
+      objective: "在侦察光出现时熄灯隐蔽，把队伍带到于都河畔",
+      completeTitle: "集结方向没有暴露",
+      completeText: "队伍保持了夜间行军秩序，顺利抵达于都河畔的出发区域。",
+      successText: "灯火及时熄灭，队伍贴着山影停下",
+      mistakeText: "侦察光扫到队尾，整列必须停下重新隐蔽",
+      failText: "队伍连续暴露在侦察光下，请重新组织这段秘密转移。",
+      advanceStep: 10,
+      maxMistakes: 3,
+      minHazardGap: 1500,
+      maxHazardGap: 2400,
+      responseWindow: 1800,
+      image: "assets/levels/ruijin-departure/cards/04-farewell.jpg?v=mission-20260710",
+      imageAlt: "赣南群众在村口送别分批出发的红军队伍",
+      imagePosition: "center",
+      source: {
+        label: "中央纪委国家监委网站《长征源头话薪传》",
+        url: "https://m.ccdi.gov.cn/content/f0/46/12025.html",
       },
     },
-    { id: "ruijin-map", name: "苏区地图", kind: "map", at: 74, x: -0.35 },
+    {
+      id: "ruijin-crossing",
+      type: "signal",
+      shortTitle: "夜渡于都",
+      date: "1934年10月17日至20日",
+      title: "四天四夜跨过于都河",
+      narrative:
+        "于都群众帮助架设浮桥、摆渡和运输，中央红军从八个渡口分批渡河。夜色既遮蔽了队伍，也要求各支队列严格服从渡口联络与接应。",
+      fact:
+        "1934年10月17日至20日，中央红军主力从于都县城东门等八个渡口陆续渡过于都河，开始战略转移。",
+      objective: "等待渡口联络号，依次接应各支队伍进入渡河队列",
+      completeTitle: "长征第一渡完成",
+      completeText: "通信、医疗和后勤队列都已按照渡口号令安全通过，主力踏上西进道路。",
+      failText: "渡口联络连续失误，行动有暴露风险，请重新组织接应。",
+      signalWindow: 1900,
+      maxMistakes: 3,
+      groups: ["通信分队", "担架与医疗队", "后勤运输队"],
+      image: "assets/levels/ruijin-departure/cards/02-assembly.jpg?v=mission-20260710",
+      imageAlt: "红军队伍在夜色中从于都河渡口分批渡河",
+      imagePosition: "center",
+      source: {
+        label: "于都县人民政府《于都河畔：万里长征从这里出发》",
+        url: "https://www.yudu.gov.cn/yudu/ydrw/202102/3f856d547c974b18afb023350581f9b0.shtml",
+      },
+    },
   ],
-  advanceStep: 6,
-  hitLimit: 3,
-  dodgeWindowMs: 980,
-  minHazardGapMs: 1450,
-  maxHazardGapMs: 2450,
 };
 
 export function renderRuijinDepartureAction25d(root, level) {
-  return renderCampaignAction25d(root, level, RUIJIN_MISSION);
+  return renderHistoricalMission25d(root, level, RUIJIN_MISSION);
 }

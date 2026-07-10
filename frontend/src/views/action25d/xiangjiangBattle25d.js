@@ -1,52 +1,103 @@
-import { renderCampaignAction25d } from "./campaignStage25d.js";
-
-const SIDE_LABEL = {
-  left: "左",
-  right: "右",
-};
+import { renderHistoricalMission25d } from "./historicalMission25d.js";
 
 const XIANGJIANG_MISSION = {
   theme: "xiangjiang",
-  progressLabel: "桥头距离",
-  integrityLabel: "队形",
-  goalLabel: "湘江浮桥",
-  introButton: "从草地出发",
-  advanceLabel: "穿过草地",
-  dodgeLine: "队伍压低身体，从弹坑旁绕了过去",
-  failLine: "江滩火力过密，队伍撤回堤岸重新组织",
-  winLines: ["湘江浮桥就在脚下，队伍刚好赶到桥头。", "收齐物品，跟上前队，开始过桥。"],
-  hitLines: ["炮弹落在草坡边，队形被撕开一角", "桥头方向被火力压住，后队被迫停顿", "敌军火力压上来，渡口又少了一分余地"],
-  warning: (side) => `炮火落向${SIDE_LABEL[side]}翼，按 ${side === "left" ? "←" : "→"} 闪避`,
-  beats: [
-    { at: 10, text: "你还在桥前草地上，湘江的水声在前方越来越近" },
-    { at: 42, text: "有人架桥，有人阻击，有人把最后的时间留给主力" },
-    { at: 76, text: "浮桥已经看得清楚，先把最后的物品收好" },
-  ],
-  collectibles: [
-    { id: "xiangjiang-pack", name: "行军背包", kind: "backpack", at: 20, x: -0.62 },
+  introButton: "进入湘江战场",
+  completionTitle: "主力突破第四道封锁线",
+  completionText:
+    "你跟随工兵抢修浮桥，在两翼阻击部队争取的窗口中组织队列渡江，又把江滩伤员转移到遮蔽处。湘江突破以极其惨重的代价完成，也把改变指挥方式的迫切问题推到了全军面前。",
+  scenes: [
     {
-      id: "xiangjiang-letter",
-      name: "红军儿子家书",
-      kind: "letter",
-      at: 48,
-      x: 0.62,
-      letter: {
-        title: "红军儿子家书摘录",
-        shortTitle: "红军家书",
-        sourceName: "人民政协网《家书抵万金》",
-        sourceUrl: "https://www.rmzxw.com.cn/c/2017-08-03/1698037.shtml",
-        lines: ["父亲母亲：", "你们好！", "想念你们的心思", "时刻不曾间断", "红军儿子敬上"],
+      id: "xiangjiang-repair",
+      type: "repair",
+      shortTitle: "抢修浮桥",
+      date: "1934年11月27日至28日",
+      title: "先头部队抢占渡口，工兵架起浮桥",
+      narrative:
+        "红一、红三军团先头部队赶到湘江，控制界首至脚山铺一线的渡河点并架设浮桥。敌机轰炸使桥面不断中断，工兵只能在火力间隙迅速修复。",
+      fact:
+        "红军先头部队在湘江上架起五座浮桥；11月28日敌机将浮桥全部炸断，红军随后继续抢修，维持渡江通道。",
+      objective: "固定五段浮桥；敌机俯冲时立即停止作业并隐蔽",
+      completeTitle: "渡江通道重新接通",
+      completeText: "五段木排重新固定，浮桥恢复通行，主力获得了短暂的过江窗口。",
+      failText: "浮桥连续被炸断，工兵和掩护队失去配合，请重新抢修。",
+      maxMistakes: 3,
+      minHazardGap: 1500,
+      maxHazardGap: 2400,
+      responseWindow: 1700,
+      image: "assets/levels/xiangjiang-battle/cards/02-crossing.jpg?v=mission-20260710",
+      imageAlt: "湘江渡口的红军工兵在炮火下抢修木排浮桥",
+      imagePosition: "center",
+      source: {
+        label: "中央网信办转载新华社《湘江突围：长征中最为惨烈的战役》",
+        url: "https://www.cac.gov.cn/2016-08/19/c_1119421570.htm",
+      },
+      points: [
+        { x: 38, y: 76, label: "岸边接头" },
+        { x: 46, y: 68, label: "第一木排" },
+        { x: 54, y: 61, label: "中段缆绳" },
+        { x: 62, y: 56, label: "第二木排" },
+        { x: 70, y: 51, label: "江心接头" },
+      ],
+    },
+    {
+      id: "xiangjiang-dispatch",
+      type: "dispatch",
+      shortTitle: "掩护渡江",
+      date: "1934年11月27日至12月1日",
+      title: "阻击部队用时间换出渡江窗口",
+      narrative:
+        "新圩、脚山铺、光华铺三处阻击阵地同时承受进攻。前方每多坚守一刻，江东队列就多一分通过机会；渡口必须根据炮火落点不断调整通道。",
+      fact:
+        "红军阻击部队在新圩、脚山铺和光华铺顽强坚守，掩护中央纵队和主力部队突破湘江封锁。",
+      objective: "观察炮火覆盖方向，把四支队列送入另一侧安全通道",
+      completeTitle: "四支队列通过江面",
+      completeText: "队列抓住阻击部队争取的间隙通过渡口，没有挤入正在遭受炮火覆盖的通道。",
+      failText: "渡江队列连续进入炮火覆盖区，请重新判断通过窗口。",
+      responseWindow: 2400,
+      maxMistakes: 3,
+      groups: ["先头接应队", "中央纵队", "伤员与医疗队", "后续部队"],
+      image: "assets/levels/xiangjiang-battle/cards/01-blockade.jpg?v=mission-20260710",
+      imageAlt: "红军在湘江两岸观察渡口与炮火并组织部队过江",
+      imagePosition: "center",
+      source: {
+        label: "中共中央党史和文献研究院《红军长征过广西》",
+        url: "https://www.dswxyjy.org.cn/n1/2026/0702/c244516-40752274.html",
       },
     },
-    { id: "xiangjiang-kit", name: "急救包", kind: "medical", at: 78, x: -0.28 },
+    {
+      id: "xiangjiang-rescue",
+      type: "rescue",
+      shortTitle: "江滩救护",
+      date: "1934年11月底",
+      title: "把伤员带离暴露的江滩",
+      narrative:
+        "江面、滩头和山口同时遭到攻击。医疗队、担架队和战友必须在炮火间隙寻找伤员，把他们转移到堤岸与山脚的遮蔽处，再继续跟上西进队伍。",
+      fact:
+        "湘江战役是中央红军长征初期损失最惨重的战役之一。许多部队为掩护中央机关和主力渡江付出巨大牺牲。",
+      objective: "响应四处救护呼叫，把伤员及时转移到遮蔽处",
+      completeTitle: "担架队完成江滩转移",
+      completeText: "四处救护呼叫都得到接应，伤员已经离开暴露江滩并转入后续医疗队列。",
+      failText: "担架队连续错过接应窗口，请重新组织江滩救护路线。",
+      responseWindow: 3200,
+      maxMistakes: 3,
+      image: "assets/levels/xiangjiang-battle/cards/03-cost.jpg?v=mission-20260710",
+      imageAlt: "湘江战役后红军医疗与担架队在江滩转移伤员",
+      imagePosition: "center",
+      source: {
+        label: "中共中央党史和文献研究院《红军长征过广西》",
+        url: "https://www.dswxyjy.org.cn/n1/2026/0702/c244516-40752274.html",
+      },
+      targets: [
+        { x: 36, y: 68, label: "江滩伤员" },
+        { x: 56, y: 69, label: "浮桥伤员" },
+        { x: 68, y: 61, label: "堤岸伤员" },
+        { x: 48, y: 78, label: "后撤队伤员" },
+      ],
+    },
   ],
-  advanceStep: 5,
-  hitLimit: 3,
-  dodgeWindowMs: 860,
-  minHazardGapMs: 1200,
-  maxHazardGapMs: 2100,
 };
 
 export function renderXiangjiangBattleAction25d(root, level) {
-  return renderCampaignAction25d(root, level, XIANGJIANG_MISSION);
+  return renderHistoricalMission25d(root, level, XIANGJIANG_MISSION);
 }

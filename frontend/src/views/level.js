@@ -55,7 +55,7 @@ const SPECIAL_CHALLENGES = {
   "ruijin-departure": {
     type: "supply",
     title: "物资取舍",
-    debrief: "你已经在夜色中收齐行军背包、家书和苏区地图。现在回到关卡任务：在出发前做一次关键取舍。",
+    debrief: "你已经完成机要编组、隐蔽转移和渡口接应。现在回到关卡任务：在出发前做一次关键取舍。",
     prompt: "只能优先带 3 件，选出最能支撑战略转移的物资。",
     required: ["map", "radio", "medical"],
     successTitle: "出发准备完成",
@@ -73,7 +73,7 @@ const SPECIAL_CHALLENGES = {
   "xiangjiang-battle": {
     type: "sequence",
     title: "渡江行动排序",
-    debrief: "你已经在江滩上收齐行军背包、战地书信和急救包。现在回到关卡任务：把抢渡行动排成正确顺序。",
+    debrief: "你已经抢修浮桥、组织队列通过火力窗口并转移江滩伤员。现在回到关卡任务：把抢渡行动排成正确顺序。",
     prompt: "按真实战斗逻辑排列 4 个行动环节。",
     required: ["seize", "bridge", "cover", "cross"],
     successTitle: "渡江组织完成",
