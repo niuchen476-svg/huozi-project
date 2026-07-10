@@ -491,7 +491,9 @@ function renderSourceCardZoom(card) {
       <button class="zunyi-source-zoom__backdrop" type="button" data-close-source-zoom aria-label="关闭史料查看"></button>
       <article class="zunyi-source-zoom__card">
         <button class="zunyi-source-zoom__close" type="button" data-close-source-zoom aria-label="关闭史料查看">关闭</button>
-        <div class="zunyi-source-zoom__image" style="background-image: url('${image}')"></div>
+        <div class="zunyi-source-zoom__image">
+          <img src="${image}" alt="${card.title}" />
+        </div>
         <div class="zunyi-source-zoom__body">
           <small>史料补充</small>
           <h2>${card.title}</h2>

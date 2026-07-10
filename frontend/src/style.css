@@ -6259,7 +6259,7 @@ a {
 .view-zunyi .zunyi-source-zoom__card {
   position: relative;
   z-index: 1;
-  width: min(780px, calc(100vw - 48px));
+  width: min(920px, calc(100vw - 48px));
   max-height: calc(100vh - 48px);
   overflow: auto;
   color: #3b2417;
@@ -6288,13 +6288,25 @@ a {
 }
 
 .view-zunyi .zunyi-source-zoom__image {
-  min-height: min(48vh, 420px);
+  display: grid;
+  place-items: center;
+  min-height: min(54vh, 480px);
+  max-height: min(62vh, 560px);
   margin: 18px 18px 0;
+  padding: 12px;
   border: 1px solid rgba(81, 45, 22, 0.26);
   border-radius: 6px;
-  background-position: center;
-  background-size: cover;
+  background: rgba(255, 246, 214, 0.36);
   filter: sepia(0.12) contrast(0.98) brightness(0.96);
+  overflow: hidden;
+}
+
+.view-zunyi .zunyi-source-zoom__image img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(min(62vh, 560px) - 24px);
+  object-fit: contain;
 }
 
 .view-zunyi .zunyi-source-zoom__body {
@@ -6816,6 +6828,11 @@ a {
 
   .view-zunyi .zunyi-source-zoom__image {
     min-height: 260px;
+    max-height: 50vh;
+  }
+
+  .view-zunyi .zunyi-source-zoom__image img {
+    max-height: calc(50vh - 24px);
   }
 }
 
