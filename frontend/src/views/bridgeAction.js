@@ -1,4 +1,5 @@
 import { LUDING_ASSETS } from "../cinematicAssets.js";
+import { resumeBgmAfterMedia, suspendBgmForMedia } from "../bgm.js";
 
 const ASSET_BASE = "assets/levels/luding-bridge";
 
@@ -15,15 +16,16 @@ const DRAG_SOLDIER = `${ASSET_BASE}/props/assault-drag-soldier.png`;
 const TEAMMATE_ICON = `${ASSET_BASE}/teammate-icon.jpg`;
 const TEAMMATE_FALL = `${ASSET_BASE}/teammate-fall.png`;
 const VICTORY_IMAGE = `${ASSET_BASE}/bridge-victory.jpg`;
+const CRAWL_VIDEO = `${ASSET_BASE}/videos/luding-bridge-crawl.mp4`;
 
 // 坐标是在 squad-assembly.jpg 图片里的百分比位置：队伍后排 -> 桥头
 const PLAYER_START_POS = { x: 84, y: 58 };
 const SQUAD_SLOT_POS = { x: 42, y: 56 };
 
 const NARRATIVE_BEATS = [
-  { at: 2, text: "脚下的铁索还带着体温——是刚刚倒下的战友抓过的地方" },
-  { at: 35, text: "对岸的机枪一刻不停，火力像雨点一样打在铁链上" },
-  { at: 68, text: "敌人点燃了桥头的煤油和木板——大火封住了最后一段路" },
+  { at: 12, title: "只剩铁索", text: "桥面木板多已被拆除，突击队员只能攀着铁索前进。" },
+  { at: 42, title: "打开通道", text: "突击队冒着对岸火力冲锋，为后续部队打开通道。" },
+  { at: 72, title: "继续北上", text: "夺下桥头，中央红军才有机会继续北上。" },
 ];
 
 const ATTACK_DIRECTIONS = {
@@ -31,13 +33,26 @@ const ATTACK_DIRECTIONS = {
   right: { arrow: "→", label: "敌军向右扫射", escape: "left", escapeLabel: "向左躲" },
 };
 
-const HIT_LIMIT = 1;
-const ADVANCE_STEP = 2.25;
-const ADVANCE_COOLDOWN_MS = 340;
-const DODGE_WINDOW_MS = 1500;
-const MIN_FIRE_GAP_MS = 1500;
-const MAX_FIRE_GAP_MS = 2400;
+const HIT_LIMIT = 3;
+const ADVANCE_STEP = 3.2;
+const ADVANCE_COOLDOWN_MS = 260;
+const ADVANCE_VIDEO_MS = 1250;
+const DODGE_WINDOW_MS = 850;
+const MIN_FIRE_GAP_MS = 1100;
+const MAX_FIRE_GAP_MS = 1900;
 const FIRE_LIMIT = 9;
+const FACT_MIN_READ_MS = 1400;
+const LUDING_FRAGMENT = {
+  id: "luding-chain",
+  title: "铁索碎片",
+  mark: "铁索",
+  image: "/assets/fragments/fragment-luding-chain.png",
+  text: "你跟随突击队冲过铁索，帮助红军打开前进通道。",
+  source: {
+    title: "史实补充",
+    text: "1935 年 5 月 29 日，红军突击队冒着敌人火力夺取泸定桥，为中央红军继续北上争取了重要通道。",
+  },
+};
 
 export function preloadBridgeActionAssets() {
   [INTRO_BG, SQUAD_BG, DRAG_SOLDIER, TEAMMATE_ICON, KEYFRAMES[0].bg].forEach(preloadImage);
@@ -52,8 +67,9 @@ export function renderBridgeAction(root, level) {
   return new Promise((resolve) => {
     root.innerHTML = `
       <div class="view view-bridge-action">
-        <div class="bridge-scene bridge-scene--intro" id="bridge-scene">
+          <div class="bridge-scene bridge-scene--intro" id="bridge-scene">
           <div class="bridge-scene__bg" id="bridge-bg" style="background-image: url('${INTRO_BG}')"></div>
+          <video class="bridge-scene__crawl-video" id="bridge-crawl-video" src="${CRAWL_VIDEO}" poster="${KEYFRAMES[0].bg}" muted playsinline preload="auto" hidden></video>
           <div class="bridge-crossing-path" id="bridge-crossing-path" hidden>
             <span class="bridge-chain bridge-chain--left"></span>
             <span class="bridge-chain bridge-chain--right"></span>
@@ -62,10 +78,16 @@ export function renderBridgeAction(root, level) {
           <div class="bridge-scene__vignette"></div>
 
           <div class="bridge-hud" id="bridge-hud" hidden>
-            <div class="bridge-hud__progress">
-              <div class="bridge-hud__progress-fill" id="bridge-progress-fill"></div>
+            <div class="bridge-hud__block">
+              <span>前进进度</span>
+              <div class="bridge-hud__progress">
+                <div class="bridge-hud__progress-fill" id="bridge-progress-fill"></div>
+              </div>
             </div>
-            <div class="bridge-hud__hits" id="bridge-hits"></div>
+            <div class="bridge-hud__block bridge-hud__block--stamina">
+              <span>体力值</span>
+              <div class="bridge-hud__hits" id="bridge-hits"></div>
+            </div>
           </div>
 
           <div class="bridge-warning" id="bridge-warning" hidden></div>
@@ -77,14 +99,20 @@ export function renderBridgeAction(root, level) {
           <div class="bridge-caption" id="bridge-caption" hidden></div>
           <div class="bridge-hint" id="bridge-hint" hidden></div>
           <div class="bridge-controls" id="bridge-controls" hidden aria-label="过桥键盘">
-            <button type="button" data-bridge-command="left" aria-label="向左躲"><span>←</span></button>
-            <button class="bridge-controls__advance" type="button" data-bridge-command="advance" aria-label="前进"><span>Space</span><small>前进</small></button>
-            <button type="button" data-bridge-command="right" aria-label="向右躲"><span>→</span></button>
+            <button type="button" data-bridge-command="left" aria-label="向左躲">←</button>
+            <button class="bridge-controls__advance" type="button" data-bridge-command="advance">前进</button>
+            <button type="button" data-bridge-command="right" aria-label="向右躲">→</button>
           </div>
+          <div class="bridge-fact-card" id="bridge-fact-card" hidden></div>
+          <div class="bridge-result" id="bridge-result" hidden></div>
 
           <div class="history-intro" id="history-intro">
             <p class="history-intro__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
             <h2 class="history-intro__title">${level.title}</h2>
+            <figure class="bridge-intro-source">
+              <img src="${ASSET_BASE}/reference/historic-iron-chains.png" alt="泸定桥铁索历史照片" />
+              <figcaption>史料线索：桥面木板被拆后，突击队必须面对“只剩铁索”的险境。</figcaption>
+            </figure>
             <p class="history-intro__text">${level.scenario}</p>
             <button type="button" id="history-intro-start">开始行动</button>
             <button class="bridge-video-bubble" type="button" id="bridge-video-open">点击查看相关视频</button>
@@ -141,9 +169,11 @@ export function renderBridgeAction(root, level) {
     const closeVideo = () => {
       videoPlayer.pause();
       videoModal.hidden = true;
+      resumeBgmAfterMedia();
     };
 
     document.querySelector("#bridge-video-open").addEventListener("click", () => {
+      suspendBgmForMedia();
       videoModal.hidden = false;
       videoPlayer.currentTime = 0;
       videoPlayer.play().catch(() => {});
@@ -266,6 +296,7 @@ function startCrossing(resolve) {
   const squadSelect = document.querySelector("#squad-select");
   const hud = document.querySelector("#bridge-hud");
   const bg = document.querySelector("#bridge-bg");
+  const crawlVideo = document.querySelector("#bridge-crawl-video");
   const crossingPath = document.querySelector("#bridge-crossing-path");
   const crawler = document.querySelector("#bridge-crawler");
   const progressFill = document.querySelector("#bridge-progress-fill");
@@ -277,12 +308,26 @@ function startCrossing(resolve) {
   const captionEl = document.querySelector("#bridge-caption");
   const hintEl = document.querySelector("#bridge-hint");
   const controlsEl = document.querySelector("#bridge-controls");
+  const factCardEl = document.querySelector("#bridge-fact-card");
+  const resultEl = document.querySelector("#bridge-result");
 
   squadSelect.remove();
   hud.hidden = false;
   crossingPath.hidden = false;
   controlsEl.hidden = false;
   bg.classList.add("bridge-scene__bg--sway");
+  crawlVideo.hidden = false;
+  crawlVideo.currentTime = 0;
+  crawlVideo.pause();
+  crawlVideo.addEventListener("error", () => {
+    crawlVideo.hidden = true;
+  }, { once: true });
+  crawlVideo.addEventListener("ended", () => {
+    if (finished || pausedForFact) return;
+    progress = 100;
+    updateHud();
+    winCrossing();
+  });
 
   let progress = 0;
   let hits = 0;
@@ -292,21 +337,33 @@ function startCrossing(resolve) {
   let fireTimeout = null;
   let firedCount = 0;
   let lastAdvanceAt = 0;
+  let pausedForFact = false;
+  let factCanContinueAt = 0;
+  let videoAdvanceTimeout = null;
   const shownBeats = new Set();
 
   function updateHud() {
+    syncProgressFromVideo();
     progressFill.style.width = `${progress}%`;
-    hitsEl.textContent = hits ? "重新过桥" : "失误即重来";
+    hitsEl.innerHTML = Array.from({ length: HIT_LIMIT }, (_, index) => (
+      `<span class="${index < HIT_LIMIT - hits ? "is-full" : "is-empty"}"></span>`
+    )).join("");
+    hitsEl.setAttribute("aria-label", `剩余体力 ${HIT_LIMIT - hits} 格`);
     crawler.style.setProperty("--bridge-progress", progress);
 
     const frame = [...KEYFRAMES].reverse().find((k) => progress >= k.at);
-    if (frame) bg.style.backgroundImage = `url(${frame.bg})`;
+    if (frame && crawlVideo.hidden) bg.style.backgroundImage = `url(${frame.bg})`;
 
     const beat = NARRATIVE_BEATS.find((b) => progress >= b.at && !shownBeats.has(b.at));
     if (beat) {
       shownBeats.add(beat.at);
-      showCaption(beat.text, "narrative");
+      showFactCard(beat);
     }
+  }
+
+  function syncProgressFromVideo() {
+    if (crawlVideo.hidden || !crawlVideo.duration) return;
+    progress = Math.min(100, (crawlVideo.currentTime / crawlVideo.duration) * 100);
   }
 
   function showCaption(text, type, duration = 2600) {
@@ -328,6 +385,80 @@ function startCrossing(resolve) {
     }, 2200);
   }
 
+  function showFactCard(beat) {
+    pausedForFact = true;
+    factCanContinueAt = performance.now() + FACT_MIN_READ_MS;
+    clearTimeout(fireTimeout);
+    clearTimeout(dodgeTimeout);
+    crawlVideo.pause();
+    awaitingDodge = null;
+    warningEl.hidden = true;
+    crawler.classList.remove("bridge-crawler--brace");
+    factCardEl.hidden = false;
+    factCardEl.innerHTML = `
+      <article>
+        <p>史实节点</p>
+        <h3>${beat.title}</h3>
+        <span>${beat.text}</span>
+        <small data-fact-continue>请先阅读</small>
+      </article>
+    `;
+    clearTimeout(showFactCard._t);
+    showFactCard._t = setTimeout(() => {
+      factCardEl.querySelector("[data-fact-continue]")?.replaceChildren("按空格继续前进");
+    }, FACT_MIN_READ_MS);
+  }
+
+  function closeFactCard() {
+    clearTimeout(showFactCard._t);
+    pausedForFact = false;
+    factCardEl.hidden = true;
+    factCardEl.innerHTML = "";
+    showHint("继续按空格前进；火力出现时先闪避");
+    scheduleFire();
+  }
+
+  function advanceCrawlVideo() {
+    if (crawlVideo.hidden) return;
+    clearTimeout(videoAdvanceTimeout);
+    if (crawlVideo.duration && crawlVideo.currentTime >= Math.max(0, crawlVideo.duration - 0.2)) {
+      crawlVideo.currentTime = crawlVideo.duration;
+      progress = 100;
+      updateHud();
+      winCrossing();
+      return;
+    }
+    crawlVideo.play().catch(() => {});
+    videoAdvanceTimeout = setTimeout(() => {
+      if (finished || pausedForFact) return;
+      crawlVideo.pause();
+      updateHud();
+      if (crawlVideo.duration && crawlVideo.currentTime >= Math.max(0, crawlVideo.duration - 0.2)) {
+        progress = 100;
+        updateHud();
+        winCrossing();
+      }
+    }, ADVANCE_VIDEO_MS);
+  }
+
+  function showResult(type, title, text, actionText = "") {
+    resultEl.hidden = false;
+    resultEl.className = `bridge-result bridge-result--${type}`;
+    resultEl.innerHTML = `
+      <div class="bridge-result__card">
+        <p>${type === "fail" ? "行动受阻" : "抵达对岸"}</p>
+        <h3>${title}</h3>
+        <span>${text}</span>
+        ${actionText ? `<button type="button" id="bridge-result-action">${actionText}</button>` : ""}
+      </div>
+    `;
+  }
+
+  function hideResult() {
+    resultEl.hidden = true;
+    resultEl.innerHTML = "";
+  }
+
   function spawnFallingTeammate() {
     const img = document.createElement("img");
     img.src = TEAMMATE_FALL;
@@ -345,6 +476,13 @@ function startCrossing(resolve) {
     bg.classList.add("bridge-scene__bg--jolt");
   }
 
+  function pulseScene(className, duration = 300) {
+    scene.classList.remove(className);
+    void scene.offsetWidth;
+    scene.classList.add(className);
+    setTimeout(() => scene.classList.remove(className), duration);
+  }
+
   function animateCrawl() {
     crawler.classList.remove("bridge-crawler--crawl");
     void crawler.offsetWidth;
@@ -358,7 +496,7 @@ function startCrossing(resolve) {
   }
 
   function fireShot() {
-    if (finished) return;
+    if (finished || pausedForFact) return;
     firedCount += 1;
     const attackDirection = Math.random() < 0.5 ? "left" : "right";
     const attack = ATTACK_DIRECTIONS[attackDirection];
@@ -384,6 +522,7 @@ function startCrossing(resolve) {
       attackEl.hidden = true;
       awaitingDodge = null;
       crawler.classList.remove("bridge-crawler--brace");
+      if (finished) return;
       scheduleFire();
     }, DODGE_WINDOW_MS);
   }
@@ -394,6 +533,7 @@ function startCrossing(resolve) {
     setTimeout(() => scene.classList.remove("bridge-scene--flash"), 200);
     showCaption(message, "hit", 1800);
     spawnFallingTeammate();
+    pulseScene("bridge-scene--danger", 420);
     updateHud();
 
     if (hits >= HIT_LIMIT) {
@@ -405,20 +545,12 @@ function startCrossing(resolve) {
     finished = true;
     clearTimeout(fireTimeout);
     clearTimeout(dodgeTimeout);
+    clearTimeout(videoAdvanceTimeout);
+    crawlVideo.pause();
     warningEl.hidden = true;
     attackEl.hidden = true;
-    showCaption("冲锋受阻，突击队重新集结——再过一次桥", "fail", 2200);
-    setTimeout(() => {
-      progress = 0;
-      hits = 0;
-      firedCount = 0;
-      finished = false;
-      shownBeats.clear();
-      lastAdvanceAt = 0;
-      updateHud();
-      scheduleFire();
-      showHint("继续前进；看到顶部箭头时，按反方向躲避");
-    }, 2400);
+    showCaption("冲锋受阻，突击队重新集结。", "fail", 2200);
+    showResult("fail", "重新集结", "体力耗尽了。观察火力方向，先闪避，再按空格继续前进。", "再试一次");
   }
 
   function winCrossing() {
@@ -433,16 +565,29 @@ function startCrossing(resolve) {
       button.removeEventListener("click", onControlClick);
     });
     bg.classList.remove("bridge-scene__bg--sway");
+    clearTimeout(videoAdvanceTimeout);
+    crawlVideo.pause();
+    crawlVideo.hidden = true;
     bg.style.backgroundImage = `url(${VICTORY_IMAGE})`;
+    showResult("victory", "成功抵达对岸", "你冲过铁索，打开了继续前进的通道。", "");
     showCaption("两小时激战，泸定城，拿下了。", "victory", 2600);
     setTimeout(() => {
       showCaption("毛主席后来写下：大渡桥横铁索寒", "victory", 2600);
     }, 2000);
-    setTimeout(resolve, 4600);
+    setTimeout(() => showArchiveFragment(scene, LUDING_FRAGMENT, resolve), 4600);
   }
 
   function advance() {
     if (finished) return;
+
+    if (pausedForFact) {
+      if (performance.now() < factCanContinueAt) {
+        factCardEl.querySelector("[data-fact-continue]")?.replaceChildren("请先阅读");
+        return;
+      }
+      closeFactCard();
+      return;
+    }
 
     if (awaitingDodge) {
       showHint("火力箭头出现了，先按反方向躲开！");
@@ -453,8 +598,12 @@ function startCrossing(resolve) {
     if (now - lastAdvanceAt < ADVANCE_COOLDOWN_MS) return;
     lastAdvanceAt = now;
 
-    progress = Math.min(100, progress + ADVANCE_STEP);
+    if (crawlVideo.hidden || !crawlVideo.duration) {
+      progress = Math.min(100, progress + ADVANCE_STEP);
+    }
     jolt();
+    advanceCrawlVideo();
+    if (finished) return;
     animateCrawl();
     updateHud();
     if (progress >= 100) winCrossing();
@@ -513,7 +662,90 @@ function startCrossing(resolve) {
     button.addEventListener("click", onControlClick);
   });
 
+  resultEl.addEventListener("click", (event) => {
+    if (event.target?.id !== "bridge-result-action") return;
+    progress = 0;
+    hits = 0;
+    firedCount = 0;
+    finished = false;
+    awaitingDodge = null;
+    warningEl.hidden = true;
+    crawler.classList.remove("bridge-crawler--brace");
+    clearTimeout(videoAdvanceTimeout);
+    crawlVideo.currentTime = 0;
+    crawlVideo.pause();
+    crawlVideo.hidden = false;
+    pausedForFact = false;
+    factCanContinueAt = 0;
+    clearTimeout(showFactCard._t);
+    factCardEl.hidden = true;
+    factCardEl.innerHTML = "";
+    shownBeats.clear();
+    lastAdvanceAt = 0;
+    hideResult();
+    updateHud();
+    showHint("先看火力方向，再闪避；没有火力时按空格前进。");
+    scheduleFire();
+  });
+
   updateHud();
   showHint("按空格或右下角前进；顶部箭头出现时按反方向躲避");
   scheduleFire();
+}
+
+function showArchiveFragment(container, fragment, onCollect) {
+  const modal = document.createElement("div");
+  modal.className = "archive-fragment";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-label", "获得档案碎片");
+  modal.innerHTML = `
+    <div class="archive-fragment__card">
+      <p class="archive-fragment__eyebrow">获得档案碎片</p>
+      ${renderArchiveFragmentPiece(fragment)}
+      <h2>${fragment.title}</h2>
+      <p class="archive-fragment__text">${fragment.text}</p>
+      ${fragment.source ? renderBridgeSourceNote(fragment.source) : ""}
+      <button type="button">收进档案袋</button>
+    </div>
+  `;
+  container.appendChild(modal);
+  modal.querySelector("button").addEventListener("click", () => {
+    saveArchiveFragment(fragment.id);
+    onCollect();
+  });
+}
+
+function renderArchiveFragmentPiece(fragment) {
+  if (fragment.image) {
+    return `
+      <div class="archive-fragment__piece archive-fragment__piece--image archive-fragment__piece--chain">
+        <img src="${fragment.image}" alt="${fragment.title}" />
+      </div>
+    `;
+  }
+
+  return `
+    <div class="archive-fragment__piece archive-fragment__piece--chain">
+      <span>${fragment.mark}</span>
+    </div>
+  `;
+}
+
+function renderBridgeSourceNote(source) {
+  return `
+    <div class="bridge-source-note">
+      <small>${source.title}</small>
+      <p>${source.text}</p>
+    </div>
+  `;
+}
+
+function saveArchiveFragment(id) {
+  const key = "huozi.archiveFragments";
+  const fragments = JSON.parse(window.localStorage.getItem(key) || "[]");
+  if (!fragments.includes(id)) {
+    fragments.push(id);
+    window.localStorage.setItem(key, JSON.stringify(fragments));
+  }
 }
