@@ -180,6 +180,236 @@ a {
   transform: translateY(-2px);
 }
 
+.home-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  align-items: center;
+}
+
+.home-link {
+  display: inline-block;
+  padding: 12px 22px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid rgba(248, 230, 168, 0.48);
+  border-radius: 999px;
+  background: rgba(20, 15, 10, 0.38);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.home-link:hover {
+  background: rgba(20, 15, 10, 0.58);
+}
+
+/* ---------- 落地页 ---------- */
+
+.view-landing {
+  min-height: 100vh;
+  color: var(--color-ink);
+  background: #ede4cd;
+}
+
+.landing-hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 88px min(8vw, 96px);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.landing-hero__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(15, 10, 7, 0.76), rgba(15, 10, 7, 0.5) 48%, rgba(15, 10, 7, 0.18)),
+    linear-gradient(180deg, rgba(15, 10, 7, 0.2), rgba(15, 10, 7, 0.72));
+}
+
+.landing-back {
+  position: absolute;
+  left: min(8vw, 96px);
+  top: 32px;
+  z-index: 1;
+  color: rgba(255, 246, 214, 0.88);
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 246, 214, 0.34);
+}
+
+.landing-hero__content {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  color: #fff6d6;
+}
+
+.landing-hero__content p,
+.landing-kicker {
+  margin: 0 0 14px;
+  color: #f2c94c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.landing-hero__content h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 6vw, 5.2rem);
+  line-height: 1.08;
+  letter-spacing: 0.04em;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.48);
+}
+
+.landing-hero__content span {
+  display: block;
+  width: min(620px, 100%);
+  margin-top: 24px;
+  color: rgba(255, 246, 214, 0.86);
+  font-size: 1.04rem;
+  line-height: 1.9;
+}
+
+.landing-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.landing-hero__actions a,
+.landing-section--cta a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 11px 24px;
+  color: #fff6d6;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid rgba(156, 35, 27, 0.3);
+  border-radius: 999px;
+  background: var(--color-red);
+  box-shadow: 0 14px 30px rgba(42, 36, 32, 0.18);
+}
+
+.landing-hero__actions a + a {
+  color: #fff6d6;
+  border-color: rgba(248, 230, 168, 0.44);
+  background: rgba(20, 15, 10, 0.34);
+}
+
+.landing-section,
+.landing-feature-grid {
+  width: min(1120px, calc(100vw - 48px));
+  margin: 0 auto;
+}
+
+.landing-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 48px;
+  padding: 72px 0;
+  align-items: start;
+}
+
+.landing-section h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  line-height: 1.25;
+}
+
+.landing-section p:last-child {
+  margin: 0;
+  color: rgba(42, 36, 32, 0.76);
+  font-size: 1.02rem;
+  line-height: 1.9;
+}
+
+.landing-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding-bottom: 72px;
+}
+
+.landing-feature-grid article {
+  min-height: 230px;
+  padding: 24px;
+  border: 1px solid rgba(91, 49, 23, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 250, 236, 0.62);
+  box-shadow: var(--shadow-card);
+}
+
+.landing-feature-grid small {
+  color: var(--color-red);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.landing-feature-grid h3 {
+  margin: 14px 0 10px;
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+}
+
+.landing-feature-grid p {
+  margin: 0;
+  color: rgba(42, 36, 32, 0.72);
+  line-height: 1.75;
+}
+
+.landing-section--cta {
+  align-items: center;
+  padding-top: 0;
+}
+
+.landing-section--cta a {
+  justify-self: end;
+}
+
+@media (max-width: 760px) {
+  .landing-hero {
+    align-items: flex-end;
+    padding: 84px 24px 52px;
+  }
+
+  .landing-back {
+    left: 24px;
+    top: 24px;
+  }
+
+  .landing-section,
+  .landing-feature-grid {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .landing-section,
+  .landing-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-section {
+    gap: 22px;
+    padding: 48px 0;
+  }
+
+  .landing-section--cta a {
+    justify-self: start;
+  }
+}
+
 /* ---------- 地图页 ---------- */
 
 .view-map--fullscreen {
