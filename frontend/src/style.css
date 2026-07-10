@@ -565,12 +565,19 @@ a {
   cursor: pointer;
 }
 
+.archive-bag-fragment .archive-fragment-visual {
+  grid-row: 1 / span 2;
+  justify-self: center;
+}
+
 .archive-bag-fragment:hover {
   background: rgba(255, 248, 222, 0.94);
 }
 
 .archive-bag-fragment > span {
   display: block;
+  grid-column: 2;
+  align-self: end;
   font-family: var(--font-serif);
   font-size: 1.02rem;
   font-weight: 700;
@@ -578,9 +585,17 @@ a {
 
 .archive-bag-fragment small {
   display: block;
+  grid-column: 2;
+  align-self: start;
   margin-top: 4px;
   color: var(--color-ink-soft);
   font-size: 0.78rem;
+}
+
+.archive-bag-fragment .archive-fragment-visual--direction-fragment,
+.archive-bag-fragment .archive-fragment-visual--iron-chain-fragment {
+  transform: scale(0.86);
+  transform-origin: center;
 }
 
 .archive-bag-fragment--locked {
