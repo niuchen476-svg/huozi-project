@@ -6,8 +6,8 @@ import { renderZunyiMeeting } from "./zunyiMeeting.js";
 import { showArchiveFragmentReward } from "../archiveFragments.js";
 
 const ACTION_SCENES = {
-  "ruijin-departure": renderRuijinDepartureAction3dLazy,
-  "xiangjiang-battle": renderXiangjiangBattleAction3dLazy,
+  "ruijin-departure": renderRuijinDepartureAction25dLazy,
+  "xiangjiang-battle": renderXiangjiangBattleAction25dLazy,
   "sidu-chishui": renderEmbeddedLevel,
   "luding-bridge": renderBridgeAction,
   "zunyi-turn": renderZunyiMeeting,
@@ -16,22 +16,22 @@ const ACTION_SCENES = {
 
 const actionSceneModulePromises = {};
 
-async function renderRuijinDepartureAction3dLazy(root, level) {
-  const { renderRuijinDepartureAction3d } = await loadAction3dModule("ruijin-departure");
-  return renderRuijinDepartureAction3d(root, level);
+async function renderRuijinDepartureAction25dLazy(root, level) {
+  const { renderRuijinDepartureAction25d } = await loadAction25dModule("ruijin-departure");
+  return renderRuijinDepartureAction25d(root, level);
 }
 
-async function renderXiangjiangBattleAction3dLazy(root, level) {
-  const { renderXiangjiangBattleAction3d } = await loadAction3dModule("xiangjiang-battle");
-  return renderXiangjiangBattleAction3d(root, level);
+async function renderXiangjiangBattleAction25dLazy(root, level) {
+  const { renderXiangjiangBattleAction25d } = await loadAction25dModule("xiangjiang-battle");
+  return renderXiangjiangBattleAction25d(root, level);
 }
 
-function loadAction3dModule(levelId) {
+function loadAction25dModule(levelId) {
   if (levelId === "ruijin-departure") {
-    actionSceneModulePromises[levelId] ||= import("./action3d/ruijinDeparture3d.js");
+    actionSceneModulePromises[levelId] ||= import("./action25d/ruijinDeparture25d.js");
   }
   if (levelId === "xiangjiang-battle") {
-    actionSceneModulePromises[levelId] ||= import("./action3d/xiangjiangBattle3d.js");
+    actionSceneModulePromises[levelId] ||= import("./action25d/xiangjiangBattle25d.js");
   }
   return actionSceneModulePromises[levelId];
 }
@@ -39,7 +39,7 @@ function loadAction3dModule(levelId) {
 export function preloadLevelResources(levelId) {
   preloadLevel(levelId);
   if (levelId === "ruijin-departure" || levelId === "xiangjiang-battle") {
-    loadAction3dModule(levelId)?.catch(() => {
+    loadAction25dModule(levelId)?.catch(() => {
       delete actionSceneModulePromises[levelId];
     });
   }
