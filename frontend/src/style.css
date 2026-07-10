@@ -568,6 +568,7 @@ a {
 .archive-bag-fragment .archive-fragment-visual {
   grid-row: 1 / span 2;
   justify-self: center;
+  overflow: hidden;
 }
 
 .archive-bag-fragment:hover {
@@ -592,10 +593,30 @@ a {
   font-size: 0.78rem;
 }
 
-.archive-bag-fragment .archive-fragment-visual--direction-fragment,
-.archive-bag-fragment .archive-fragment-visual--iron-chain-fragment {
-  transform: scale(0.86);
-  transform-origin: center;
+.archive-bag-fragment .archive-fragment-visual--image {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 99px;
+  aspect-ratio: auto;
+  background: linear-gradient(145deg, #efe4c9, #d6bd8a);
+  border-radius: 8px;
+  box-shadow: 0 10px 18px rgba(42, 36, 32, 0.16);
+}
+
+.archive-bag-fragment .archive-fragment-visual--image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.archive-bag-fragment .archive-fragment-visual--direction-fragment img {
+  object-position: 52% 52%;
+}
+
+.archive-bag-fragment .archive-fragment-visual--iron-chain-fragment img {
+  object-position: 50% 50%;
 }
 
 .archive-bag-fragment--locked {
