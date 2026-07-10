@@ -36,6 +36,17 @@ export const ARCHIVE_FRAGMENTS = [
     effect: "zunyi-chishui-route",
   },
   {
+    id: "chishui-maneuver-fragment",
+    levelId: "sidu-chishui",
+    group: "四渡赤水碎片",
+    name: "赤水碎片",
+    visual: "一片赤水河行军图，带四道渡河红线。",
+    rewardText: "你完成四次机动渡河，帮助红军在围追堵截中重新掌握主动。",
+    mapHint: "地图上赤水到泸定桥方向的路线被点亮，提示队伍跳出重围继续北上。",
+    fact: "四渡赤水体现了红军声东击西、避实击虚的机动作战，使战略转移重新转为主动。",
+    effect: "chishui-luding-route",
+  },
+  {
     id: "iron-chain-fragment",
     levelId: "luding-bridge",
     group: "飞夺泸定桥碎片",
@@ -46,6 +57,17 @@ export const ARCHIVE_FRAGMENTS = [
     mapHint: "地图上泸定桥节点亮起，说明队伍突破险关。",
     fact: "飞夺泸定桥打通了红军北上通道，是长征突破险关的重要一战。",
     effect: "luding-node",
+  },
+  {
+    id: "snow-grass-fragment",
+    levelId: "snow-grassland",
+    group: "雪山草地碎片",
+    name: "雪草碎片",
+    visual: "一角雪山草地行军札记，带雪峰、草根和会师红星。",
+    rewardText: "你在雪山和草地中做出正确抉择，带领队伍走出自然绝境。",
+    mapHint: "地图上泸定桥到雪山草地方向的路线被点亮，提示队伍向会师继续前进。",
+    fact: "翻雪山、过草地是长征途中最艰苦的自然考验之一，红军依靠信念和互助保存了继续前进的力量。",
+    effect: "luding-snow-route",
   },
 ];
 
@@ -133,7 +155,9 @@ function renderFragmentVisualInner(fragmentId) {
   if (fragmentId === "departure-map-fragment") return renderDepartureMapFragment();
   if (fragmentId === "river-crossing-fragment") return renderRiverCrossingFragment();
   if (fragmentId === "direction-fragment") return renderDirectionFragment();
+  if (fragmentId === "chishui-maneuver-fragment") return renderChishuiManeuverFragment();
   if (fragmentId === "iron-chain-fragment") return renderIronChainFragment();
+  if (fragmentId === "snow-grass-fragment") return renderSnowGrassFragment();
   return "";
 }
 
@@ -172,5 +196,25 @@ function renderIronChainFragment() {
     <span class="archive-fragment-visual__chain archive-fragment-visual__chain--one"></span>
     <span class="archive-fragment-visual__chain archive-fragment-visual__chain--two"></span>
     <span class="archive-fragment-visual__plank"></span>
+  `;
+}
+
+function renderChishuiManeuverFragment() {
+  return `
+    <span class="archive-fragment-visual__chishui-river"></span>
+    <span class="archive-fragment-visual__chishui-line archive-fragment-visual__chishui-line--one"></span>
+    <span class="archive-fragment-visual__chishui-line archive-fragment-visual__chishui-line--two"></span>
+    <span class="archive-fragment-visual__chishui-line archive-fragment-visual__chishui-line--three"></span>
+    <span class="archive-fragment-visual__chishui-line archive-fragment-visual__chishui-line--four"></span>
+    <strong>赤水</strong>
+  `;
+}
+
+function renderSnowGrassFragment() {
+  return `
+    <span class="archive-fragment-visual__snow-peak archive-fragment-visual__snow-peak--one"></span>
+    <span class="archive-fragment-visual__snow-peak archive-fragment-visual__snow-peak--two"></span>
+    <span class="archive-fragment-visual__grass"></span>
+    <strong>雪草</strong>
   `;
 }

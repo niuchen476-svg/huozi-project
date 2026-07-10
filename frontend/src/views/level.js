@@ -1,14 +1,17 @@
 import { fetchLevel, preloadLevel, submitReflection } from "../api.js";
 import { markCompleted, resetLevelProgress, hasCrossedBridge, markBridgeCrossed } from "../state.js";
 import { preloadBridgeActionAssets, renderBridgeAction } from "./bridgeAction.js";
+import { renderEmbeddedLevel } from "./embeddedLevel.js";
 import { renderZunyiMeeting } from "./zunyiMeeting.js";
 import { showArchiveFragmentReward } from "../archiveFragments.js";
 
 const ACTION_SCENES = {
   "ruijin-departure": renderRuijinDepartureAction3dLazy,
   "xiangjiang-battle": renderXiangjiangBattleAction3dLazy,
+  "sidu-chishui": renderEmbeddedLevel,
   "luding-bridge": renderBridgeAction,
   "zunyi-turn": renderZunyiMeeting,
+  "snow-grassland": renderEmbeddedLevel,
 };
 
 const actionSceneModulePromises = {};
@@ -46,7 +49,7 @@ export function preloadLevelResources(levelId) {
 }
 
 const POEM_FORMS = ["七律", "绝句", "词"];
-const REPLAY_ACTION_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle", "luding-bridge"]);
+const REPLAY_ACTION_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle", "sidu-chishui", "luding-bridge", "snow-grassland"]);
 
 const SPECIAL_CHALLENGES = {
   "ruijin-departure": {
@@ -116,6 +119,13 @@ export async function renderLevelView(root, levelId) {
     app.classList.add("app--fullbleed", "app--action-scene");
     actionResult = await actionScene(root, level);
     app.classList.remove("app--fullbleed", "app--action-scene");
+
+    if (actionResult === "completed") {
+      markCompleted(levelId);
+      await showArchiveFragmentReward(root, levelId);
+      window.location.hash = "#/map";
+      return;
+    }
 
     if (levelId === "zunyi-turn") {
       markCompleted(levelId);

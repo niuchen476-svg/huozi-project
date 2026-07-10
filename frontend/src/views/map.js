@@ -153,6 +153,14 @@ function renderFragmentMapEffects(fragments) {
     lines.push(`<path class="route-fragment-line route-fragment-line--direction" d="M 42 66 C 41 62, 39 60, 38 58" />`);
   }
 
+  if (collectedEffects.has("chishui-luding-route")) {
+    lines.push(`<path class="route-fragment-line route-fragment-line--chishui" d="M 38 58 C 32 55, 27 52, 21 51" />`);
+  }
+
+  if (collectedEffects.has("luding-snow-route")) {
+    lines.push(`<path class="route-fragment-line route-fragment-line--snow" d="M 21 51 C 24 49, 28 47, 31 46" />`);
+  }
+
   if (!lines.length) return "";
 
   return `

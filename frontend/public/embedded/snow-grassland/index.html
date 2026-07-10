@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>长征 · 爬雪山过草地</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    color: #f5f5f0;
+    overflow: hidden;
+    background: #0b1622;
+  }
+
+  /* ===== 通用舞台 ===== */
+  .stage {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    opacity: 0;
+    transition: opacity .8s ease;
+  }
+  .stage.active { display: flex; opacity: 1; }
+
+  /* ===== 背景：雪山场景（开头 / 结尾统一风格） ===== */
+  .scene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .scene svg { width: 100%; height: 100%; display: block; }
+  .scene::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,18,30,.55) 0%, rgba(8,18,30,.25) 45%, rgba(8,18,30,.75) 100%);
+  }
+  /* 飘雪 */
+  .snow { position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .snow i {
+    position:absolute; top:-10px; border-radius:50%;
+    background:#fff; opacity:.85;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) translateX(40px); opacity:.15; }
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 860px;
+    text-align: center;
+  }
+
+  /* ===== 标题 ===== */
+  .kicker {
+    letter-spacing: .5em;
+    font-size: 14px;
+    color: #e8c07d;
+    margin-bottom: 18px;
+    text-indent: .5em;
+  }
+  .title {
+    font-size: 60px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-shadow: 0 4px 24px rgba(0,0,0,.6), 0 0 40px rgba(232,192,125,.25);
+    margin-bottom: 10px;
+  }
+  .title .red { color: #e0402f; }
+  .subtitle {
+    font-size: 17px;
+    color: #cfd8dc;
+    letter-spacing: .28em;
+    margin-bottom: 34px;
+  }
+
+  /* ===== 资料卡 ===== */
+  .card {
+    background: rgba(15, 28, 42, .62);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(232,192,125,.28);
+    border-radius: 16px;
+    padding: 30px 36px;
+    text-align: left;
+    line-height: 2;
+    font-size: 16.5px;
+    color: #eceff1;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+  }
+  .card p { margin-bottom: 12px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card .hl { color: #e8c07d; font-weight: 600; }
+
+  /* ===== 按钮 ===== */
+  .btn {
+    margin-top: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 46px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    color: #fff;
+    background: linear-gradient(135deg, #c62828, #e0402f);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(224,64,47,.45);
+    transition: transform .2s, box-shadow .2s, filter .2s;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(224,64,47,.6); filter: brightness(1.08); }
+  .btn:active { transform: translateY(0); }
+  .btn.ghost {
+    background: transparent;
+    border: 1.5px solid rgba(232,192,125,.7);
+    color: #f0d9a8;
+    box-shadow: none;
+  }
+  .btn.ghost:hover { background: rgba(232,192,125,.12); box-shadow:none; }
+  .ending-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .ending-actions .btn { margin-top: 34px; }
+
+  /* ===== 答题界面 ===== */
+  #quiz .content { max-width: 780px; }
+  .progress {
+    display: flex; gap: 10px; justify-content: center; margin-bottom: 26px;
+  }
+  .progress .dot {
+    width: 34px; height: 6px; border-radius: 999px;
+    background: rgba(255,255,255,.18);
+    transition: background .3s;
+  }
+  .progress .dot.done { background: #e8c07d; }
+  .progress .dot.cur { background: #e0402f; }
+
+  .q-scene {
+    font-size: 13px; letter-spacing:.3em; color:#e8c07d; margin-bottom:14px;
+  }
+  .q-text {
+    font-size: 24px; font-weight: 700; line-height: 1.6;
+    margin-bottom: 30px; text-shadow: 0 2px 12px rgba(0,0,0,.5);
+  }
+  .options { display: flex; flex-direction: column; gap: 14px; }
+  .opt {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 22px;
+    background: rgba(15,28,42,.6);
+    border: 1.5px solid rgba(232,192,125,.25);
+    border-radius: 12px;
+    font-size: 17px; text-align: left; color:#eceff1;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .opt:hover { border-color: #e8c07d; background: rgba(232,192,125,.12); transform: translateX(4px); }
+  .opt .k {
+    flex: none;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgba(232,192,125,.2); color: #e8c07d; font-weight: 700;
+  }
+  .opt.correct { border-color:#43a047; background: rgba(67,160,71,.22); }
+  .opt.correct .k { background:#43a047; color:#fff; }
+  .opt.wrong { border-color:#e0402f; background: rgba(224,64,47,.22); }
+  .opt.wrong .k { background:#e0402f; color:#fff; }
+  .options.locked .opt { pointer-events: none; }
+
+  .feedback {
+    margin-top: 22px; min-height: 26px;
+    font-size: 16px; letter-spacing:.05em;
+    opacity:0; transition: opacity .3s;
+  }
+  .feedback.show { opacity:1; }
+  .feedback.ok { color:#8bd48e; }
+  .feedback.no { color:#ff8a80; }
+
+  /* ===== 会师提示界面 ===== */
+  #victory .content { max-width: 720px; }
+  .victory-badge {
+    font-size: 66px; margin-bottom: 22px;
+    filter: drop-shadow(0 6px 20px rgba(224,64,47,.5));
+    animation: pop .6s cubic-bezier(.2,1.4,.5,1);
+  }
+  @keyframes pop { from { transform: scale(0); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .victory-text {
+    font-size: 26px; font-weight: 700; line-height: 1.9;
+    letter-spacing: .06em;
+    text-shadow: 0 3px 18px rgba(0,0,0,.6);
+  }
+  .victory-text .hl { color:#e8c07d; }
+  .victory-sub { margin-top: 20px; font-size:15px; color:#cfd8dc; letter-spacing:.2em; }
+
+  /* ===== 结尾界面额外装饰 ===== */
+  .ending-star { color:#e0402f; font-size: 40px; margin-bottom: 8px; }
+  .quote {
+    margin-top: 26px; font-size: 20px; font-style: italic;
+    color:#f0d9a8; letter-spacing:.1em; line-height:1.8;
+  }
+  .quote small { display:block; margin-top:10px; font-style:normal; font-size:13px; color:#9fb0bc; letter-spacing:.3em; }
+
+  @media (max-width: 640px) {
+    .title { font-size: 40px; }
+    .q-text { font-size: 20px; }
+    .card { padding: 22px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= 开头资料界面 ================= -->
+<section class="stage active" id="intro">
+  <div class="scene" id="scene-a"></div>
+  <div class="snow" id="snow-a"></div>
+  <div class="content">
+    <div class="kicker">中 国 工 农 红 军 · 长 征</div>
+    <h1 class="title">爬雪山 · <span class="red">过草地</span></h1>
+    <div class="subtitle">一 九 三 五 年 · 川 西 高 原</div>
+    <div class="card">
+      <p>一九三五年，红军翻越连绵雪山、穿越茫茫草地，走过长征途中<span class="hl">自然环境最险恶</span>的一段路程。</p>
+      <p>红一方面军翻越了海拔四千多米的<span class="hl">夹金山</span>等大雪山。山上空气稀薄、终年积雪、狂风暴雪，许多战士倒下便再未起来。</p>
+      <p>随后，红军进入川西北的<span class="hl">松潘草地</span>——一望无际的沼泽泥潭，一脚踏空便会陷入泥沼。粮食断绝，战士们<span class="hl">挖野菜、煮皮带、嚼草根</span>充饥，靠着钢铁般的意志走出死亡之地。</p>
+      <p>雪山巍巍，草地茫茫。请你化身一名红军战士，做出正确的抉择，带领队伍走出绝境。</p>
+    </div>
+    <button class="btn" onclick="startQuiz()">踏上征途 ▸</button>
+  </div>
+</section>
+
+<!-- ================= 答题界面 ================= -->
+<section class="stage" id="quiz">
+  <div class="scene" id="scene-b"></div>
+  <div class="snow" id="snow-b"></div>
+  <div class="content">
+    <div class="progress" id="progress"></div>
+    <div class="q-scene" id="qScene">情 境</div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</section>
+
+<!-- ================= 会师提示界面（3 秒） ================= -->
+<section class="stage" id="victory">
+  <div class="scene" id="scene-c"></div>
+  <div class="snow" id="snow-c"></div>
+  <div class="content">
+    <div class="victory-badge">🎖️</div>
+    <div class="victory-text">
+      你带领红军战胜雪山草地的重重艰险，<br>
+      <span class="hl">摆脱了敌军的围追堵截</span>，<br>
+      胜利与 <span class="hl">红四方面军</span> 胜利会合！
+    </div>
+    <div class="victory-sub">即 将 抵 达 终 点 …</div>
+  </div>
+</section>
+
+<!-- ================= 结尾资料界面 ================= -->
+<section class="stage" id="ending">
+  <div class="scene" id="scene-d"></div>
+  <div class="snow" id="snow-d"></div>
+  <div class="content">
+    <div class="ending-star">★</div>
+    <div class="kicker">征 途 · 尾 声</div>
+    <h1 class="title" style="font-size:48px;">雪 山 草 地 · <span class="red">胜 利 会 师</span></h1>
+    <div class="card">
+      <p>一九三五年六月，红一方面军翻越<span class="hl">夹金山</span>，在懋功地区与红四方面军<span class="hl">胜利会师</span>。</p>
+      <p>此后，红军又征服了党岭山、梦笔山等一座座雪山，穿越了渺无人烟的<span class="hl">松潘大草地</span>。缺氧、严寒、饥饿、沼泽……红军以血肉之躯战胜了大自然的极限。</p>
+      <p>爬雪山、过草地，是长征途中<span class="hl">最为悲壮的篇章</span>。无数红军战士长眠于皑皑雪山与茫茫草地，却为革命保存了不灭的火种。</p>
+      <p>一九三六年十月，红军三大主力在甘肃会宁会师，二万五千里长征<span class="hl">胜利结束</span>。</p>
+    </div>
+    <div class="quote">
+      “更喜岷山千里雪，三军过后尽开颜。”
+      <small>—— 毛 泽 东 《七 律 · 长 征》</small>
+    </div>
+    <div class="ending-actions">
+      <button class="btn" onclick="finishLevel()">完 成 关 卡</button>
+      <button class="btn ghost" onclick="restartAll()">重 走 长 征 路</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ===== 雪山场景 SVG（开头/答题/会师/结尾统一风格） ===== */
+function mountainSVG() {
+  return `
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1a3a52"/>
+        <stop offset="0.5" stop-color="#2c5978"/>
+        <stop offset="1" stop-color="#6d8fa3"/>
+      </linearGradient>
+      <linearGradient id="snowg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="#b9cdd8"/>
+      </linearGradient>
+      <linearGradient id="rock" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#5a6b78"/>
+        <stop offset="1" stop-color="#38434d"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#sky)"/>
+    <circle cx="1140" cy="180" r="70" fill="#fdf6e3" opacity="0.9"/>
+    <circle cx="1140" cy="180" r="110" fill="#fdf6e3" opacity="0.12"/>
+    <path d="M0 560 L220 380 L360 500 L560 320 L760 520 L980 350 L1180 520 L1440 400 L1440 900 L0 900 Z" fill="url(#rock)" opacity="0.55"/>
+    <path d="M-40 900 L360 300 L520 520 L760 200 L980 470 L1240 260 L1500 900 Z" fill="url(#rock)"/>
+    <path d="M360 300 L300 385 L340 375 L318 430 L400 380 L440 420 L520 520 L470 470 L430 500 L400 440 L360 300 Z" fill="url(#snowg)"/>
+    <path d="M760 200 L700 300 L740 285 L715 350 L800 290 L850 340 L980 470 L900 430 L860 470 L820 400 L760 200 Z" fill="url(#snowg)"/>
+    <path d="M1240 260 L1180 360 L1230 345 L1360 560 L1300 520 L1240 260 Z" fill="url(#snowg)"/>
+    <path d="M0 720 Q360 640 720 710 T1440 700 L1440 900 L0 900 Z" fill="url(#snowg)" opacity="0.95"/>
+    <path d="M0 790 Q360 740 720 790 T1440 780 L1440 900 L0 900 Z" fill="#e8f1f6"/>
+  </svg>`;
+}
+
+/* 注入所有场景 */
+['scene-a','scene-b','scene-c','scene-d'].forEach(id => {
+  document.getElementById(id).innerHTML = mountainSVG();
+});
+
+/* ===== 飘雪 ===== */
+function makeSnow(el) {
+  let html = '';
+  for (let i = 0; i < 40; i++) {
+    const size = (Math.floor(i % 4) + 2);            // 2~5px（不用 Math.random）
+    const left = ((i * 37) % 100);                    // 均匀分布
+    const dur = 6 + (i % 7);                           // 6~12s
+    const delay = -(i % 10);                           // 负延迟错开
+    html += `<i style="left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></i>`;
+  }
+  el.innerHTML = html;
+}
+['snow-a','snow-b','snow-c','snow-d'].forEach(id => makeSnow(document.getElementById(id)));
+
+/* ===== 题库：情境选择题 ===== */
+const QUESTIONS = [
+  {
+    scene: "情 境 一 · 翻 越 夹 金 山",
+    q: "队伍翻越终年积雪的夹金山，山上空气稀薄、寒风刺骨，有战士想坐下歇一歇。作为带队者，你应当？",
+    options: [
+      "让大家原地坐下休息，恢复体力",
+      "互相搀扶、坚持不停脚步，快速翻过山顶",
+      "就地生火扎营，等天气转暖再走",
+      "分头下山，各自寻找避风的山洞"
+    ],
+    answer: 1,
+    ok: "正确！雪山上一旦坐下极易被冻僵牺牲，只有咬牙坚持、互相搀扶不停脚，才能活着翻过雪山。",
+    no: "错误！雪山严寒缺氧，坐下歇息往往就再也站不起来。"
+  },
+  {
+    scene: "情 境 二 · 挺 进 松 潘 草 地",
+    q: "进入草地，眼前是一片看似平整的绿色沼泽。怎样通过才安全？",
+    options: [
+      "径直踩上绿草抄近路，节省体力",
+      "沿着水草最茂盛、最平坦的地方走",
+      "跟随向导、踩着探明的草甸路线，一个跟一个走",
+      "单独快速冲过去，减少停留"
+    ],
+    answer: 2,
+    ok: "正确！草地表面是致命的泥沼，必须跟随向导、踩着踏勘过的草甸鱼贯而行，才不会陷进去。",
+    no: "错误！草地看似平坦，实为吃人的沼泽，贸然踩踏会陷入泥潭。"
+  },
+  {
+    scene: "情 境 三 · 断 粮 之 困",
+    q: "草地深处粮食吃光了，战士们又冷又饿。为了活下去、走出草地，你带头做什么？",
+    options: [
+      "原地等待后方送来补给",
+      "挖野菜、煮皮带、嚼草根,想尽办法充饥前进",
+      "立即掉头返回出发地找吃的",
+      "把所有干粮留给自己，保证带队者体力"
+    ],
+    answer: 1,
+    ok: "正确！断粮的红军正是靠挖野菜、煮皮带、嚼草根，以惊人的意志坚持走出了草地。",
+    no: "错误！草地无处补给，返回或空等只会全军覆没，唯有就地找一切能吃的东西坚持前进。"
+  },
+  {
+    scene: "情 境 四 · 生 死 与 共",
+    q: "一名战友因饥饿寒冷倒在泥沼边，几乎走不动了。你会怎么做？",
+    options: [
+      "队伍要紧，只能忍痛把他留下",
+      "搀扶他、鼓励他，分出仅有的干粮，一起走出草地",
+      "让他自己想办法追上来",
+      "把武器物资丢给他背，减轻自己负担"
+    ],
+    answer: 1,
+    ok: "正确！‘不掉一人’是红军的信念，战友间互相搀扶、生死与共，正是长征胜利的力量源泉。",
+    no: "错误！红军是钢铁般团结的队伍，绝不会丢下自己的战友。"
+  },
+  {
+    scene: "情 境 五 · 胜 利 会 师",
+    q: "历经雪山草地的九死一生，红军终于走出绝境。这段征程最伟大的意义是？",
+    options: [
+      "证明了川西的风景十分壮美",
+      "战胜了恶劣的自然环境，摆脱敌军围追堵截，为北上会师奠定基础",
+      "缩短了长征的总里程",
+      "找到了一条通往城市的近路"
+    ],
+    answer: 1,
+    ok: "正确！翻雪山、过草地，红军以血肉之躯战胜自然极限，摆脱围追堵截，为胜利会师奠定了基础。",
+    no: "错误！雪山草地的真正意义，在于红军战胜绝境、摆脱敌军围堵，走向胜利会师。"
+  }
+];
+
+let cur = 0;
+
+function buildProgress() {
+  const p = document.getElementById('progress');
+  p.innerHTML = QUESTIONS.map((_, i) =>
+    `<div class="dot ${i < cur ? 'done' : (i === cur ? 'cur' : '')}"></div>`
+  ).join('');
+}
+
+function renderQuestion() {
+  const item = QUESTIONS[cur];
+  buildProgress();
+  document.getElementById('qScene').textContent = item.scene;
+  document.getElementById('qText').textContent = item.q;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+  const box = document.getElementById('options');
+  box.className = 'options';
+  const keys = ['A','B','C','D'];
+  box.innerHTML = item.options.map((opt, i) =>
+    `<div class="opt" data-i="${i}"><span class="k">${keys[i]}</span><span>${opt}</span></div>`
+  ).join('');
+  box.querySelectorAll('.opt').forEach(el => {
+    el.addEventListener('click', () => choose(parseInt(el.dataset.i)));
+  });
+}
+
+function choose(i) {
+  const item = QUESTIONS[cur];
+  const box = document.getElementById('options');
+  box.classList.add('locked');
+  const opts = box.querySelectorAll('.opt');
+  const fb = document.getElementById('feedback');
+
+  if (i === item.answer) {
+    opts[i].classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = item.ok + '　（即将进入下一关…）';
+    setTimeout(() => {
+      cur++;
+      if (cur >= QUESTIONS.length) {
+        showVictory();
+      } else {
+        renderQuestion();
+      }
+    }, 1500);
+  } else {
+    opts[i].classList.add('wrong');
+    opts[item.answer].classList.add('correct');
+    fb.className = 'feedback show no';
+    fb.textContent = item.no + '　队伍陷入绝境，请从头再走一遍！';
+    setTimeout(() => {
+      cur = 0;               // 答错回到第一关
+      renderQuestion();
+    }, 2200);
+  }
+}
+
+/* ===== 界面切换 ===== */
+function show(id) {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  cur = 0;
+  renderQuestion();
+  show('quiz');
+}
+
+function showVictory() {
+  show('victory');
+  // 会师界面停留 3 秒后跳转到结尾资料界面
+  setTimeout(() => show('ending'), 3000);
+}
+
+function finishLevel() {
+  window.parent?.postMessage({ type: "changzheng-level-complete", levelId: "snow-grassland" }, "*");
+}
+
+function restartAll() {
+  cur = 0;
+  show('intro');
+}
+</script>
+</body>
+</html>

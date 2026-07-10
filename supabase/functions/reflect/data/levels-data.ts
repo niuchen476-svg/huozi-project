@@ -128,18 +128,20 @@ export const LEVELS: Record<string, { scenario: string; significance?: string }>
   "sidu-chishui": {
     "levelId": "sidu-chishui",
     "title": "四渡赤水",
-    "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-    "playerQuestion": "TODO：待填写本关推断问题。",
-    "cards": [],
-    "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+    "date": "1935 年 1 月至 3 月",
+    "location": "贵州 · 川南 · 云南 · 赤水河流域",
+    "scenario": "遵义会议后，中央红军以赤水河为战场，四次机动渡河，声东击西、避实击虚，在数十万敌军围追堵截中重新争取主动。",
+    "playerQuestion": "依照真实历史，把红军标志拖到四次渡河的正确渡口。",
+    "cards": []
   },
   "snow-grassland": {
     "levelId": "snow-grassland",
     "title": "雪山草地",
-    "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-    "playerQuestion": "TODO：待填写本关推断问题。",
-    "cards": [],
-    "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。"
+    "date": "1935 年",
+    "location": "川西高原 · 夹金山与松潘草地",
+    "scenario": "红军翻越雪山、穿越草地，在严寒、缺氧、沼泽和断粮中保存队伍继续前进的力量。",
+    "playerQuestion": "面对雪山草地的极限环境，做出正确选择，带领队伍走出绝境。",
+    "cards": []
   },
   "xiangjiang-battle": {
     "levelId": "xiangjiang-battle",
