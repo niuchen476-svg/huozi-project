@@ -1,16 +1,16 @@
 export const ZUNYI_ASSETS = {
   cinematic: {
     introVideo: "/assets/levels/zunyi-turn/videos/zunyi-intro-02.mp4",
-    exteriorNight: "/assets/levels/zunyi-turn/dora-exterior.png",
-    doorwayEntry: "/assets/levels/zunyi-turn/dora-doorway.png",
-    meetingRoomWide: "/assets/levels/zunyi-turn/meeting-painting-wide.png",
-    recorderDesk: "/assets/levels/zunyi-turn/dora-desk.png",
-    recorderDeskFallback: "/assets/levels/zunyi-turn/meeting-table-room.png",
+    exteriorNight: "/assets/levels/zunyi-turn/dora-exterior.jpg",
+    doorwayEntry: "/assets/levels/zunyi-turn/dora-doorway.jpg",
+    meetingRoomWide: "/assets/levels/zunyi-turn/meeting-painting-wide.jpg",
+    recorderDesk: "/assets/levels/zunyi-turn/dora-desk.jpg",
+    recorderDeskFallback: "/assets/levels/zunyi-turn/meeting-table-room.jpg",
   },
   props: {
-    meetingMap: "/assets/levels/zunyi-turn/meeting-room-map.png",
-    meetingMapFallback: "/assets/levels/zunyi-turn/meeting-room-map.png",
-    lossReport: "/assets/levels/zunyi-turn/handwriting-closeup.png",
+    meetingMap: "/assets/levels/zunyi-turn/meeting-room-map.jpg",
+    meetingMapFallback: "/assets/levels/zunyi-turn/meeting-room-map.jpg",
+    lossReport: "/assets/levels/zunyi-turn/handwriting-closeup.jpg",
     telegram: "/assets/levels/zunyi-turn/meeting-manuscript.png",
     recordBook: "/assets/levels/zunyi-turn/meeting-manuscript.png",
     letterStack: "/assets/relics/document-letters.png",
@@ -23,7 +23,7 @@ export const ZUNYI_ASSETS = {
   },
   effects: {
     lampGlow: "/assets/relics/kerosene-lamp.png",
-    paperInk: "/assets/levels/zunyi-turn/handwriting-closeup.png",
+    paperInk: "/assets/levels/zunyi-turn/handwriting-closeup.jpg",
   },
   fragments: {
     meetingRecord: "/assets/relics/victory-paper.png",

@@ -48,6 +48,7 @@
         background-image: url("assets/chishui-route.jpg");
         background-size: cover;
         background-position: center;
+        filter: sepia(0.12) saturate(0.82) contrast(1.06) brightness(0.88);
       }
       .scene__vignette {
         position: absolute;
@@ -57,7 +58,7 @@
       }
 
       /* ---------- 历史背景前置（与飞夺泸定桥一致） ---------- */
-      .scene--intro .scene__bg { filter: sepia(0.1) contrast(1.05) brightness(0.62); }
+      .scene--intro .scene__bg { filter: sepia(0.14) saturate(0.8) contrast(1.06) brightness(0.62); }
 
       .history-intro {
         position: absolute;
@@ -104,7 +105,7 @@
         color: var(--color-paper);
         background: var(--color-red);
         border: none;
-        border-radius: 999px;
+        border-radius: 6px;
         cursor: pointer;
         box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
         transition: background-color 0.15s ease, transform 0.15s ease;
@@ -119,14 +120,14 @@
         color: rgba(237, 228, 205, 0.92);
         background: transparent;
         border: 1px solid rgba(248, 230, 168, 0.4);
-        border-radius: 999px;
+        border-radius: 6px;
         cursor: pointer;
         transition: border-color 0.15s ease, background-color 0.15s ease;
       }
       .ghost-btn:hover { border-color: rgba(242, 201, 76, 0.75); background: rgba(156, 35, 27, 0.25); }
 
       /* ---------- 拖动关卡场景 ---------- */
-      .scene--play .scene__bg { filter: sepia(0.04) contrast(1.04) brightness(0.9); }
+      .scene--play .scene__bg { filter: sepia(0.12) saturate(0.82) contrast(1.06) brightness(0.9); }
       .scene__scrim {
         position: absolute;
         inset: 0;

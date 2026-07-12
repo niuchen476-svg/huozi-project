@@ -124,18 +124,18 @@ const ZUNYI_FRAGMENT = {
   text: "你记录下了遵义会议的关键判断。它会放进档案袋，和后面“四渡赤水”“飞夺泸定桥”的路线线索连在一起，说明红军怎样一步步重新争取主动。",
   gallery: [
     {
-      image: "/assets/levels/zunyi-turn/site-exterior.png",
-      zoomImage: "/assets/levels/zunyi-turn/site-exterior.png",
+      image: "/assets/levels/zunyi-turn/site-exterior.jpg",
+      zoomImage: "/assets/levels/zunyi-turn/site-exterior.jpg",
       title: "会址外景",
     },
     {
-      image: "/assets/levels/zunyi-turn/meeting-room-map.png",
-      zoomImage: "/assets/levels/zunyi-turn/meeting-room-map.png",
+      image: "/assets/levels/zunyi-turn/meeting-room-map.jpg",
+      zoomImage: "/assets/levels/zunyi-turn/meeting-room-map.jpg",
       title: "会场线索",
     },
     {
-      image: "/assets/levels/zunyi-turn/handwriting-closeup.png",
-      zoomImage: "/assets/levels/zunyi-turn/handwriting-closeup.png",
+      image: "/assets/levels/zunyi-turn/handwriting-closeup.jpg",
+      zoomImage: "/assets/levels/zunyi-turn/handwriting-closeup.jpg",
       title: "记录细节",
     },
   ],
@@ -152,8 +152,8 @@ const MEETING_RECORDS = [
     sourceCard: {
       title: "《关于反对敌人五次围剿的总结》的决议",
       text: "这份《决议》重点总结第五次反“围剿”和长征初期的失败教训，指出错误不是为了削弱团结，而是为了把问题讲清楚、把队伍重新凝聚起来。",
-      image: "/assets/levels/zunyi-turn/source/zunyi-record-summary-cover.png",
-      zoomImage: "/assets/levels/zunyi-turn/source/zunyi-record-summary-pages.png",
+      image: "/assets/levels/zunyi-turn/source/zunyi-record-summary-cover.jpg",
+      zoomImage: "/assets/levels/zunyi-turn/source/zunyi-record-summary-pages.jpg",
       sourceName: "《关于反对敌人五次围剿的总结》的决议",
       excerpt: "党在揭发了这种错误之后，不是削弱而是加强了。",
       credit: "中央档案馆藏遵义会议相关决议文献",
@@ -189,8 +189,8 @@ const MEETING_RECORDS = [
     sourceCard: {
       title: "重要组织调整",
       text: "会议增选毛泽东同志为中央政治局常委，并让他参加中央军事指挥的领导工作，红军开始重新争取主动。",
-      image: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-detail.png",
-      zoomImage: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-thumb.png",
+      image: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-detail.jpg",
+      zoomImage: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-thumb.jpg",
       sourceName: "遵义会议后的重要组织调整",
       excerpt: "增选毛泽东同志为中央政治局常委，并让他参加中央军事指挥的领导工作。",
       credit: "根据遵义会议相关史实整理",
@@ -271,7 +271,6 @@ export function renderZunyiMeeting(root, level) {
       activeSourceCard: null,
       zoomSourceCard: null,
       zoomArchiveImage: null,
-      showFragment: false,
       recordFeedback: "先听发言，再选择最应该写进记录纸的重点。",
       feedback: "你是会议小记录员。先把桌上的线索整理清楚，再写出会议判断。",
       hint: "小参谋：别急着背结论，先看见危机，再找原因。",
@@ -297,7 +296,6 @@ function render(root, state) {
 
         ${state.step === "intro" ? renderIntro(state) : state.step === "rewrite" ? renderRewriteCanvas(state) : renderStep(step, state)}
       </div>
-      ${state.showFragment ? renderArchiveFragment(ZUNYI_FRAGMENT) : ""}
       ${state.zoomSourceCard ? renderSourceCardZoom(state.zoomSourceCard) : ""}
       ${state.zoomArchiveImage ? renderArchiveImageZoom(state.zoomArchiveImage) : ""}
     </div>
@@ -773,8 +771,8 @@ function renderDecisionWorkspace(state) {
 
 function renderRouteWorkspace() {
   return `
-    <div class="zunyi-turn-map" style="--zunyi-desk-bg: url('/assets/levels/zunyi-turn/meeting-table-room.png')">
-      <img class="zunyi-turn-map__paper" src="/assets/levels/zunyi-turn/meeting-room-map.png" alt="会议后的路线图" />
+    <div class="zunyi-turn-map" style="--zunyi-desk-bg: url('/assets/levels/zunyi-turn/meeting-table-room.jpg')">
+      <img class="zunyi-turn-map__paper" src="/assets/levels/zunyi-turn/meeting-room-map.jpg" alt="会议后的路线图" />
       <div class="zunyi-turn-map__route">
         ${ROUTE_POINTS.map(
           (point, index) => `
@@ -891,13 +889,7 @@ function attachEvents(root, state) {
 
   root.querySelector("[data-finish-rewrite]")?.addEventListener("click", () => {
     state.completed.add("rewrite");
-    state.showFragment = true;
-    render(root, state);
-  });
-
-  root.querySelector("[data-collect-fragment]")?.addEventListener("click", () => {
-    saveArchiveFragment(ZUNYI_FRAGMENT.id);
-    state.resolve();
+    state.resolve("completed");
   });
 
   root.querySelectorAll("[data-card]").forEach((button) => {
@@ -964,18 +956,8 @@ function attachEvents(root, state) {
 
   root.querySelector("[data-finish]")?.addEventListener("click", () => {
     state.completed.add("route");
-    state.showFragment = true;
-    render(root, state);
+    state.resolve("completed");
   });
-}
-
-function saveArchiveFragment(id) {
-  const key = "huozi.archiveFragments";
-  const fragments = JSON.parse(window.localStorage.getItem(key) || "[]");
-  if (!fragments.includes(id)) {
-    fragments.push(id);
-    window.localStorage.setItem(key, JSON.stringify(fragments));
-  }
 }
 
 function placeSelectedCard(root, state, zoneId) {

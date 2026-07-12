@@ -5,6 +5,7 @@ import { preloadLevelResources } from "./level.js";
 
 const MAP_IMAGE_SRC = "assets/map/route.jpg";
 const INSTANT_ENTRY_LEVELS = new Set(["ruijin-departure", "xiangjiang-battle"]);
+const imagePreloads = new Map();
 
 // 坐标为在地图图片中的百分比位置（横向 x% / 纵向 y%），对应图上的星标/地名：
 // 瑞金 → 湘江战役 → 遵义会议 → 四渡赤水（标签处）→ 强渡大渡河/飞夺泸定桥 → 翻越夹金山/两河口会议 → 会宁会师
@@ -20,7 +21,7 @@ const MARKER_POSITIONS = {
 
 export function preloadMapAssets() {
   preloadLevelsIndex();
-  preloadImage(MAP_IMAGE_SRC);
+  return preloadImage(MAP_IMAGE_SRC, "high");
 }
 
 export async function renderMapView(root) {
@@ -237,10 +238,19 @@ function attachArchiveBag(root, fragments) {
   });
 }
 
-function preloadImage(src) {
-  const image = new Image();
-  image.decoding = "async";
-  image.src = src;
+function preloadImage(src, priority = "auto") {
+  if (imagePreloads.has(src)) return imagePreloads.get(src);
+
+  const promise = new Promise((resolve) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.fetchPriority = priority;
+    image.onload = () => resolve(true);
+    image.onerror = () => resolve(false);
+    image.src = src;
+  });
+  imagePreloads.set(src, promise);
+  return promise;
 }
 
 function idle(callback) {

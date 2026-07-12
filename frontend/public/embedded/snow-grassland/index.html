@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preload" href="assets/snow-main.jpg" as="image" fetchpriority="high">
 <title>长征 · 爬雪山过草地</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  /* 全部改为直角矩形，去掉一切圆角 */
-  * { border-radius: 0 !important; }
   html, body { height: 100%; }
   body {
     font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
     color: #f5f5f0;
     overflow: hidden;
-    background: #0b1622;
+    background: #15100c;
   }
 
   /* ===== 通用舞台 ===== */
@@ -48,6 +47,7 @@
     background: inherit;
     background-size: cover;
     background-position: center;
+    filter: sepia(.1) saturate(.8) contrast(1.05);
     animation: slowzoom 26s ease-in-out infinite alternate;
   }
   @keyframes slowzoom { from { transform: scale(1); } to { transform: scale(1.08); } }
@@ -55,8 +55,8 @@
     content: "";
     position: absolute; inset: 0;
     background:
-      linear-gradient(180deg, rgba(6,14,24,.62) 0%, rgba(6,14,24,.30) 40%, rgba(6,14,24,.55) 72%, rgba(6,14,24,.86) 100%),
-      radial-gradient(120% 90% at 50% 30%, transparent 45%, rgba(6,14,24,.55) 100%);
+      linear-gradient(180deg, rgba(20,13,8,.62) 0%, rgba(20,13,8,.26) 40%, rgba(20,13,8,.55) 72%, rgba(12,8,5,.9) 100%),
+      radial-gradient(120% 90% at 50% 30%, transparent 45%, rgba(20,13,8,.58) 100%);
   }
   /* 飘雪 */
   .snow { position:absolute; inset:0; z-index:1; pointer-events:none; }
@@ -93,25 +93,25 @@
     text-shadow: 0 4px 26px rgba(0,0,0,.85), 0 2px 6px rgba(0,0,0,.9), 0 0 44px rgba(232,192,125,.22);
     margin-bottom: 10px;
   }
-  .title .red { color: #e0402f; }
+  .title .red { color: #b73a2f; }
   .subtitle {
     font-size: 17px;
-    color: #cfd8dc;
+    color: #d7c8a7;
     letter-spacing: .28em;
     margin-bottom: 34px;
   }
 
   /* ===== 资料卡 ===== */
   .card {
-    background: rgba(9, 18, 30, .74);
+    background: rgba(26, 17, 11, .78);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(232,192,125,.34);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 30px 36px;
     text-align: left;
     line-height: 2;
     font-size: 16.5px;
-    color: #eef2f5;
+    color: #ede4cd;
     box-shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.04);
   }
   .card p { margin-bottom: 12px; }
@@ -129,14 +129,14 @@
     font-weight: 600;
     letter-spacing: .18em;
     color: #fff;
-    background: linear-gradient(135deg, #c62828, #e0402f);
+    background: linear-gradient(135deg, #6f1712, #9c231b);
     border: none;
-    border-radius: 999px;
+    border-radius: 6px;
     cursor: pointer;
-    box-shadow: 0 12px 30px rgba(224,64,47,.45);
+    box-shadow: 0 12px 30px rgba(111,23,18,.42);
     transition: transform .2s, box-shadow .2s, filter .2s;
   }
-  .btn:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(224,64,47,.6); filter: brightness(1.08); }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(111,23,18,.55); filter: brightness(1.08); }
   .btn:active { transform: translateY(0); }
   .btn.ghost {
     background: transparent;
@@ -156,9 +156,9 @@
   /* ===== 答题界面：题目左上 / 选项居中 / 进度右下 ===== */
   /* 题目区（左上角） */
   .quiz-topleft {
-    position: absolute; top: 34px; left: 34px; z-index: 3;
-    width: 400px; max-width: 42vw; text-align: left;
-    background: rgba(9, 18, 30, .78);
+    position: absolute; top: 70px; left: 34px; z-index: 3;
+    width: 360px; max-width: 38vw; text-align: left;
+    background: rgba(26, 17, 11, .82);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(232,192,125,.32);
     padding: 20px 22px;
@@ -181,7 +181,7 @@
     transition: background .3s;
   }
   .progress .dot.done { background: #e8c07d; }
-  .progress .dot.cur { background: #e0402f; }
+  .progress .dot.cur { background: #9c231b; }
 
   .q-scene {
     font-size: 13px; letter-spacing:.28em; color:#e8c07d; margin-bottom:12px;
@@ -190,10 +190,10 @@
   .opt {
     display: flex; align-items: center; gap: 16px;
     padding: 16px 22px;
-    background: rgba(15,28,42,.6);
+    background: rgba(34,22,14,.7);
     border: 1.5px solid rgba(232,192,125,.25);
-    border-radius: 12px;
-    font-size: 17px; text-align: left; color:#eceff1;
+    border-radius: 6px;
+    font-size: 17px; text-align: left; color:#ede4cd;
     cursor: pointer;
     transition: all .2s;
   }
@@ -206,8 +206,8 @@
   }
   .opt.correct { border-color:#43a047; background: rgba(67,160,71,.22); }
   .opt.correct .k { background:#43a047; color:#fff; }
-  .opt.wrong { border-color:#e0402f; background: rgba(224,64,47,.22); }
-  .opt.wrong .k { background:#e0402f; color:#fff; }
+  .opt.wrong { border-color:#9c231b; background: rgba(156,35,27,.26); }
+  .opt.wrong .k { background:#9c231b; color:#fff; }
   .options.locked .opt { pointer-events: none; }
 
   .feedback {
@@ -222,10 +222,10 @@
   /* ===== 章节标签 / 任务提示 ===== */
   .chapter {
     font-size: 13px; letter-spacing: .38em; font-weight: 700;
-    color: #e0402f; margin-bottom: 8px; text-indent: .38em;
+    color: #c94a3d; margin-bottom: 8px; text-indent: .38em;
   }
   .task {
-    font-size: 15px; line-height: 1.8; color: #eef2f5;
+    font-size: 15px; line-height: 1.8; color: #ede4cd;
     background: rgba(0,0,0,.30);
     border-left: 3px solid #e8c07d;
     padding: 12px 16px; margin-bottom: 0;
@@ -236,7 +236,7 @@
   /* 窄屏：题目回到顶部通栏，进度条居中 */
   @media (max-width: 720px) {
     .quiz-topleft {
-      position: static; width: 100%; max-width: none; margin-bottom: 22px;
+      position: static; width: 100%; max-width: none; margin: 38px 0 14px;
     }
     #quiz.stage { justify-content: flex-start; padding-top: 26px; }
     .progress { position: static; justify-content: center; margin-top: 24px; }
@@ -250,10 +250,10 @@
   .item {
     position: relative;
     padding: 20px 16px;
-    background: rgba(15,28,42,.62);
+    background: rgba(34,22,14,.72);
     border: 1.5px solid rgba(232,192,125,.28);
-    border-radius: 12px;
-    font-size: 17px; text-align: center; color:#eceff1;
+    border-radius: 6px;
+    font-size: 17px; text-align: center; color:#ede4cd;
     cursor: pointer; transition: all .18s;
   }
   .item:hover { border-color:#e8c07d; background: rgba(232,192,125,.12); }
@@ -291,15 +291,67 @@
     text-shadow: 0 3px 18px rgba(0,0,0,.6);
   }
   .victory-text .hl { color:#e8c07d; }
-  .victory-sub { margin-top: 20px; font-size:15px; color:#cfd8dc; letter-spacing:.2em; }
+  .victory-sub { margin-top: 20px; font-size:15px; color:#d7c8a7; letter-spacing:.2em; }
 
   /* ===== 结尾界面额外装饰 ===== */
-  .ending-star { color:#e0402f; font-size: 40px; margin-bottom: 8px; }
+  .ending-star { color:#9c231b; font-size: 40px; margin-bottom: 8px; }
   .quote {
     margin-top: 26px; font-size: 20px; font-style: italic;
     color:#f0d9a8; letter-spacing:.1em; line-height:1.8;
   }
-  .quote small { display:block; margin-top:10px; font-style:normal; font-size:13px; color:#9fb0bc; letter-spacing:.3em; }
+  .quote small { display:block; margin-top:10px; font-style:normal; font-size:13px; color:#b9aa8b; letter-spacing:.3em; }
+
+  /* ===== 馆藏家书互动 ===== */
+  .archive-letter-stage {
+    display: grid;
+    grid-template-columns: minmax(260px, .9fr) minmax(300px, 1.1fr);
+    gap: 22px;
+    align-items: center;
+    width: min(920px, calc(100vw - 48px));
+    margin: 0 auto;
+  }
+  .archive-letter-stage figure {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid rgba(232,192,125,.5);
+    border-radius: 6px;
+    background: rgba(31,20,12,.86);
+    box-shadow: 0 20px 54px rgba(0,0,0,.55);
+    transform: rotate(-1deg);
+  }
+  .archive-letter-stage img {
+    display: block;
+    width: 100%;
+    max-height: 54vh;
+    object-fit: contain;
+    border-radius: 3px;
+    background: #d8c49d;
+    filter: sepia(.08) saturate(.82) contrast(1.06);
+  }
+  .archive-letter-stage figcaption {
+    margin-top: 10px;
+    color: #d7c8a7;
+    font-size: 12px;
+    line-height: 1.7;
+    text-align: left;
+  }
+  .archive-letter-stage figcaption a { color: #e8c07d; }
+  .archive-letter-stage .options { min-width: 0; }
+  .archive-letter-stage .opt { width: 100%; font: inherit; }
+  .archive-letter-hint {
+    margin: 0 0 14px;
+    color: #e8c07d;
+    font-size: 13px;
+    letter-spacing: .08em;
+  }
+  @media (max-width: 760px) {
+    .archive-letter-stage { grid-template-columns: 1fr; width: min(94vw, 620px); gap: 8px; }
+    .archive-letter-stage figure { width: min(330px, 82vw); margin: 0 auto; }
+    .archive-letter-stage img { max-height: 25vh; }
+    .archive-letter-stage .opt { padding: 8px 14px; font-size: 13.5px; }
+    .archive-letter-stage .options { gap: 9px; }
+    .archive-letter-hint { margin-bottom: 8px; }
+  }
 
   /* ===== 档案袋入口（固定右上角） ===== */
   .archive-entry {
@@ -441,9 +493,9 @@
     pointer-events: auto;
     max-width: 210px;
     padding: 11px 15px;
-    background: rgba(9, 18, 30, .84);
+    background: rgba(26, 17, 11, .86);
     border: 1.5px solid rgba(232, 192, 125, .55);
-    color: #eceff1; font-size: 15px; font-weight: 600; line-height: 1.4;
+    color: #ede4cd; font-size: 15px; font-weight: 600; line-height: 1.4;
     text-align: center; cursor: pointer;
     backdrop-filter: blur(4px);
     box-shadow: 0 10px 26px rgba(0, 0, 0, .55);
@@ -474,14 +526,14 @@
   }
   .pos-opt.correct { border-color: #43a047; background: rgba(67, 160, 71, .34); }
   .pos-opt.correct::after { border-top-color: #43a047; }
-  .pos-opt.wrong { border-color: #e0402f; background: rgba(224, 64, 47, .34); }
+  .pos-opt.wrong { border-color: #9c231b; background: rgba(156, 35, 27, .34); }
   .pos-layer.locked .pos-opt { pointer-events: none; }
   /* 底部居中的确认按钮 + 反馈 */
   .pos-confirm { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 4; margin-top: 0; pointer-events: auto; }
   .pos-feedback {
     position: absolute; left: 50%; bottom: 86px; transform: translateX(-50%); z-index: 4;
     max-width: 74vw; text-align: center; font-size: 16px; letter-spacing: .04em;
-    padding: 8px 20px; background: rgba(9, 18, 30, .82); color: #eceff1;
+    padding: 8px 20px; background: rgba(26, 17, 11, .84); color: #ede4cd;
     opacity: 0; transition: opacity .3s;
   }
   .pos-feedback.show { opacity: 1; }
@@ -578,38 +630,6 @@
   </div>
 </section>
 
-<!-- ================= 档案袋入口（固定右上角） ================= -->
-<div class="archive-entry" id="archiveEntry" onclick="openArchive()">
-  <span>📁</span><span>档案袋</span><span class="cnt" id="archiveCnt">0</span>
-</div>
-
-<!-- ================= 碎片获得弹窗 ================= -->
-<div class="overlay" id="fragOverlay">
-  <div class="frag-modal">
-    <div class="frag-label">档 案 碎 片 · 获 得</div>
-    <div class="frag-icon-wrap">
-      <div class="frag-glow"></div>
-      <div class="frag-icon" id="fragIcon">🥾</div>
-    </div>
-    <div class="frag-name" id="fragName"></div>
-    <div class="frag-from" id="fragFrom"></div>
-    <div class="frag-desc" id="fragDesc"></div>
-    <div class="frag-effect" id="fragEffect"></div>
-    <button class="btn" id="fragCollectBtn">收 进 档 案 袋 ▸</button>
-  </div>
-</div>
-
-<!-- ================= 档案册 ================= -->
-<div class="overlay" id="archiveOverlay">
-  <div class="archive-book">
-    <button class="close-x" onclick="closeArchive()">✕</button>
-    <h2>长 征 档 案 册</h2>
-    <div class="sub">每 走 过 一 关 · 收 集 一 块 历 史 碎 片</div>
-    <div class="frag-grid" id="fragGrid"></div>
-    <div class="frag-detail" id="fragDetail"></div>
-  </div>
-</div>
-
 <script>
 /* ===== 飘雪 ===== */
 function makeSnow(el) {
@@ -628,7 +648,8 @@ function makeSnow(el) {
 /* ================= 关卡数据：分「爬雪山 / 过草地」两篇 =================
    type: 'multi'  物品多选，选出需舍弃的物品（须与 discard 完全一致）
    type: 'single' 单选 A/B/C
-   type: 'tap'    点击交互 N 次（鸣枪 / 敲树干）
+   type: 'tap'    点击交互 N 次（敲树干）
+   type: 'archive' 阅读馆藏史料后判断其核心信息
    ground: 'grass' 时切换为草地灰绿色调背景，否则用雪山油画背景         */
 const SCENES = [
   /* ---------------- 第一篇 · 爬雪山 ---------------- */
@@ -661,12 +682,19 @@ const SCENES = [
   },
   {
     chapter: "第 一 篇 · 爬 雪 山",
-    scene: "界面三 · 山脚树林 · 遭遇友军",
-    type: "tap",
-    bg: "assets/snow-allies.jpg",
-    task: "快下山时，树丛里的人影朝天连开 5 枪。请操控红军战士朝天鸣枪 5 次进行回应。",
-    n: 5, btn: "鸣 枪 回 应", unit: "枪",
-    done: "红一方面军与红四方面军成功会师，长征路上战友相逢。"
+    scene: "界面三 · 行军休整 · 一封家书",
+    type: "archive",
+    bg: "assets/snow-main.jpg",
+    documentImage: "assets/xiong-qiwen-letter-1935.jpg",
+    task: "阅读红四方面军第九军战士熊启文于 1935 年 3 月 19 日写给父母及幺叔的家书，根据史料选出最能体现红军队伍精神的一项。",
+    source: "熊启文致父母及幺叔的信 · 1935 年 3 月 19 日 · 纸本 32×37.5 厘米",
+    options: [
+      "官兵平等，彼此没有大小之分",
+      "只有军官可以休整和通信",
+      "停止行军，原地等待家人"
+    ],
+    answer: 0,
+    ok: "判断正确。家书既牵挂亲人，也写到红军官兵平等和革命必胜的信念。"
   },
   /* ---------------- 第二篇 · 过草地 ---------------- */
   {
@@ -727,6 +755,7 @@ const SCENES = [
 const GRASS_INTRO_BG = "assets/grass-intro.jpg";
 
 let cur = 0;
+let sceneKeyHandler = null;
 
 function buildProgress() {
   const p = document.getElementById('progress');
@@ -774,6 +803,7 @@ function nextScene() {
 }
 
 function renderScene() {
+  clearSceneKeyboard();
   const s = SCENES[cur];
   buildProgress();
   setGround(s);
@@ -793,6 +823,66 @@ function renderScene() {
   if (s.type === 'single') renderSingle(s, box);
   else if (s.type === 'multi') renderMulti(s, box);
   else if (s.type === 'tap') renderTap(s, box);
+  else if (s.type === 'archive') renderArchiveLetter(s, box);
+}
+
+function setSceneKeyboard(handler) {
+  clearSceneKeyboard();
+  sceneKeyHandler = handler;
+  window.addEventListener('keydown', sceneKeyHandler);
+}
+
+function clearSceneKeyboard() {
+  if (!sceneKeyHandler) return;
+  window.removeEventListener('keydown', sceneKeyHandler);
+  sceneKeyHandler = null;
+}
+
+function renderArchiveLetter(s, box) {
+  const layout = document.createElement('div');
+  layout.className = 'archive-letter-stage';
+  layout.innerHTML =
+    '<figure>' +
+      '<img src="' + s.documentImage + '" alt="熊启文写给父母及幺叔的家书原件" decoding="async">' +
+      '<figcaption>' + s.source + '<br><a href="https://www.chnmuseum.cn/portals/0/web/zt/20160922longmarch/" target="_blank" rel="noreferrer">馆藏：中国国家博物馆</a></figcaption>' +
+    '</figure>' +
+    '<div><p class="archive-letter-hint">按 A / B / C 或数字 1 / 2 / 3 作答</p><div class="options">' +
+      s.options.map(function (opt, i) {
+        return '<button type="button" class="opt" data-i="' + i + '"><span class="k">' + ['A','B','C'][i] + '</span><span>' + opt + '</span></button>';
+      }).join('') +
+    '</div></div>';
+  box.appendChild(layout);
+
+  const list = layout.querySelector('.options');
+  function choose(i) {
+    if (list.classList.contains('locked')) return;
+    const el = list.querySelector('[data-i="' + i + '"]');
+    if (!el) return;
+    if (i === s.answer) {
+      list.classList.add('locked');
+      el.classList.add('correct');
+      clearSceneKeyboard();
+      fb('show ok', s.ok + '　（进入下一篇…）');
+      setTimeout(nextScene, 1700);
+    } else {
+      el.classList.add('wrong');
+      fb('show no', '这项与家书内容不符，请重新判断。');
+      setTimeout(function () { el.classList.remove('wrong'); }, 900);
+    }
+  }
+
+  list.querySelectorAll('.opt').forEach(function (el) {
+    el.addEventListener('click', function () { choose(parseInt(el.dataset.i)); });
+  });
+  setSceneKeyboard(function (event) {
+    const key = event.key.toLowerCase();
+    const index = ['a', 'b', 'c'].indexOf(key);
+    const numberIndex = ['1', '2', '3'].indexOf(event.key);
+    const choice = index >= 0 ? index : numberIndex;
+    if (choice < 0) return;
+    event.preventDefault();
+    choose(choice);
+  });
 }
 
 /* ----- 对位选项（选项按 pos 坐标浮在背景物品上方） ----- */
@@ -975,118 +1065,9 @@ function startQuiz() {
   show('quiz');
 }
 
-/* ============================================================
-   档案碎片收集系统（跨关通用，localStorage 持久化）
-   —— 其它两关只需复用这份 FRAGMENTS + 同一套弹窗/档案册代码
-   ============================================================ */
-const STORE_KEY = 'changzheng_fragments';
-
-/* 全部碎片登记表：本关只发放 xueshan，其余关卡在各自会话里发放，
-   这里一并登记是为了让「档案册」显示未获得碎片的剪影，形成主线收集感。 */
-const FRAGMENTS = {
-  zunyi: {
-    icon: '📜',
-    name: '方向碎片',
-    from: '遵义会议',
-    when: '第三幕 · 记录纸完成后',
-    desc: '你记录下了关键判断。红军在危急关头重新看清方向。',
-    effect: '地图上「遵义→赤水」一段路线变亮，重新争取主动。',
-    fact: '1935 年 1 月遵义会议确立了毛泽东在红军和党中央的领导地位，是中国革命的伟大转折点。'
-  },
-  luding: {
-    icon: '⛓️',
-    name: '铁索碎片',
-    from: '飞夺泸定桥',
-    when: '成功到达对岸后',
-    desc: '你跟随突击队冲过铁索，帮助红军打开前进通道。',
-    effect: '地图上「泸定桥」节点亮起，队伍突破险关。',
-    fact: '1935 年 5 月，红军 22 名勇士冒着枪林弹雨攀踏铁索，夺取泸定桥，打通了北上通道。'
-  },
-  xueshan: {
-    icon: '🥾',
-    name: '草鞋碎片',
-    from: '爬雪山过草地',
-    when: '走出雪山草地、与红四方面军会合后',
-    desc: '你带领队伍翻过雪山、走出草地，红军以血肉之躯战胜了自然的极限。',
-    effect: '地图上「夹金山—松潘草地」一段贯通，胜利会师。',
-    fact: '1935 年，红军翻越夹金山等大雪山、穿越松潘草地，缺氧严寒、断粮沼泽，无数战士长眠于此，写下长征最悲壮的一章。'
-  }
-};
-/* 档案册中的展示顺序（按长征时间线） */
-const FRAG_ORDER = ['zunyi', 'luding', 'xueshan'];
-/* 本关对应的碎片 */
-const THIS_LEVEL_FRAG = 'xueshan';
-
-function getCollected() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
-  catch (e) { return []; }
-}
-function saveCollected(arr) {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch (e) {}
-}
-function hasFrag(id) { return getCollected().indexOf(id) !== -1; }
-function addFrag(id) {
-  const arr = getCollected();
-  if (arr.indexOf(id) === -1) { arr.push(id); saveCollected(arr); }
-  updateArchiveCount();
-}
-function updateArchiveCount() {
-  document.getElementById('archiveCnt').textContent = getCollected().length;
-}
-
-/* --- 碎片获得弹窗 --- */
-function showFragmentReward(id, onDone) {
-  const f = FRAGMENTS[id];
-  document.getElementById('fragIcon').textContent = f.icon;
-  document.getElementById('fragName').innerHTML = '获得 · <span class="red">' + f.name + '</span>';
-  document.getElementById('fragFrom').textContent = '来自「' + f.from + '」· ' + f.when;
-  document.getElementById('fragDesc').textContent = '“' + f.desc + '”';
-  document.getElementById('fragEffect').textContent = '▸ ' + f.effect;
-  const btn = document.getElementById('fragCollectBtn');
-  btn.onclick = function () {
-    addFrag(id);
-    document.getElementById('fragOverlay').classList.remove('active');
-    if (typeof onDone === 'function') onDone();
-  };
-  document.getElementById('fragOverlay').classList.add('active');
-}
-
-/* --- 档案册 --- */
-function renderArchive() {
-  const grid = document.getElementById('fragGrid');
-  grid.innerHTML = FRAG_ORDER.map(function (id) {
-    const f = FRAGMENTS[id];
-    if (hasFrag(id)) {
-      return '<div class="frag-cell got" onclick="showFragDetail(\'' + id + '\')">' +
-        '<div class="ci">' + f.icon + '</div>' +
-        '<div class="cn">' + f.name + '</div>' +
-        '<div class="cf">' + f.from + '</div></div>';
-    }
-    return '<div class="frag-cell locked">' +
-      '<div class="ci">❔</div>' +
-      '<div class="cn">未获得</div>' +
-      '<div class="cf">' + f.from + '</div>' +
-      '<div class="clk">🔒 通关后解锁</div></div>';
-  }).join('');
-  document.getElementById('fragDetail').classList.remove('show');
-}
-function showFragDetail(id) {
-  const f = FRAGMENTS[id];
-  const box = document.getElementById('fragDetail');
-  box.innerHTML = '<div class="dt">' + f.icon + '　' + f.name + ' · ' + f.from + '</div>' + f.fact;
-  box.classList.add('show');
-}
-function openArchive() { renderArchive(); document.getElementById('archiveOverlay').classList.add('active'); }
-function closeArchive() { document.getElementById('archiveOverlay').classList.remove('active'); }
-
-updateArchiveCount();
-
 function showVictory() {
   show('victory');
-  // 会师界面停留 3 秒 → 弹出碎片获得弹窗 → 收进档案袋后进入结尾资料界面
-  setTimeout(function () {
-    showFragmentReward(THIS_LEVEL_FRAG, function () { show('ending'); });
-  }, 3000);
+  setTimeout(function () { show('ending'); }, 3000);
 }
 
 function finishLevel() {

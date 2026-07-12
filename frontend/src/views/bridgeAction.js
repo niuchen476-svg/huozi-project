@@ -10,7 +10,7 @@ const KEYFRAMES = [
   { at: 90, bg: `${ASSET_BASE}/pov-arrival.jpg` },
 ];
 
-const INTRO_BG = `${ASSET_BASE}/reference/assault-painting-wide.png`;
+const INTRO_BG = `${ASSET_BASE}/reference/assault-painting-wide.jpg`;
 const SQUAD_BG = `${ASSET_BASE}/squad-assembly.jpg`;
 const DRAG_SOLDIER = `${ASSET_BASE}/props/assault-drag-soldier.png`;
 const TEAMMATE_ICON = `${ASSET_BASE}/teammate-icon.jpg`;
@@ -42,22 +42,10 @@ const MIN_FIRE_GAP_MS = 1100;
 const MAX_FIRE_GAP_MS = 1900;
 const FIRE_LIMIT = 9;
 const FACT_MIN_READ_MS = 1400;
-const LUDING_FRAGMENT = {
-  id: "luding-chain",
-  title: "铁索碎片",
-  mark: "铁索",
-  image: "/assets/fragments/fragment-luding-chain.png",
-  text: "你跟随突击队冲过铁索，帮助红军打开前进通道。",
-  source: {
-    title: "史实补充",
-    text: "1935 年 5 月 29 日，红军突击队冒着敌人火力夺取泸定桥，为中央红军继续北上争取了重要通道。",
-  },
-};
-
 export function preloadBridgeActionAssets() {
   [INTRO_BG, SQUAD_BG, DRAG_SOLDIER, TEAMMATE_ICON, KEYFRAMES[0].bg].forEach(preloadImage);
   idle(() => {
-    [...KEYFRAMES.slice(1).map((frame) => frame.bg), VICTORY_IMAGE, TEAMMATE_FALL].forEach(preloadImage);
+    [...KEYFRAMES.slice(1).map((frame) => frame.bg), VICTORY_IMAGE].forEach(preloadImage);
   });
 }
 
@@ -67,9 +55,10 @@ export function renderBridgeAction(root, level) {
   return new Promise((resolve) => {
     root.innerHTML = `
       <div class="view view-bridge-action">
+          <a class="bridge-action__back" href="#/map">返回路线图</a>
           <div class="bridge-scene bridge-scene--intro" id="bridge-scene">
           <div class="bridge-scene__bg" id="bridge-bg" style="background-image: url('${INTRO_BG}')"></div>
-          <video class="bridge-scene__crawl-video" id="bridge-crawl-video" src="${CRAWL_VIDEO}" poster="${KEYFRAMES[0].bg}" muted playsinline preload="auto" hidden></video>
+          <video class="bridge-scene__crawl-video" id="bridge-crawl-video" data-src="${CRAWL_VIDEO}" poster="${KEYFRAMES[0].bg}" muted playsinline preload="none" hidden></video>
           <div class="bridge-crossing-path" id="bridge-crossing-path" hidden>
             <span class="bridge-chain bridge-chain--left"></span>
             <span class="bridge-chain bridge-chain--right"></span>
@@ -110,7 +99,7 @@ export function renderBridgeAction(root, level) {
             <p class="history-intro__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
             <h2 class="history-intro__title">${level.title}</h2>
             <figure class="bridge-intro-source">
-              <img src="${ASSET_BASE}/reference/historic-iron-chains.png" alt="泸定桥铁索历史照片" />
+              <img src="${ASSET_BASE}/reference/historic-iron-chains.jpg" alt="泸定桥铁索历史照片" decoding="async" />
               <figcaption>史料线索：桥面木板被拆后，突击队必须面对“只剩铁索”的险境。</figcaption>
             </figure>
             <p class="history-intro__text">${level.scenario}</p>
@@ -122,7 +111,7 @@ export function renderBridgeAction(root, level) {
             <button class="bridge-video-modal__backdrop" type="button" id="bridge-video-backdrop" aria-label="关闭视频"></button>
             <div class="bridge-video-modal__panel">
               <button class="bridge-video-modal__close" type="button" id="bridge-video-close" aria-label="关闭视频">关闭</button>
-              <video id="bridge-video-player" controls playsinline src="${LUDING_ASSETS.cinematic.introVideo}">
+              <video id="bridge-video-player" controls playsinline preload="none" data-src="${LUDING_ASSETS.cinematic.introVideo}">
                 当前浏览器不支持视频播放。
               </video>
             </div>
@@ -175,6 +164,10 @@ export function renderBridgeAction(root, level) {
     document.querySelector("#bridge-video-open").addEventListener("click", () => {
       suspendBgmForMedia();
       videoModal.hidden = false;
+      if (!videoPlayer.src) {
+        videoPlayer.src = videoPlayer.dataset.src;
+        videoPlayer.load();
+      }
       videoPlayer.currentTime = 0;
       videoPlayer.play().catch(() => {});
     });
@@ -316,6 +309,10 @@ function startCrossing(resolve) {
   crossingPath.hidden = false;
   controlsEl.hidden = false;
   bg.classList.add("bridge-scene__bg--sway");
+  if (!crawlVideo.src) {
+    crawlVideo.src = crawlVideo.dataset.src;
+    crawlVideo.load();
+  }
   crawlVideo.hidden = false;
   crawlVideo.currentTime = 0;
   crawlVideo.pause();
@@ -574,7 +571,7 @@ function startCrossing(resolve) {
     setTimeout(() => {
       showCaption("毛主席后来写下：大渡桥横铁索寒", "victory", 2600);
     }, 2000);
-    setTimeout(() => showArchiveFragment(scene, LUDING_FRAGMENT, resolve), 4600);
+    setTimeout(() => resolve("completed"), 4400);
   }
 
   function advance() {
@@ -691,61 +688,4 @@ function startCrossing(resolve) {
   updateHud();
   showHint("按空格或右下角前进；顶部箭头出现时按反方向躲避");
   scheduleFire();
-}
-
-function showArchiveFragment(container, fragment, onCollect) {
-  const modal = document.createElement("div");
-  modal.className = "archive-fragment";
-  modal.setAttribute("role", "dialog");
-  modal.setAttribute("aria-modal", "true");
-  modal.setAttribute("aria-label", "获得档案碎片");
-  modal.innerHTML = `
-    <div class="archive-fragment__card">
-      <p class="archive-fragment__eyebrow">获得档案碎片</p>
-      ${renderArchiveFragmentPiece(fragment)}
-      <h2>${fragment.title}</h2>
-      <p class="archive-fragment__text">${fragment.text}</p>
-      ${fragment.source ? renderBridgeSourceNote(fragment.source) : ""}
-      <button type="button">收进档案袋</button>
-    </div>
-  `;
-  container.appendChild(modal);
-  modal.querySelector("button").addEventListener("click", () => {
-    saveArchiveFragment(fragment.id);
-    onCollect();
-  });
-}
-
-function renderArchiveFragmentPiece(fragment) {
-  if (fragment.image) {
-    return `
-      <div class="archive-fragment__piece archive-fragment__piece--image archive-fragment__piece--chain">
-        <img src="${fragment.image}" alt="${fragment.title}" />
-      </div>
-    `;
-  }
-
-  return `
-    <div class="archive-fragment__piece archive-fragment__piece--chain">
-      <span>${fragment.mark}</span>
-    </div>
-  `;
-}
-
-function renderBridgeSourceNote(source) {
-  return `
-    <div class="bridge-source-note">
-      <small>${source.title}</small>
-      <p>${source.text}</p>
-    </div>
-  `;
-}
-
-function saveArchiveFragment(id) {
-  const key = "huozi.archiveFragments";
-  const fragments = JSON.parse(window.localStorage.getItem(key) || "[]");
-  if (!fragments.includes(id)) {
-    fragments.push(id);
-    window.localStorage.setItem(key, JSON.stringify(fragments));
-  }
 }

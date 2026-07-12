@@ -7,6 +7,7 @@ export function renderHistoricalMission25d(root, level, config) {
     root.innerHTML = `
       <div class="view view-historical-mission">
         <main class="historical-mission historical-mission--${config.theme}" id="historical-mission">
+          <a class="historical-mission__back" href="#/map">返回路线图</a>
           <section class="historical-mission__stage" id="historical-stage" tabindex="0">
             <div class="historical-mission__backdrop" id="historical-backdrop" role="img"></div>
             <div class="historical-mission__atmosphere" aria-hidden="true"></div>
@@ -996,11 +997,17 @@ function applySceneBackdrop(nodes, scene) {
 }
 
 function preloadSceneImages(scenes) {
-  scenes.forEach((scene) => {
+  const load = (scene, priority = "auto") => {
     const image = new Image();
     image.decoding = "async";
+    image.fetchPriority = priority;
     image.src = scene.image;
-  });
+  };
+
+  load(scenes[0], "high");
+  const rest = () => scenes.slice(1).forEach((scene) => load(scene, "low"));
+  if ("requestIdleCallback" in window) window.requestIdleCallback(rest, { timeout: 1200 });
+  else window.setTimeout(rest, 250);
 }
 
 function renderRisk(total, used) {

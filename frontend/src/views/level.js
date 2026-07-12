@@ -1,9 +1,9 @@
 import { fetchLevel, preloadLevel, submitReflection } from "../api.js";
 import { markCompleted, resetLevelProgress, hasCrossedBridge, markBridgeCrossed } from "../state.js";
 import { preloadBridgeActionAssets, renderBridgeAction } from "./bridgeAction.js";
-import { renderEmbeddedLevel } from "./embeddedLevel.js";
+import { preloadEmbeddedLevel, renderEmbeddedLevel } from "./embeddedLevel.js";
 import { renderZunyiMeeting } from "./zunyiMeeting.js";
-import { collectArchiveFragmentForLevel, showArchiveFragmentReward } from "../archiveFragments.js";
+import { showArchiveFragmentReward } from "../archiveFragments.js";
 
 const ACTION_SCENES = {
   "ruijin-departure": renderRuijinDepartureAction25dLazy,
@@ -15,6 +15,12 @@ const ACTION_SCENES = {
 };
 
 const actionSceneModulePromises = {};
+const firstScreenImagePreloads = new Map();
+const FIRST_SCREEN_IMAGES = {
+  "ruijin-departure": "assets/levels/ruijin-departure/cards/03-column.jpg",
+  "xiangjiang-battle": "assets/levels/xiangjiang-battle/cards/02-crossing.jpg",
+  "zunyi-turn": "assets/levels/zunyi-turn/meeting-painting-wide.jpg",
+};
 
 async function renderRuijinDepartureAction25dLazy(root, level) {
   const { renderRuijinDepartureAction25d } = await loadAction25dModule("ruijin-departure");
@@ -38,6 +44,7 @@ function loadAction25dModule(levelId) {
 
 export function preloadLevelResources(levelId) {
   preloadLevel(levelId);
+  preloadFirstScreenImage(levelId);
   if (levelId === "ruijin-departure" || levelId === "xiangjiang-battle") {
     loadAction25dModule(levelId)?.catch(() => {
       delete actionSceneModulePromises[levelId];
@@ -46,6 +53,24 @@ export function preloadLevelResources(levelId) {
   if (levelId === "luding-bridge") {
     preloadBridgeActionAssets();
   }
+  if (levelId === "sidu-chishui" || levelId === "snow-grassland") {
+    preloadEmbeddedLevel(levelId);
+  }
+}
+
+function preloadFirstScreenImage(levelId) {
+  const src = FIRST_SCREEN_IMAGES[levelId];
+  if (!src || firstScreenImagePreloads.has(src)) return firstScreenImagePreloads.get(src);
+  const promise = new Promise((resolve) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.fetchPriority = "high";
+    image.onload = () => resolve(true);
+    image.onerror = () => resolve(false);
+    image.src = src;
+  });
+  firstScreenImagePreloads.set(src, promise);
+  return promise;
 }
 
 const POEM_FORMS = ["七律", "绝句", "词"];
@@ -123,11 +148,7 @@ export async function renderLevelView(root, levelId) {
 
     if (actionResult === "completed") {
       markCompleted(levelId);
-      if (levelId === "snow-grassland") {
-        collectArchiveFragmentForLevel(levelId);
-      } else {
-        await showArchiveFragmentReward(root, levelId);
-      }
+      await showArchiveFragmentReward(root, levelId);
       window.location.hash = "#/map";
       return;
     }

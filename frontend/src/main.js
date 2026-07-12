@@ -1,6 +1,6 @@
 import { renderHomeView } from "./views/home.js";
 import { renderLandingView } from "./views/landing.js";
-import { renderMapView } from "./views/map.js";
+import { preloadMapAssets, renderMapView } from "./views/map.js";
 import { renderLevelView } from "./views/level.js";
 import { resumeBgmAfterMedia, setupBgm } from "./bgm.js";
 
@@ -28,3 +28,19 @@ function route() {
 window.addEventListener("hashchange", route);
 route();
 setupBgm();
+
+function warmMapWhenHomeIsReady() {
+  const warm = () => {
+    if (window.location.hash && window.location.hash !== "#/" && window.location.hash !== "#/landing") return;
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(() => preloadMapAssets(), { timeout: 900 });
+      return;
+    }
+    window.setTimeout(() => preloadMapAssets(), 180);
+  };
+
+  if (document.readyState === "complete") warm();
+  else window.addEventListener("load", warm, { once: true });
+}
+
+warmMapWhenHomeIsReady();

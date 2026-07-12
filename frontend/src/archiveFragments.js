@@ -152,7 +152,7 @@ export function renderArchiveFragmentVisual(fragment, options = {}) {
   if (fragment.image) {
     return `
       <div class="archive-fragment-visual archive-fragment-visual--image archive-fragment-visual--${fragment.id}${stateClass}" aria-hidden="true">
-        <img src="${fragment.image}" alt="" />
+        <img src="${fragment.image}" alt="" loading="lazy" decoding="async" />
       </div>
     `;
   }

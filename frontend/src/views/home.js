@@ -1,3 +1,5 @@
+import { preloadMapAssets } from "./map.js";
+
 const COVER_IMAGE_SRC = "assets/cover/cover.jpg";
 
 export function renderHomeView(root) {
@@ -18,7 +20,13 @@ export function renderHomeView(root) {
     </div>
   `;
 
-  document.querySelector("#join-army").addEventListener("click", () => {
+  const joinButton = document.querySelector("#join-army");
+  const warmMap = () => preloadMapAssets();
+
+  joinButton.addEventListener("pointerenter", warmMap, { once: true });
+  joinButton.addEventListener("focus", warmMap, { once: true });
+  joinButton.addEventListener("pointerdown", warmMap, { once: true });
+  joinButton.addEventListener("click", () => {
     window.location.hash = "#/map";
   });
 }
