@@ -124,13 +124,26 @@ export function showArchiveFragmentReward(root, levelId) {
     root.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add("archive-fragment-reward--visible"));
 
-    overlay.querySelector("[data-collect-archive-fragment]").addEventListener("click", () => {
+    function collectReward() {
       overlay.classList.remove("archive-fragment-reward--visible");
       window.setTimeout(() => {
         overlay.remove();
         resolve(true);
       }, 180);
+    }
+
+    function onRewardKeyDown(event) {
+      if (event.key !== "Enter" && event.code !== "Space") return;
+      event.preventDefault();
+      window.removeEventListener("keydown", onRewardKeyDown);
+      collectReward();
+    }
+
+    overlay.querySelector("[data-collect-archive-fragment]").addEventListener("click", () => {
+      window.removeEventListener("keydown", onRewardKeyDown);
+      collectReward();
     });
+    window.addEventListener("keydown", onRewardKeyDown);
   });
 }
 

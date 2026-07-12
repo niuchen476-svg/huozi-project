@@ -90,6 +90,7 @@ const SPECIAL_CHALLENGES = {
 
 export async function renderLevelView(root, levelId) {
   const app = document.querySelector("#app");
+  root._challengeKeyboardAbort?.abort();
 
   root.innerHTML = `
     <div class="view view-level">
@@ -226,8 +227,9 @@ function renderSupplyChallenge(challenge) {
     <div class="mission-choice-grid">
       ${challenge.options
         .map(
-          (option) => `
+          (option, index) => `
           <button type="button" class="mission-choice" data-choice="${option.id}">
+            <kbd class="mission-choice__key">${index + 1}</kbd>
             <span class="mission-choice__label">${option.label}</span>
             <span class="mission-choice__detail">${option.detail}</span>
           </button>
@@ -237,6 +239,7 @@ function renderSupplyChallenge(challenge) {
     </div>
     <div class="mission-challenge__bar">
       <span data-challenge-status>已选择 0/${challenge.required.length}</span>
+      <span class="mission-challenge__keys">数字键选择 · Enter 确认</span>
       <button type="button" data-submit-challenge disabled>确认取舍</button>
     </div>
   `;
@@ -252,8 +255,9 @@ function renderSequenceChallenge(challenge) {
     <div class="mission-choice-grid mission-choice-grid--sequence">
       ${challenge.options
         .map(
-          (option) => `
+          (option, index) => `
           <button type="button" class="mission-choice" data-sequence-choice="${option.id}">
+            <kbd class="mission-choice__key">${index + 1}</kbd>
             <span class="mission-choice__label">${option.label}</span>
             <span class="mission-choice__detail">${option.detail}</span>
           </button>
@@ -263,6 +267,7 @@ function renderSequenceChallenge(challenge) {
     </div>
     <div class="mission-challenge__bar">
       <span data-challenge-status>已排序 0/${challenge.required.length}</span>
+      <span class="mission-challenge__keys">数字键排序 · Backspace 清空 · Enter 确认</span>
       <div class="mission-challenge__actions">
         <button type="button" data-clear-sequence>清空顺序</button>
         <button type="button" data-submit-challenge disabled>确认行动</button>
@@ -285,6 +290,7 @@ function attachSupplyChallenge(root, levelId, challenge) {
   const submit = root.querySelector("[data-submit-challenge]");
   const status = root.querySelector("[data-challenge-status]");
   const panel = root.querySelector("#challenge-panel");
+  const keyboardSignal = createChallengeKeyboardSignal(root);
 
   function update() {
     buttons.forEach((button) => {
@@ -294,27 +300,41 @@ function attachSupplyChallenge(root, levelId, challenge) {
     submit.disabled = selected.size !== challenge.required.length;
   }
 
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = button.dataset.choice;
-      if (selected.has(id)) {
-        selected.delete(id);
-      } else if (selected.size < challenge.required.length) {
-        selected.add(id);
-      }
-      panel.innerHTML = "";
-      update();
-    });
-  });
+  function toggleChoice(id) {
+    if (selected.has(id)) {
+      selected.delete(id);
+    } else if (selected.size < challenge.required.length) {
+      selected.add(id);
+    }
+    panel.innerHTML = "";
+    update();
+  }
 
-  submit.addEventListener("click", () => {
+  function submitChoice() {
     const correct = challenge.required.every((id) => selected.has(id)) && selected.size === challenge.required.length;
     if (correct) {
       completeSpecialChallenge(root, levelId, challenge);
     } else {
       panel.innerHTML = `<p class="challenge-feedback challenge-feedback--error">${challenge.errorText}</p>`;
     }
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => toggleChoice(button.dataset.choice));
   });
+
+  submit.addEventListener("click", submitChoice);
+  window.addEventListener("keydown", (event) => {
+    const number = challengeNumberKey(event);
+    if (number && buttons[number - 1]) {
+      event.preventDefault();
+      toggleChoice(buttons[number - 1].dataset.choice);
+    }
+    if (event.key === "Enter" && !submit.disabled) {
+      event.preventDefault();
+      submitChoice();
+    }
+  }, { signal: keyboardSignal });
 
   update();
 }
@@ -327,6 +347,7 @@ function attachSequenceChallenge(root, levelId, challenge) {
   const status = root.querySelector("[data-challenge-status]");
   const slots = [...root.querySelectorAll("[data-sequence-slot]")];
   const panel = root.querySelector("#challenge-panel");
+  const keyboardSignal = createChallengeKeyboardSignal(root);
 
   function labelFor(id) {
     return challenge.options.find((option) => option.id === id)?.label || "";
@@ -346,34 +367,67 @@ function attachSequenceChallenge(root, levelId, challenge) {
     submit.disabled = order.length !== challenge.required.length;
   }
 
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (order.length >= challenge.required.length) return;
-      order.push(button.dataset.sequenceChoice);
-      panel.innerHTML = "";
-      update();
-    });
-  });
+  function addChoice(id) {
+    if (order.length >= challenge.required.length || order.includes(id)) return;
+    order.push(id);
+    panel.innerHTML = "";
+    update();
+  }
 
-  clear.addEventListener("click", () => {
+  function clearOrder() {
     order.length = 0;
     panel.innerHTML = "";
     update();
-  });
+  }
 
-  submit.addEventListener("click", () => {
+  function submitOrder() {
     const correct = challenge.required.every((id, index) => order[index] === id);
     if (correct) {
       completeSpecialChallenge(root, levelId, challenge);
     } else {
       panel.innerHTML = `<p class="challenge-feedback challenge-feedback--error">${challenge.errorText}</p>`;
     }
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => addChoice(button.dataset.sequenceChoice));
   });
+
+  clear.addEventListener("click", clearOrder);
+  submit.addEventListener("click", submitOrder);
+  window.addEventListener("keydown", (event) => {
+    const number = challengeNumberKey(event);
+    if (number && buttons[number - 1]) {
+      event.preventDefault();
+      addChoice(buttons[number - 1].dataset.sequenceChoice);
+    }
+    if (event.key === "Backspace") {
+      event.preventDefault();
+      clearOrder();
+    }
+    if (event.key === "Enter" && !submit.disabled) {
+      event.preventDefault();
+      submitOrder();
+    }
+  }, { signal: keyboardSignal });
 
   update();
 }
 
+function createChallengeKeyboardSignal(root) {
+  root._challengeKeyboardAbort?.abort();
+  root._challengeKeyboardAbort = new AbortController();
+  return root._challengeKeyboardAbort.signal;
+}
+
+function challengeNumberKey(event) {
+  if (/^Digit[1-9]$/.test(event.code)) return Number(event.code.replace("Digit", ""));
+  if (/^Numpad[1-9]$/.test(event.code)) return Number(event.code.replace("Numpad", ""));
+  return null;
+}
+
 async function completeSpecialChallenge(root, levelId, challenge) {
+  root._challengeKeyboardAbort?.abort();
   markCompleted(levelId);
   const panel = root.querySelector("#challenge-panel");
   panel.innerHTML = `

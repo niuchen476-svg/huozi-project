@@ -7,7 +7,7 @@ export function renderHistoricalMission25d(root, level, config) {
     root.innerHTML = `
       <div class="view view-historical-mission">
         <main class="historical-mission historical-mission--${config.theme}" id="historical-mission">
-          <section class="historical-mission__stage" id="historical-stage">
+          <section class="historical-mission__stage" id="historical-stage" tabindex="0">
             <div class="historical-mission__backdrop" id="historical-backdrop" role="img"></div>
             <div class="historical-mission__atmosphere" aria-hidden="true"></div>
             <div class="historical-mission__scrim" aria-hidden="true"></div>
@@ -39,8 +39,8 @@ export function renderHistoricalMission25d(root, level, config) {
               <h1>${level.title}</h1>
               <p>${level.scenario}</p>
               <div class="historical-mission__intro-actions">
-                <button type="button" id="historical-start">${config.introButton || "进入历史现场"}</button>
-                <button type="button" id="historical-skip">直接查看档案</button>
+                ${renderKeyCommand("Enter", config.introButton || "进入历史现场")}
+                ${renderKeyCommand("S", "直接查看档案", "secondary")}
               </div>
             </section>
           </section>
@@ -62,16 +62,17 @@ export function renderHistoricalMission25d(root, level, config) {
       feedback: root.querySelector("#historical-feedback"),
       overlay: root.querySelector("#historical-overlay"),
       intro: root.querySelector("#historical-intro"),
-      start: root.querySelector("#historical-start"),
-      skip: root.querySelector("#historical-skip"),
     };
 
     let sceneIndex = 0;
     let controller = null;
     let feedbackTimer = null;
     let settled = false;
+    let introOpen = true;
+    let overlayAction = null;
 
     applySceneBackdrop(nodes, config.scenes[0]);
+    nodes.stage.focus({ preventScroll: true });
 
     function finish(value) {
       if (settled) return;
@@ -82,6 +83,8 @@ export function renderHistoricalMission25d(root, level, config) {
     }
 
     function startMission() {
+      if (!introOpen) return;
+      introOpen = false;
       nodes.intro.remove();
       window.scrollTo({ top: 0, behavior: "auto" });
       nodes.topbar.hidden = false;
@@ -93,6 +96,7 @@ export function renderHistoricalMission25d(root, level, config) {
     function renderScene() {
       controller?.cleanup();
       controller = null;
+      overlayAction = null;
       nodes.overlay.hidden = true;
       nodes.hotspots.replaceChildren();
       nodes.task.replaceChildren();
@@ -138,12 +142,9 @@ export function renderHistoricalMission25d(root, level, config) {
             <p>${scene.fact}</p>
           </div>
           ${renderSource(scene.source)}
-          <button type="button" data-next-scene>${nextLabel}</button>
+          ${renderKeyCommand("Enter", nextLabel)}
         </div>
-      `);
-
-      const next = nodes.overlay.querySelector("[data-next-scene]");
-      next.addEventListener("click", () => {
+      `, () => {
         if (isLast) {
           showMissionComplete();
           return;
@@ -162,10 +163,9 @@ export function renderHistoricalMission25d(root, level, config) {
           <p>本幕需要重新组织</p>
           <h2>任务没有完成</h2>
           <div class="historical-mission__result-summary">${reason}</div>
-          <button type="button" data-retry-scene>重新执行本幕</button>
+          ${renderKeyCommand("Enter", "重新执行本幕")}
         </div>
-      `);
-      nodes.overlay.querySelector("[data-retry-scene]").addEventListener("click", renderScene);
+      `, renderScene);
     }
 
     function showMissionComplete() {
@@ -175,15 +175,16 @@ export function renderHistoricalMission25d(root, level, config) {
           <p>历史行动完成</p>
           <h2>${config.completionTitle}</h2>
           <div class="historical-mission__result-summary">${config.completionText}</div>
-          <button type="button" data-finish-mission>进入本关档案任务</button>
+          ${renderKeyCommand("Enter", "进入本关档案任务")}
         </div>
-      `);
-      nodes.overlay.querySelector("[data-finish-mission]").addEventListener("click", () => finish());
+      `, () => finish());
     }
 
-    function showOverlay(markup) {
+    function showOverlay(markup, action) {
       nodes.overlay.innerHTML = markup;
       nodes.overlay.hidden = false;
+      overlayAction = action || null;
+      nodes.stage.focus({ preventScroll: true });
     }
 
     function report(text, tone = "neutral", duration = 1700) {
@@ -196,8 +197,34 @@ export function renderHistoricalMission25d(root, level, config) {
       }, duration);
     }
 
-    nodes.start.addEventListener("click", startMission);
-    nodes.skip.addEventListener("click", () => finish("skipped"));
+    function onGlobalKeyDown(event) {
+      if (settled) return;
+      if (introOpen) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          startMission();
+        }
+        if (event.key.toLowerCase() === "s") {
+          event.preventDefault();
+          finish("skipped");
+        }
+        return;
+      }
+      if (overlayAction && event.key === "Enter") {
+        event.preventDefault();
+        const action = overlayAction;
+        overlayAction = null;
+        action();
+      }
+    }
+
+    window.addEventListener("keydown", onGlobalKeyDown);
+
+    const originalFinish = finish;
+    finish = (value) => {
+      window.removeEventListener("keydown", onGlobalKeyDown);
+      originalFinish(value);
+    };
   });
 }
 
@@ -214,39 +241,55 @@ function createSceneController(scene, context) {
 function createCollectController(scene, context) {
   const { nodes, report, setStatus, complete } = context;
   const collected = new Set();
-  nodes.task.innerHTML = renderTaskHeader(scene, `已编入 0 / ${scene.items.length}`);
+  nodes.task.innerHTML = `
+    ${renderTaskHeader(scene, `已编入 0 / ${scene.items.length}`)}
+    <div class="historical-mission__controls historical-mission__controls--keys">
+      ${scene.items.map((item, index) => renderKeyCommand(String(index + 1), item.label)).join("")}
+    </div>
+  `;
   nodes.hotspots.innerHTML = scene.items.map((item, index) => `
-    <button
+    <div
       class="historical-hotspot historical-hotspot--supply"
-      type="button"
       data-collect-item="${item.id}"
       style="--x:${item.x}%;--y:${item.y}%"
-      aria-label="编入${item.label}"
     >
       <i>${index + 1}</i>
       <span><b>${item.label}</b><small>${item.detail}</small></span>
-    </button>
+    </div>
   `).join("");
 
-  const buttons = [...nodes.hotspots.querySelectorAll("[data-collect-item]")];
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = button.dataset.collectItem;
-      if (collected.has(id)) return;
-      collected.add(id);
-      button.classList.add("historical-hotspot--done");
-      button.disabled = true;
-      const item = scene.items.find((entry) => entry.id === id);
-      report(`${item.label}已编入转移队列`, "success");
-      updateTaskProgress(nodes.task, collected.size, scene.items.length, `已编入 ${collected.size} / ${scene.items.length}`);
-      setStatus(`物资 ${collected.size} / ${scene.items.length}`);
-      if (collected.size === scene.items.length) {
-        setTimeout(() => complete(scene.completeText), 650);
-      }
-    });
-  });
+  const targets = [...nodes.hotspots.querySelectorAll("[data-collect-item]")];
 
-  return { cleanup() {} };
+  function collectAt(index) {
+    const target = targets[index];
+    if (!target) return;
+    const id = target.dataset.collectItem;
+    if (collected.has(id)) return;
+    collected.add(id);
+    target.classList.add("historical-hotspot--done");
+    const item = scene.items.find((entry) => entry.id === id);
+    report(`${item.label}已编入转移队列`, "success");
+    updateTaskProgress(nodes.task, collected.size, scene.items.length, `已编入 ${collected.size} / ${scene.items.length}`);
+    setStatus(`物资 ${collected.size} / ${scene.items.length}`);
+    if (collected.size === scene.items.length) {
+      setTimeout(() => complete(scene.completeText), 650);
+    }
+  }
+
+  function onKeyDown(event) {
+    const number = numberKey(event);
+    if (!number) return;
+    event.preventDefault();
+    collectAt(number - 1);
+  }
+
+  window.addEventListener("keydown", onKeyDown);
+
+  return {
+    cleanup() {
+      window.removeEventListener("keydown", onKeyDown);
+    },
+  };
 }
 
 function createStealthController(scene, context) {
@@ -266,8 +309,8 @@ function createStealthController(scene, context) {
     ${renderTaskHeader(scene, "转移进度 0%")}
     <div class="historical-mission__risk" data-risk>隐蔽 ${renderRisk(maxMistakes, mistakes)}</div>
     <div class="historical-mission__controls historical-mission__controls--two">
-      <button type="button" data-stealth-advance>跟队前进</button>
-      <button type="button" data-stealth-hide>熄灯隐蔽</button>
+      ${renderKeyCommand("Space", "跟队前进")}
+      ${renderKeyCommand("↓", "熄灯隐蔽", "secondary")}
     </div>
     <div class="historical-mission__alert" data-stealth-alert hidden>
       <b>侦察光正在扫过</b>
@@ -275,8 +318,6 @@ function createStealthController(scene, context) {
     </div>
   `;
 
-  const advance = nodes.task.querySelector("[data-stealth-advance]");
-  const hide = nodes.task.querySelector("[data-stealth-hide]");
   const alert = nodes.task.querySelector("[data-stealth-alert]");
   const risk = nodes.task.querySelector("[data-risk]");
 
@@ -326,7 +367,6 @@ function createStealthController(scene, context) {
       return;
     }
     advanceLocked = true;
-    advance.disabled = true;
     if (!started) {
       started = true;
       scheduleHazard(1500);
@@ -339,7 +379,6 @@ function createStealthController(scene, context) {
     nodes.stage.classList.add("historical-mission__stage--step");
     lockTimer = setTimeout(() => {
       advanceLocked = false;
-      advance.disabled = false;
     }, 420);
     if (progress >= 100) {
       ended = true;
@@ -367,11 +406,12 @@ function createStealthController(scene, context) {
       event.preventDefault();
       move();
     }
-    if (event.key.toLowerCase() === "h") conceal();
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      conceal();
+    }
   }
 
-  advance.addEventListener("click", move);
-  hide.addEventListener("click", conceal);
   window.addEventListener("keydown", onKeyDown);
 
   return {
@@ -406,12 +446,12 @@ function createSignalController(scene, context) {
       ${groups.map((group, index) => `<li data-group="${index}"><i>${index + 1}</i><span>${group}</span></li>`).join("")}
     </ol>
     <div class="historical-mission__controls">
-      <button type="button" data-signal-action>按号令接应下一队</button>
+      ${renderKeyCommand("Space", "开始监听渡口号令", "", "data-signal-command")}
     </div>
   `;
 
   const signal = nodes.task.querySelector("[data-signal]");
-  const action = nodes.task.querySelector("[data-signal-action]");
+  const action = nodes.task.querySelector("[data-signal-command] span");
   const queue = nodes.task.querySelector("[data-queue]");
 
   function waitForSignal(delay = 1100) {
@@ -488,7 +528,6 @@ function createSignalController(scene, context) {
     receiveGroup();
   }
 
-  action.addEventListener("click", receiveGroup);
   window.addEventListener("keydown", onKeyDown);
   action.textContent = "开始监听渡口号令";
   setStatus("等待开始接应");
@@ -520,8 +559,8 @@ function createRepairController(scene, context) {
     ${renderTaskHeader(scene, `桥段 0 / ${points.length}`)}
     <div class="historical-mission__risk" data-risk>掩护 ${renderRisk(maxMistakes, mistakes)}</div>
     <div class="historical-mission__controls historical-mission__controls--repair">
-      <button type="button" data-repair-action>固定当前桥段</button>
-      <button type="button" data-repair-hide>卧倒隐蔽</button>
+      ${renderKeyCommand("Space", "固定当前桥段")}
+      ${renderKeyCommand("↓", "卧倒隐蔽", "secondary")}
     </div>
     <div class="historical-mission__alert" data-repair-alert hidden>
       <b>敌机正在俯冲</b>
@@ -535,8 +574,6 @@ function createRepairController(scene, context) {
     </span>
   `).join("");
 
-  const repair = nodes.task.querySelector("[data-repair-action]");
-  const hide = nodes.task.querySelector("[data-repair-hide]");
   const alert = nodes.task.querySelector("[data-repair-alert]");
   const risk = nodes.task.querySelector("[data-risk]");
 
@@ -595,7 +632,6 @@ function createRepairController(scene, context) {
       return;
     }
     locked = true;
-    repair.disabled = true;
     if (!started) {
       started = true;
       scheduleHazard(950);
@@ -614,7 +650,6 @@ function createRepairController(scene, context) {
     }
     repairTimer = setTimeout(() => {
       locked = false;
-      repair.disabled = false;
     }, 520);
   }
 
@@ -635,11 +670,12 @@ function createRepairController(scene, context) {
       event.preventDefault();
       repairCurrent();
     }
-    if (event.key.toLowerCase() === "h") takeCover();
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      takeCover();
+    }
   }
 
-  repair.addEventListener("click", repairCurrent);
-  hide.addEventListener("click", takeCover);
   window.addEventListener("keydown", onKeyDown);
 
   return {
@@ -673,9 +709,9 @@ function createDispatchController(scene, context) {
       ${groups.map((group, index) => `<li data-group="${index}"><i>${index + 1}</i><span>${group}</span></li>`).join("")}
     </ol>
     <div class="historical-mission__controls historical-mission__controls--lanes">
-      <button type="button" data-dispatch-start>开始组织渡江</button>
-      <button type="button" data-lane="left" disabled>上游通道</button>
-      <button type="button" data-lane="right" disabled>下游通道</button>
+      ${renderKeyCommand("Space", "开始组织渡江", "", "data-dispatch-command")}
+      ${renderKeyCommand("←", "上游通道")}
+      ${renderKeyCommand("→", "下游通道")}
     </div>
   `;
   nodes.hotspots.innerHTML = `
@@ -685,16 +721,13 @@ function createDispatchController(scene, context) {
 
   const warning = nodes.task.querySelector("[data-dispatch-warning]");
   const queue = nodes.task.querySelector("[data-queue]");
-  const start = nodes.task.querySelector("[data-dispatch-start]");
-  const laneButtons = [...nodes.task.querySelectorAll("[data-lane]")];
+  const start = nodes.task.querySelector("[data-dispatch-command]");
+  const startLabel = start.querySelector("span");
 
   function startDispatch() {
     if (started || ended) return;
     started = true;
-    start.hidden = true;
-    laneButtons.forEach((button) => {
-      button.disabled = false;
-    });
+    start.classList.add("historical-key-command--muted");
     warning.textContent = "第一支队列正在接近渡口";
     setStatus("观察炮火");
     nextTimer = setTimeout(openRound, 650);
@@ -745,11 +778,8 @@ function createDispatchController(scene, context) {
       }
     }
     started = false;
-    laneButtons.forEach((button) => {
-      button.disabled = true;
-    });
-    start.hidden = false;
-    start.textContent = success ? "观察下一轮炮火" : "重新观察炮火窗口";
+    start.classList.remove("historical-key-command--muted");
+    startLabel.textContent = success ? "观察下一轮炮火" : "重新观察炮火窗口";
     setStatus(`通过 ${current} / ${groups.length}`);
     warning.textContent = "下一支队列留在堤岸遮蔽处待命";
   }
@@ -760,12 +790,20 @@ function createDispatchController(scene, context) {
   }
 
   function onKeyDown(event) {
-    if (event.key === "ArrowLeft") chooseLane("left");
-    if (event.key === "ArrowRight") chooseLane("right");
+    if (event.code === "Space") {
+      event.preventDefault();
+      startDispatch();
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      chooseLane("left");
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      chooseLane("right");
+    }
   }
 
-  start.addEventListener("click", startDispatch);
-  laneButtons.forEach((button) => button.addEventListener("click", () => chooseLane(button.dataset.lane)));
   window.addEventListener("keydown", onKeyDown);
   setStatus("等待开始渡江");
 
@@ -797,17 +835,18 @@ function createRescueController(scene, context) {
     <div class="historical-mission__risk" data-risk>担架队 ${renderRisk(maxMistakes, mistakes)}</div>
     <div class="historical-mission__rescue-call" data-rescue-call>观察江滩，等待担架队呼叫</div>
     <div class="historical-mission__controls">
-      <button type="button" data-rescue-start>开始江滩救护</button>
+      ${renderKeyCommand("Space", "开始江滩救护", "", "data-rescue-command")}
     </div>
   `;
   const risk = nodes.task.querySelector("[data-risk]");
   const call = nodes.task.querySelector("[data-rescue-call]");
-  const start = nodes.task.querySelector("[data-rescue-start]");
+  const start = nodes.task.querySelector("[data-rescue-command]");
+  const startLabel = start.querySelector("span");
 
   function startRescue() {
     if (started || ended) return;
     started = true;
-    start.hidden = true;
+    start.classList.add("historical-key-command--muted");
     call.textContent = "担架队正在确认第一处呼叫";
     setStatus("观察江滩");
     nextTimer = setTimeout(showTarget, 500);
@@ -820,12 +859,11 @@ function createRescueController(scene, context) {
     call.textContent = `${target.label}需要接应`;
     setStatus("立即救护");
     nodes.hotspots.innerHTML = `
-      <button class="historical-hotspot historical-hotspot--rescue" type="button"
+      <div class="historical-hotspot historical-hotspot--rescue"
         style="--x:${target.x}%;--y:${target.y}%" data-rescue-target>
-        <i>+</i><span><b>抬上担架</b><small>${target.label}</small></span>
-      </button>
+        <i>+</i><span><b>空格抬上担架</b><small>${target.label}</small></span>
+      </div>
     `;
-    nodes.hotspots.querySelector("[data-rescue-target]").addEventListener("click", rescue);
     targetTimer = setTimeout(missTarget, scene.responseWindow || 3000);
   }
 
@@ -845,8 +883,8 @@ function createRescueController(scene, context) {
     }
     call.textContent = "担架队正在转向下一处呼叫";
     started = false;
-    start.hidden = false;
-    start.textContent = "确认下一处救护呼叫";
+    start.classList.remove("historical-key-command--muted");
+    startLabel.textContent = "确认下一处救护呼叫";
   }
 
   function missTarget() {
@@ -862,18 +900,18 @@ function createRescueController(scene, context) {
       return;
     }
     started = false;
-    start.hidden = false;
-    start.textContent = "重新接应当前呼叫";
+    start.classList.remove("historical-key-command--muted");
+    startLabel.textContent = "重新接应当前呼叫";
     call.textContent = "担架队已退回遮蔽处，等待重新选择路线";
   }
 
   function onKeyDown(event) {
-    if (event.code !== "Space" || !active) return;
+    if (event.code !== "Space") return;
     event.preventDefault();
-    rescue();
+    if (active) rescue();
+    else startRescue();
   }
 
-  start.addEventListener("click", startRescue);
   window.addEventListener("keydown", onKeyDown);
   setStatus("等待开始救护");
 
@@ -885,6 +923,23 @@ function createRescueController(scene, context) {
       window.removeEventListener("keydown", onKeyDown);
     },
   };
+}
+
+function renderKeyCommand(key, label, tone = "", dataAttribute = "") {
+  const toneClass = tone ? ` historical-key-command--${tone}` : "";
+  const attr = dataAttribute ? ` ${dataAttribute}` : "";
+  return `
+    <div class="historical-key-command${toneClass}"${attr}>
+      <kbd>${key}</kbd>
+      <span>${label}</span>
+    </div>
+  `;
+}
+
+function numberKey(event) {
+  if (/^Digit[1-9]$/.test(event.code)) return Number(event.code.replace("Digit", ""));
+  if (/^Numpad[1-9]$/.test(event.code)) return Number(event.code.replace("Numpad", ""));
+  return null;
 }
 
 function renderTaskHeader(scene, progressText) {
