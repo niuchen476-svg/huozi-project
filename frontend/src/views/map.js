@@ -121,19 +121,21 @@ function renderPin(level, status, index, fragments) {
     locked: "尚未解锁",
   }[status];
   const pos = MARKER_POSITIONS[level.id] || { x: 50, y: 50 };
+  const linkAttributes =
+    status === "locked" ? `aria-disabled="true"` : `href="#/level/${level.id}"`;
 
   return `
-    <button
-      type="button"
+    <a
       class="route-pin route-pin--${status}${fragmentCollected ? " route-pin--fragment-lit" : ""}"
       data-level-id="${level.id}"
       data-status="${status}"
+      ${linkAttributes}
       style="left: ${pos.x}%; top: ${pos.y}%; animation-delay: ${(index * 0.35).toFixed(2)}s;"
       title="${level.title} · ${statusLabel}${fragmentCollected ? " · 已收入档案碎片" : ""}"
     >
       <span class="route-pin__badge">${String(level.order).padStart(2, "0")}</span>
       <span class="route-pin__label">${level.title}</span>
-    </button>
+    </a>
   `;
 }
 

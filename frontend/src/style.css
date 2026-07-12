@@ -633,6 +633,7 @@ a {
   padding: 0;
   border: none;
   background: none;
+  text-decoration: none;
   cursor: pointer;
   animation: route-pin-float 3.2s ease-in-out infinite;
 }
