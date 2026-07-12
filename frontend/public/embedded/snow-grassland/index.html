@@ -6,6 +6,8 @@
 <title>长征 · 爬雪山过草地</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* 全部改为直角矩形，去掉一切圆角 */
+  * { border-radius: 0 !important; }
   html, body { height: 100%; }
   body {
     font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
@@ -28,18 +30,33 @@
   }
   .stage.active { display: flex; opacity: 1; }
 
-  /* ===== 背景：雪山场景（开头 / 结尾统一风格） ===== */
+  /* ===== 背景：真实油画雪山场景（开头 / 答题 / 会师 / 结尾统一） ===== */
   .scene {
     position: absolute;
     inset: 0;
     z-index: 0;
     overflow: hidden;
+    background-image: url('assets/snow-main.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
-  .scene svg { width: 100%; height: 100%; display: block; }
+  /* 缓慢推近，增强史诗代入感 */
+  .scene::before {
+    content: "";
+    position: absolute; inset: -4%;
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    animation: slowzoom 26s ease-in-out infinite alternate;
+  }
+  @keyframes slowzoom { from { transform: scale(1); } to { transform: scale(1.08); } }
   .scene::after {
     content: "";
     position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(8,18,30,.55) 0%, rgba(8,18,30,.25) 45%, rgba(8,18,30,.75) 100%);
+    background:
+      linear-gradient(180deg, rgba(6,14,24,.62) 0%, rgba(6,14,24,.30) 40%, rgba(6,14,24,.55) 72%, rgba(6,14,24,.86) 100%),
+      radial-gradient(120% 90% at 50% 30%, transparent 45%, rgba(6,14,24,.55) 100%);
   }
   /* 飘雪 */
   .snow { position:absolute; inset:0; z-index:1; pointer-events:none; }
@@ -69,10 +86,11 @@
     text-indent: .5em;
   }
   .title {
-    font-size: 60px;
+    font-family: "STKaiti", "KaiTi", "STSong", "SimSun", "Songti SC", serif;
+    font-size: 64px;
     font-weight: 800;
-    letter-spacing: .12em;
-    text-shadow: 0 4px 24px rgba(0,0,0,.6), 0 0 40px rgba(232,192,125,.25);
+    letter-spacing: .14em;
+    text-shadow: 0 4px 26px rgba(0,0,0,.85), 0 2px 6px rgba(0,0,0,.9), 0 0 44px rgba(232,192,125,.22);
     margin-bottom: 10px;
   }
   .title .red { color: #e0402f; }
@@ -85,16 +103,16 @@
 
   /* ===== 资料卡 ===== */
   .card {
-    background: rgba(15, 28, 42, .62);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(232,192,125,.28);
+    background: rgba(9, 18, 30, .74);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(232,192,125,.34);
     border-radius: 16px;
     padding: 30px 36px;
     text-align: left;
     line-height: 2;
     font-size: 16.5px;
-    color: #eceff1;
-    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    color: #eef2f5;
+    box-shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.04);
   }
   .card p { margin-bottom: 12px; }
   .card p:last-child { margin-bottom: 0; }
@@ -134,27 +152,39 @@
     justify-content: center;
     align-items: center;
   }
-  .ending-actions .btn { margin-top: 34px; }
 
-  /* ===== 答题界面 ===== */
-  #quiz .content { max-width: 780px; }
+  /* ===== 答题界面：题目左上 / 选项居中 / 进度右下 ===== */
+  /* 题目区（左上角） */
+  .quiz-topleft {
+    position: absolute; top: 34px; left: 34px; z-index: 3;
+    width: 400px; max-width: 42vw; text-align: left;
+    background: rgba(9, 18, 30, .78);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(232,192,125,.32);
+    padding: 20px 22px;
+    box-shadow: 0 14px 44px rgba(0,0,0,.55);
+  }
+  /* 选项区（屏幕居中） */
+  .quiz-center {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 620px;
+    text-align: center;
+  }
+  /* 进度条（右下角） */
   .progress {
-    display: flex; gap: 10px; justify-content: center; margin-bottom: 26px;
+    position: absolute; right: 36px; bottom: 30px; z-index: 3;
+    display: flex; gap: 8px;
   }
   .progress .dot {
-    width: 34px; height: 6px; border-radius: 999px;
-    background: rgba(255,255,255,.18);
+    width: 30px; height: 6px;
+    background: rgba(255,255,255,.22);
     transition: background .3s;
   }
   .progress .dot.done { background: #e8c07d; }
   .progress .dot.cur { background: #e0402f; }
 
   .q-scene {
-    font-size: 13px; letter-spacing:.3em; color:#e8c07d; margin-bottom:14px;
-  }
-  .q-text {
-    font-size: 24px; font-weight: 700; line-height: 1.6;
-    margin-bottom: 30px; text-shadow: 0 2px 12px rgba(0,0,0,.5);
+    font-size: 13px; letter-spacing:.28em; color:#e8c07d; margin-bottom:12px;
   }
   .options { display: flex; flex-direction: column; gap: 14px; }
   .opt {
@@ -189,6 +219,64 @@
   .feedback.ok { color:#8bd48e; }
   .feedback.no { color:#ff8a80; }
 
+  /* ===== 章节标签 / 任务提示 ===== */
+  .chapter {
+    font-size: 13px; letter-spacing: .38em; font-weight: 700;
+    color: #e0402f; margin-bottom: 8px; text-indent: .38em;
+  }
+  .task {
+    font-size: 15px; line-height: 1.8; color: #eef2f5;
+    background: rgba(0,0,0,.30);
+    border-left: 3px solid #e8c07d;
+    padding: 12px 16px; margin-bottom: 0;
+    text-align: left;
+  }
+  /* 选项区内的反馈文字 */
+  .quiz-center .feedback { text-align: center; }
+  /* 窄屏：题目回到顶部通栏，进度条居中 */
+  @media (max-width: 720px) {
+    .quiz-topleft {
+      position: static; width: 100%; max-width: none; margin-bottom: 22px;
+    }
+    #quiz.stage { justify-content: flex-start; padding-top: 26px; }
+    .progress { position: static; justify-content: center; margin-top: 24px; }
+  }
+
+  /* ===== 物品多选（卸下负重 / 舍弃物资） ===== */
+  .items {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+    margin-bottom: 20px;
+  }
+  .item {
+    position: relative;
+    padding: 20px 16px;
+    background: rgba(15,28,42,.62);
+    border: 1.5px solid rgba(232,192,125,.28);
+    border-radius: 12px;
+    font-size: 17px; text-align: center; color:#eceff1;
+    cursor: pointer; transition: all .18s;
+  }
+  .item:hover { border-color:#e8c07d; background: rgba(232,192,125,.12); }
+  .item.sel {
+    border-color:#43a047; background: rgba(67,160,71,.26);
+    box-shadow: 0 0 0 1px rgba(67,160,71,.45) inset;
+  }
+  .item.sel::after {
+    content: "✓"; position: absolute; top: 8px; right: 12px;
+    font-size: 14px; color:#8bd48e; font-weight: 700;
+  }
+  .items.locked .item { pointer-events: none; }
+  .item.ok-keep { border-color: rgba(232,192,125,.6); background: rgba(232,192,125,.14); }
+
+  /* ===== 点击交互（鸣枪 / 敲树干） ===== */
+  .tap-wrap { text-align: center; padding: 6px 0 4px; }
+  .tap-count {
+    font-size: 18px; color:#e8c07d; letter-spacing:.12em; margin: 6px 0 20px;
+  }
+  .tap-count b { font-size: 24px; color:#fff; }
+  .tap-btn { margin-top: 4px; }
+  .tap-btn:disabled { opacity:.5; cursor: default; transform:none; box-shadow:none; }
+
   /* ===== 会师提示界面 ===== */
   #victory .content { max-width: 720px; }
   .victory-badge {
@@ -213,10 +301,194 @@
   }
   .quote small { display:block; margin-top:10px; font-style:normal; font-size:13px; color:#9fb0bc; letter-spacing:.3em; }
 
+  /* ===== 档案袋入口（固定右上角） ===== */
+  .archive-entry {
+    position: fixed; top: 20px; right: 22px; z-index: 50;
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: rgba(15,28,42,.66);
+    border: 1.5px solid rgba(232,192,125,.5);
+    border-radius: 999px;
+    color: #f0d9a8; font-size: 14px; letter-spacing: .1em;
+    cursor: pointer; backdrop-filter: blur(6px);
+    transition: all .2s;
+  }
+  .archive-entry:hover { background: rgba(232,192,125,.16); transform: translateY(-2px); }
+  .archive-entry .cnt {
+    min-width: 20px; height: 20px; padding: 0 6px;
+    display: grid; place-items: center;
+    background: #e0402f; color:#fff; border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+  }
+
+  /* ===== 遮罩层（碎片弹窗 / 档案册通用） ===== */
+  .overlay {
+    position: fixed; inset: 0; z-index: 100;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 30px 20px;
+    background: rgba(5,12,20,.78);
+    backdrop-filter: blur(4px);
+    opacity: 0; transition: opacity .35s;
+  }
+  .overlay.active { display: flex; opacity: 1; }
+
+  /* ===== 碎片获得弹窗 ===== */
+  .frag-modal {
+    position: relative;
+    width: 100%; max-width: 420px;
+    text-align: center;
+    background: linear-gradient(160deg, #17293b, #0e1b28);
+    border: 1.5px solid rgba(232,192,125,.55);
+    border-radius: 20px;
+    padding: 34px 30px 30px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.6), 0 0 60px rgba(232,192,125,.12);
+    animation: fragIn .5s cubic-bezier(.2,1.3,.5,1);
+  }
+  @keyframes fragIn { from { transform: translateY(30px) scale(.9); opacity:0; } to { transform:none; opacity:1; } }
+  .frag-label { font-size: 13px; letter-spacing: .4em; color: #e8c07d; margin-bottom: 18px; }
+  .frag-icon-wrap {
+    position: relative; width: 130px; height: 130px; margin: 0 auto 18px;
+    display: grid; place-items: center;
+  }
+  .frag-icon {
+    font-size: 66px;
+    filter: drop-shadow(0 6px 16px rgba(0,0,0,.5));
+    animation: floaty 3s ease-in-out infinite;
+  }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .frag-glow {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,192,125,.45), transparent 65%);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { transform: scale(.9); opacity:.6; } 50% { transform: scale(1.15); opacity:1; } }
+  .frag-name { font-size: 26px; font-weight: 800; letter-spacing: .08em; margin-bottom: 6px; }
+  .frag-name .red { color:#e0402f; }
+  .frag-from { font-size: 13px; color:#9fb0bc; letter-spacing:.2em; margin-bottom: 16px; }
+  .frag-desc {
+    font-size: 15.5px; line-height: 1.9; color:#eceff1;
+    background: rgba(0,0,0,.22); border-radius: 12px; padding: 14px 18px;
+    margin-bottom: 8px;
+  }
+  .frag-effect { font-size: 13.5px; color:#e8c07d; margin: 12px 0 4px; letter-spacing:.05em; }
+
+  /* ===== 档案册 ===== */
+  .archive-book {
+    position: relative;
+    width: 100%; max-width: 760px;
+    max-height: 86vh; overflow-y: auto;
+    background: linear-gradient(160deg, #17293b, #0e1b28);
+    border: 1.5px solid rgba(232,192,125,.4);
+    border-radius: 20px;
+    padding: 30px 30px 34px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.6);
+  }
+  .archive-book h2 {
+    font-size: 24px; letter-spacing: .2em; text-align: center; margin-bottom: 4px;
+  }
+  .archive-book .sub { text-align:center; font-size:13px; color:#9fb0bc; letter-spacing:.2em; margin-bottom: 24px; }
+  .frag-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .frag-cell {
+    background: rgba(0,0,0,.25);
+    border: 1px solid rgba(232,192,125,.22);
+    border-radius: 14px;
+    padding: 20px 14px 18px;
+    text-align: center;
+    transition: transform .2s, border-color .2s;
+  }
+  .frag-cell.got { cursor: pointer; }
+  .frag-cell.got:hover { transform: translateY(-4px); border-color:#e8c07d; }
+  .frag-cell .ci { font-size: 46px; margin-bottom: 10px; }
+  .frag-cell.locked .ci { filter: grayscale(1) brightness(.4); opacity:.55; }
+  .frag-cell .cn { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .frag-cell.locked .cn { color:#5f7180; }
+  .frag-cell .cf { font-size: 12px; color:#8598a6; letter-spacing:.1em; }
+  .frag-cell .clk { font-size: 12px; color:#5f7180; margin-top: 6px; }
+  .frag-detail {
+    margin-top: 20px;
+    background: rgba(0,0,0,.28);
+    border-left: 3px solid #e8c07d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px; line-height: 1.85; color:#eceff1;
+    display: none;
+  }
+  .frag-detail.show { display: block; }
+  .frag-detail .dt { color:#e8c07d; font-weight:700; margin-bottom: 4px; }
+  .close-x {
+    position: absolute; top: 14px; right: 18px;
+    width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items:center;
+    background: rgba(255,255,255,.08); color:#cfd8dc;
+    border: none; font-size: 18px; cursor: pointer;
+  }
+  .close-x:hover { background: rgba(255,255,255,.18); }
+
   @media (max-width: 640px) {
     .title { font-size: 40px; }
     .q-text { font-size: 20px; }
     .card { padding: 22px; font-size: 15px; }
+    .frag-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===== 实景对位选项层：选项浮在背景图对应物品的正上方 ===== */
+  .pos-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .pos-layer .pos-opt {
+    position: absolute; transform: translate(-50%, -50%);
+    pointer-events: auto;
+    max-width: 210px;
+    padding: 11px 15px;
+    background: rgba(9, 18, 30, .84);
+    border: 1.5px solid rgba(232, 192, 125, .55);
+    color: #eceff1; font-size: 15px; font-weight: 600; line-height: 1.4;
+    text-align: center; cursor: pointer;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .55);
+    transition: background .18s, border-color .18s, transform .18s;
+    white-space: nowrap;
+  }
+  .pos-layer .pos-opt:hover {
+    border-color: #e8c07d; background: rgba(232, 192, 125, .2);
+    transform: translate(-50%, -50%) translateY(-3px);
+  }
+  /* 指向下方物品的小箭头 */
+  .pos-layer .pos-opt::after {
+    content: ""; position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: rgba(232, 192, 125, .7);
+  }
+  .pos-opt .k {
+    display: inline-grid; place-items: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(232, 192, 125, .22); color: #e8c07d;
+    font-weight: 700; font-size: 13px; margin-right: 8px; vertical-align: middle;
+  }
+  .pos-opt.sel { border-color: #43a047; background: rgba(67, 160, 71, .32); }
+  .pos-opt.sel::before {
+    content: "✓"; position: absolute; top: -9px; right: -9px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #43a047; color: #fff; font-size: 12px;
+    display: grid; place-items: center;
+  }
+  .pos-opt.correct { border-color: #43a047; background: rgba(67, 160, 71, .34); }
+  .pos-opt.correct::after { border-top-color: #43a047; }
+  .pos-opt.wrong { border-color: #e0402f; background: rgba(224, 64, 47, .34); }
+  .pos-layer.locked .pos-opt { pointer-events: none; }
+  /* 底部居中的确认按钮 + 反馈 */
+  .pos-confirm { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 4; margin-top: 0; pointer-events: auto; }
+  .pos-feedback {
+    position: absolute; left: 50%; bottom: 86px; transform: translateX(-50%); z-index: 4;
+    max-width: 74vw; text-align: center; font-size: 16px; letter-spacing: .04em;
+    padding: 8px 20px; background: rgba(9, 18, 30, .82); color: #eceff1;
+    opacity: 0; transition: opacity .3s;
+  }
+  .pos-feedback.show { opacity: 1; }
+  .pos-feedback.ok { color: #8bd48e; }
+  .pos-feedback.no { color: #ff8a80; }
+  @media (max-width: 640px) {
+    .pos-layer .pos-opt { max-width: 130px; font-size: 12.5px; padding: 8px 10px; white-space: normal; }
   }
 </style>
 </head>
@@ -244,12 +516,25 @@
 <section class="stage" id="quiz">
   <div class="scene" id="scene-b"></div>
   <div class="snow" id="snow-b"></div>
-  <div class="content">
-    <div class="progress" id="progress"></div>
-    <div class="q-scene" id="qScene">情 境</div>
-    <div class="q-text" id="qText"></div>
-    <div class="options" id="options"></div>
+  <div class="quiz-topleft">
+    <div class="chapter" id="chapterLabel"></div>
+    <div class="q-scene" id="qScene"></div>
+    <div class="task" id="qTask"></div>
+  </div>
+  <div class="quiz-center">
+    <div id="interact"></div>
     <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<!-- ================= 篇章过渡界面（进入过草地） ================= -->
+<section class="stage" id="chapterIntro">
+  <div class="scene" id="scene-ci"></div>
+  <div class="content">
+    <div class="kicker" id="ciKicker"></div>
+    <h1 class="title" id="ciTitle"></h1>
+    <div class="subtitle" id="ciSub"></div>
   </div>
 </section>
 
@@ -293,44 +578,39 @@
   </div>
 </section>
 
+<!-- ================= 档案袋入口（固定右上角） ================= -->
+<div class="archive-entry" id="archiveEntry" onclick="openArchive()">
+  <span>📁</span><span>档案袋</span><span class="cnt" id="archiveCnt">0</span>
+</div>
+
+<!-- ================= 碎片获得弹窗 ================= -->
+<div class="overlay" id="fragOverlay">
+  <div class="frag-modal">
+    <div class="frag-label">档 案 碎 片 · 获 得</div>
+    <div class="frag-icon-wrap">
+      <div class="frag-glow"></div>
+      <div class="frag-icon" id="fragIcon">🥾</div>
+    </div>
+    <div class="frag-name" id="fragName"></div>
+    <div class="frag-from" id="fragFrom"></div>
+    <div class="frag-desc" id="fragDesc"></div>
+    <div class="frag-effect" id="fragEffect"></div>
+    <button class="btn" id="fragCollectBtn">收 进 档 案 袋 ▸</button>
+  </div>
+</div>
+
+<!-- ================= 档案册 ================= -->
+<div class="overlay" id="archiveOverlay">
+  <div class="archive-book">
+    <button class="close-x" onclick="closeArchive()">✕</button>
+    <h2>长 征 档 案 册</h2>
+    <div class="sub">每 走 过 一 关 · 收 集 一 块 历 史 碎 片</div>
+    <div class="frag-grid" id="fragGrid"></div>
+    <div class="frag-detail" id="fragDetail"></div>
+  </div>
+</div>
+
 <script>
-/* ===== 雪山场景 SVG（开头/答题/会师/结尾统一风格） ===== */
-function mountainSVG() {
-  return `
-  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1a3a52"/>
-        <stop offset="0.5" stop-color="#2c5978"/>
-        <stop offset="1" stop-color="#6d8fa3"/>
-      </linearGradient>
-      <linearGradient id="snowg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffffff"/>
-        <stop offset="1" stop-color="#b9cdd8"/>
-      </linearGradient>
-      <linearGradient id="rock" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#5a6b78"/>
-        <stop offset="1" stop-color="#38434d"/>
-      </linearGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#sky)"/>
-    <circle cx="1140" cy="180" r="70" fill="#fdf6e3" opacity="0.9"/>
-    <circle cx="1140" cy="180" r="110" fill="#fdf6e3" opacity="0.12"/>
-    <path d="M0 560 L220 380 L360 500 L560 320 L760 520 L980 350 L1180 520 L1440 400 L1440 900 L0 900 Z" fill="url(#rock)" opacity="0.55"/>
-    <path d="M-40 900 L360 300 L520 520 L760 200 L980 470 L1240 260 L1500 900 Z" fill="url(#rock)"/>
-    <path d="M360 300 L300 385 L340 375 L318 430 L400 380 L440 420 L520 520 L470 470 L430 500 L400 440 L360 300 Z" fill="url(#snowg)"/>
-    <path d="M760 200 L700 300 L740 285 L715 350 L800 290 L850 340 L980 470 L900 430 L860 470 L820 400 L760 200 Z" fill="url(#snowg)"/>
-    <path d="M1240 260 L1180 360 L1230 345 L1360 560 L1300 520 L1240 260 Z" fill="url(#snowg)"/>
-    <path d="M0 720 Q360 640 720 710 T1440 700 L1440 900 L0 900 Z" fill="url(#snowg)" opacity="0.95"/>
-    <path d="M0 790 Q360 740 720 790 T1440 780 L1440 900 L0 900 Z" fill="#e8f1f6"/>
-  </svg>`;
-}
-
-/* 注入所有场景 */
-['scene-a','scene-b','scene-c','scene-d'].forEach(id => {
-  document.getElementById(id).innerHTML = mountainSVG();
-});
-
 /* ===== 飘雪 ===== */
 function makeSnow(el) {
   let html = '';
@@ -343,134 +623,344 @@ function makeSnow(el) {
   }
   el.innerHTML = html;
 }
-['snow-a','snow-b','snow-c','snow-d'].forEach(id => makeSnow(document.getElementById(id)));
+/* 已按需求关闭飘雪效果 */
 
-/* ===== 题库：情境选择题 ===== */
-const QUESTIONS = [
+/* ================= 关卡数据：分「爬雪山 / 过草地」两篇 =================
+   type: 'multi'  物品多选，选出需舍弃的物品（须与 discard 完全一致）
+   type: 'single' 单选 A/B/C
+   type: 'tap'    点击交互 N 次（鸣枪 / 敲树干）
+   ground: 'grass' 时切换为草地灰绿色调背景，否则用雪山油画背景         */
+const SCENES = [
+  /* ---------------- 第一篇 · 爬雪山 ---------------- */
   {
-    scene: "情 境 一 · 翻 越 夹 金 山",
-    q: "队伍翻越终年积雪的夹金山，山上空气稀薄、寒风刺骨，有战士想坐下歇一歇。作为带队者，你应当？",
-    options: [
-      "让大家原地坐下休息，恢复体力",
-      "互相搀扶、坚持不停脚步，快速翻过山顶",
-      "就地生火扎营，等天气转暖再走",
-      "分头下山，各自寻找避风的山洞"
-    ],
-    answer: 1,
-    ok: "正确！雪山上一旦坐下极易被冻僵牺牲，只有咬牙坚持、互相搀扶不停脚，才能活着翻过雪山。",
-    no: "错误！雪山严寒缺氧，坐下歇息往往就再也站不起来。"
+    chapter: "第 一 篇 · 爬 雪 山",
+    scene: "界面一 · 夹金山下 · 整理负重",
+    type: "multi",
+    bg: "assets/snow-load.jpg",
+    task: "马上要翻越夹金山，山路陡峭、风雪巨大。请选出必须卸下的多余负重物品，减轻行军负担。",
+    items: ["厚重棉被", "多余银元", "必要干粮", "珍贵急救草药"],
+    // 选项浮在背景图对应物品正上方（x,y 为视口百分比）：棉被/银元/干粮/草药
+    pos: [ {x:17,y:60}, {x:40,y:62}, {x:58,y:52}, {x:83,y:62} ],
+    discard: ["厚重棉被", "多余银元"],
+    confirm: "确认卸下",
+    ok: "回答正确。卸下棉被与银元，留下干粮和急救草药，队伍轻装翻山。"
   },
   {
-    scene: "情 境 二 · 挺 进 松 潘 草 地",
-    q: "进入草地，眼前是一片看似平整的绿色沼泽。怎样通过才安全？",
+    chapter: "第 一 篇 · 爬 雪 山",
+    scene: "界面二 · 半山腰 · 雪光刺眼",
+    type: "single",
+    bg: "assets/snow-glare.jpg",
+    task: "雪地反射的强光极易灼伤眼睛（雪盲），已有战士晕倒。请选出正确的防护方式。",
     options: [
-      "径直踩上绿草抄近路，节省体力",
-      "沿着水草最茂盛、最平坦的地方走",
-      "跟随向导、踩着探明的草甸路线，一个跟一个走",
-      "单独快速冲过去，减少停留"
+      "低头，用破旧布条蒙住眼睛，只留缝隙看路",
+      "直视强光，继续往前走",
+      "摘掉帽子，裸露头部"
     ],
-    answer: 2,
-    ok: "正确！草地表面是致命的泥沼，必须跟随向导、踩着踏勘过的草甸鱼贯而行，才不会陷进去。",
-    no: "错误！草地看似平坦，实为吃人的沼泽，贸然踩踏会陷入泥潭。"
+    answer: 0,
+    ok: "回答正确。用布条蒙眼、只留细缝，能有效防止雪盲。"
   },
   {
-    scene: "情 境 三 · 断 粮 之 困",
-    q: "草地深处粮食吃光了，战士们又冷又饿。为了活下去、走出草地，你带头做什么？",
-    options: [
-      "原地等待后方送来补给",
-      "挖野菜、煮皮带、嚼草根,想尽办法充饥前进",
-      "立即掉头返回出发地找吃的",
-      "把所有干粮留给自己，保证带队者体力"
-    ],
-    answer: 1,
-    ok: "正确！断粮的红军正是靠挖野菜、煮皮带、嚼草根，以惊人的意志坚持走出了草地。",
-    no: "错误！草地无处补给，返回或空等只会全军覆没，唯有就地找一切能吃的东西坚持前进。"
+    chapter: "第 一 篇 · 爬 雪 山",
+    scene: "界面三 · 山脚树林 · 遭遇友军",
+    type: "tap",
+    bg: "assets/snow-allies.jpg",
+    task: "快下山时，树丛里的人影朝天连开 5 枪。请操控红军战士朝天鸣枪 5 次进行回应。",
+    n: 5, btn: "鸣 枪 回 应", unit: "枪",
+    done: "红一方面军与红四方面军成功会师，长征路上战友相逢。"
+  },
+  /* ---------------- 第二篇 · 过草地 ---------------- */
+  {
+    chapter: "第 二 篇 · 过 草 地",
+    scene: "界面一 · 草地外围 · 挑选物资",
+    type: "multi", ground: "grass",
+    bg: "assets/grass-load.jpg",
+    task: "沼泽草地路途漫长、泥潭众多，行李过重容易陷进泥潭。请选出需要舍弃的物品。",
+    items: ["笨重铁锅", "压缩野菜干粮", "厚实防雨斗篷", "多余陶瓷碗"],
+    // 选项浮在背景图对应物品正上方：铁锅/干粮/斗篷/陶瓷碗
+    pos: [ {x:15,y:66}, {x:46,y:66}, {x:63,y:66}, {x:84,y:66} ],
+    discard: ["笨重铁锅", "多余陶瓷碗"],
+    confirm: "确认舍弃",
+    ok: "回答正确。舍弃铁锅与陶瓷碗，留下干粮和防雨斗篷，才能安全穿越沼泽。"
   },
   {
-    scene: "情 境 四 · 生 死 与 共",
-    q: "一名战友因饥饿寒冷倒在泥沼边，几乎走不动了。你会怎么做？",
+    chapter: "第 二 篇 · 过 草 地",
+    scene: "界面二 · 草地深处 · 战友陷潭",
+    type: "single", ground: "grass",
+    bg: "assets/grass-rescue.jpg",
+    task: "一名战友半个身子陷进软泥潭。泥潭吸力很强，站立靠近极易一同陷下。请选出正确的救援方式。",
     options: [
-      "队伍要紧，只能忍痛把他留下",
-      "搀扶他、鼓励他，分出仅有的干粮，一起走出草地",
-      "让他自己想办法追上来",
-      "把武器物资丢给他背，减轻自己负担"
+      "趴在地面，伸长木棍把战友拉上来",
+      "几个人全部站到泥潭边，伸手去拖拽",
+      "丢下战友，快速赶路跟上队伍"
     ],
-    answer: 1,
-    ok: "正确！‘不掉一人’是红军的信念，战友间互相搀扶、生死与共，正是长征胜利的力量源泉。",
-    no: "错误！红军是钢铁般团结的队伍，绝不会丢下自己的战友。"
+    answer: 0,
+    ok: "回答正确。趴地分散重量、用木棍施救，才能把战友安全拉出泥潭。"
   },
   {
-    scene: "情 境 五 · 胜 利 会 师",
-    q: "历经雪山草地的九死一生，红军终于走出绝境。这段征程最伟大的意义是？",
+    chapter: "第 二 篇 · 过 草 地",
+    scene: "界面三 · 草地深夜 · 暗号相认",
+    type: "tap", ground: "grass",
+    bg: "assets/grass-signal.jpg",
+    task: "漆黑雾夜，草丛里的身影轻敲树干 3 次作为暗号。请敲击树干 3 次回应。",
+    n: 3, btn: "敲 击 树 干", unit: "次",
+    done: "军民同心，共渡茫茫草地。"
+  },
+  {
+    chapter: "第 二 篇 · 过 草 地",
+    scene: "界面四 · 断粮之际 · 坚守底线",
+    type: "single", ground: "grass",
+    bg: "assets/grass-food.jpg",
+    task: "队伍粮食将尽，战士饥寒交迫。请选出正确的做法。",
     options: [
-      "证明了川西的风景十分壮美",
-      "战胜了恶劣的自然环境，摆脱敌军围追堵截，为北上会师奠定基础",
-      "缩短了长征的总里程",
-      "找到了一条通往城市的近路"
+      "辨认并采摘安全的野菜",
+      "吃不知名的有毒野草",
+      "立即宰杀仅剩的战马"
     ],
-    answer: 1,
-    ok: "正确！翻雪山、过草地，红军以血肉之躯战胜自然极限，摆脱围追堵截，为胜利会师奠定了基础。",
-    no: "错误！雪山草地的真正意义，在于红军战胜绝境、摆脱敌军围堵，走向胜利会师。"
+    // 选项浮在对应物品上方：安全野菜(右下青菜)/有毒野草(左侧毒草)/战马(右侧瘦马)
+    pos: [ {x:86,y:60}, {x:14,y:52}, {x:68,y:24} ],
+    answer: 0,
+    ok: "回答正确。珍惜粮食、采摘安全野菜；不到迫不得已，红军绝不宰杀战马。"
   }
 ];
+
+/* 过草地篇章过渡的全景背景图 */
+const GRASS_INTRO_BG = "assets/grass-intro.jpg";
 
 let cur = 0;
 
 function buildProgress() {
   const p = document.getElementById('progress');
-  p.innerHTML = QUESTIONS.map((_, i) =>
+  p.innerHTML = SCENES.map((_, i) =>
     `<div class="dot ${i < cur ? 'done' : (i === cur ? 'cur' : '')}"></div>`
   ).join('');
 }
 
-function renderQuestion() {
-  const item = QUESTIONS[cur];
+function setGround(scene) {
+  // 每一关使用各自对应的实景图作为背景
+  document.getElementById('scene-b').style.backgroundImage = "url('" + scene.bg + "')";
+}
+
+/* 篇章过渡：全屏展示一张全景图 + 标题，停留数秒后进入首关 */
+function showChapterIntro(bg, kicker, titleHTML, sub, cb) {
+  document.getElementById('scene-ci').style.backgroundImage = "url('" + bg + "')";
+  document.getElementById('ciKicker').textContent = kicker;
+  document.getElementById('ciTitle').innerHTML = titleHTML;
+  document.getElementById('ciSub').textContent = sub;
+  show('chapterIntro');
+  setTimeout(cb, 3000);
+}
+
+function fb(cls, text) {
+  const f = document.getElementById('feedback');
+  f.className = 'feedback ' + cls;
+  f.textContent = text;
+}
+
+function nextScene() {
+  cur++;
+  if (cur >= SCENES.length) { showVictory(); return; }
+  // 进入「第二篇 · 过草地」前，先播放草地全景过渡界面
+  if (cur === 3) {
+    showChapterIntro(
+      GRASS_INTRO_BG,
+      "长 征 · 第 二 篇",
+      "过 <span class=\"red\">草 地</span>",
+      "川 西 北 · 松 潘 草 地",
+      function () { show('quiz'); renderScene(); }
+    );
+  } else {
+    renderScene();
+  }
+}
+
+function renderScene() {
+  const s = SCENES[cur];
   buildProgress();
-  document.getElementById('qScene').textContent = item.scene;
-  document.getElementById('qText').textContent = item.q;
-  const fb = document.getElementById('feedback');
-  fb.className = 'feedback';
-  fb.textContent = '';
-  const box = document.getElementById('options');
-  box.className = 'options';
-  const keys = ['A','B','C','D'];
-  box.innerHTML = item.options.map((opt, i) =>
+  setGround(s);
+  document.getElementById('chapterLabel').textContent = s.chapter;
+  document.getElementById('qScene').textContent = s.scene;
+  document.getElementById('qTask').textContent = s.task;
+  fb('', '');
+  const box = document.getElementById('interact');
+  box.innerHTML = '';
+  // 清除上一关遗留的对位选项层
+  const oldLayer = document.querySelector('#quiz .pos-layer');
+  if (oldLayer) oldLayer.remove();
+
+  // 带 pos 坐标的关卡：选项浮在背景图对应物品正上方
+  if (s.pos && (s.type === 'single' || s.type === 'multi')) { renderPositioned(s); return; }
+
+  if (s.type === 'single') renderSingle(s, box);
+  else if (s.type === 'multi') renderMulti(s, box);
+  else if (s.type === 'tap') renderTap(s, box);
+}
+
+/* ----- 对位选项（选项按 pos 坐标浮在背景物品上方） ----- */
+function renderPositioned(s) {
+  const stage = document.getElementById('quiz');
+  const layer = document.createElement('div');
+  layer.className = 'pos-layer';
+
+  const fbEl = document.createElement('div');
+  fbEl.className = 'pos-feedback';
+  function setFb(cls, txt) { fbEl.className = 'pos-feedback show ' + cls; fbEl.textContent = txt; }
+
+  const keys = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  if (s.type === 'multi') {
+    const btns = s.items.map((name, i) => {
+      const b = document.createElement('div');
+      b.className = 'pos-opt';
+      b.dataset.name = name;
+      b.style.left = s.pos[i].x + '%';
+      b.style.top = s.pos[i].y + '%';
+      b.innerHTML = '<span class="k">' + keys[i] + '</span>' + name;
+      b.addEventListener('click', () => {
+        if (layer.classList.contains('locked')) return;
+        b.classList.toggle('sel');
+      });
+      layer.appendChild(b);
+      return b;
+    });
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn pos-confirm';
+    confirmBtn.textContent = s.confirm;
+    confirmBtn.addEventListener('click', () => {
+      if (layer.classList.contains('locked')) return;
+      const chosen = btns.filter(b => b.classList.contains('sel')).map(b => b.dataset.name);
+      const want = s.discard;
+      const ok = chosen.length === want.length && want.every(n => chosen.indexOf(n) !== -1);
+      if (ok) {
+        layer.classList.add('locked');
+        confirmBtn.disabled = true;
+        btns.forEach(b => { if (want.indexOf(b.dataset.name) === -1) b.classList.add('correct'); });
+        setFb('ok', s.ok + '　（进入下一关…）');
+        setTimeout(nextScene, 1500);
+      } else {
+        setFb('no', '选择错误，请重新选择。');
+      }
+    });
+    layer.appendChild(confirmBtn);
+  } else { // single
+    s.options.forEach((opt, i) => {
+      const b = document.createElement('div');
+      b.className = 'pos-opt';
+      b.style.left = s.pos[i].x + '%';
+      b.style.top = s.pos[i].y + '%';
+      b.innerHTML = '<span class="k">' + keys[i] + '</span>' + opt;
+      b.addEventListener('click', () => {
+        if (layer.classList.contains('locked')) return;
+        if (i === s.answer) {
+          layer.classList.add('locked');
+          b.classList.add('correct');
+          setFb('ok', s.ok + '　（进入下一关…）');
+          setTimeout(nextScene, 1400);
+        } else {
+          b.classList.add('wrong');
+          setFb('no', '选择错误，请重新作答。');
+          setTimeout(() => b.classList.remove('wrong'), 900);
+        }
+      });
+      layer.appendChild(b);
+    });
+  }
+
+  layer.appendChild(fbEl);
+  stage.appendChild(layer);
+}
+
+/* ----- 单选 A/B/C ----- */
+function renderSingle(s, box) {
+  const keys = ['A', 'B', 'C', 'D'];
+  const list = document.createElement('div');
+  list.className = 'options';
+  list.innerHTML = s.options.map((opt, i) =>
     `<div class="opt" data-i="${i}"><span class="k">${keys[i]}</span><span>${opt}</span></div>`
   ).join('');
-  box.querySelectorAll('.opt').forEach(el => {
-    el.addEventListener('click', () => choose(parseInt(el.dataset.i)));
+  box.appendChild(list);
+  list.querySelectorAll('.opt').forEach(el => {
+    el.addEventListener('click', () => {
+      if (list.classList.contains('locked')) return;
+      const i = parseInt(el.dataset.i);
+      if (i === s.answer) {
+        list.classList.add('locked');
+        el.classList.add('correct');
+        fb('show ok', s.ok + '　（进入下一关…）');
+        setTimeout(nextScene, 1400);
+      } else {
+        el.classList.add('wrong');
+        fb('show no', '选择错误，请重新作答。');
+        setTimeout(() => el.classList.remove('wrong'), 900);
+      }
+    });
   });
 }
 
-function choose(i) {
-  const item = QUESTIONS[cur];
-  const box = document.getElementById('options');
-  box.classList.add('locked');
-  const opts = box.querySelectorAll('.opt');
-  const fb = document.getElementById('feedback');
+/* ----- 物品多选（选出需舍弃的物品） ----- */
+function renderMulti(s, box) {
+  const grid = document.createElement('div');
+  grid.className = 'items';
+  grid.innerHTML = s.items.map((name, i) =>
+    `<div class="item" data-name="${name}">${name}</div>`
+  ).join('');
+  box.appendChild(grid);
 
-  if (i === item.answer) {
-    opts[i].classList.add('correct');
-    fb.className = 'feedback show ok';
-    fb.textContent = item.ok + '　（即将进入下一关…）';
-    setTimeout(() => {
-      cur++;
-      if (cur >= QUESTIONS.length) {
-        showVictory();
-      } else {
-        renderQuestion();
-      }
-    }, 1500);
-  } else {
-    opts[i].classList.add('wrong');
-    opts[item.answer].classList.add('correct');
-    fb.className = 'feedback show no';
-    fb.textContent = item.no + '　队伍陷入绝境，请从头再走一遍！';
-    setTimeout(() => {
-      cur = 0;               // 答错回到第一关
-      renderQuestion();
-    }, 2200);
-  }
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = s.confirm;
+  box.appendChild(btn);
+
+  grid.querySelectorAll('.item').forEach(el => {
+    el.addEventListener('click', () => {
+      if (grid.classList.contains('locked')) return;
+      el.classList.toggle('sel');
+    });
+  });
+
+  btn.addEventListener('click', () => {
+    if (grid.classList.contains('locked')) return;
+    const chosen = Array.from(grid.querySelectorAll('.item.sel'))
+      .map(el => el.dataset.name);
+    const want = s.discard;
+    const ok = chosen.length === want.length &&
+      want.every(n => chosen.indexOf(n) !== -1);
+    if (ok) {
+      grid.classList.add('locked');
+      btn.disabled = true;
+      // 高亮保留下来的正确物品
+      grid.querySelectorAll('.item').forEach(el => {
+        if (want.indexOf(el.dataset.name) === -1) el.classList.add('ok-keep');
+      });
+      fb('show ok', s.ok + '　（进入下一关…）');
+      setTimeout(nextScene, 1500);
+    } else {
+      fb('show no', '选择错误，请重新选择。');
+    }
+  });
+}
+
+/* ----- 点击交互（鸣枪 / 敲树干 N 次） ----- */
+function renderTap(s, box) {
+  let count = 0;
+  const wrap = document.createElement('div');
+  wrap.className = 'tap-wrap';
+  wrap.innerHTML =
+    `<div class="tap-count">已完成 <b id="tapNum">0</b> / ${s.n} ${s.unit}</div>` +
+    `<button class="btn tap-btn" id="tapBtn">${s.btn}</button>`;
+  box.appendChild(wrap);
+
+  const btn = wrap.querySelector('#tapBtn');
+  const num = wrap.querySelector('#tapNum');
+  btn.addEventListener('click', () => {
+    if (count >= s.n) return;
+    count++;
+    num.textContent = count;
+    if (count >= s.n) {
+      btn.disabled = true;
+      fb('show ok', s.done + '　（进入下一关…）');
+      setTimeout(nextScene, 1700);
+    }
+  });
 }
 
 /* ===== 界面切换 ===== */
@@ -481,18 +971,126 @@ function show(id) {
 
 function startQuiz() {
   cur = 0;
-  renderQuestion();
+  renderScene();
   show('quiz');
 }
 
+/* ============================================================
+   档案碎片收集系统（跨关通用，localStorage 持久化）
+   —— 其它两关只需复用这份 FRAGMENTS + 同一套弹窗/档案册代码
+   ============================================================ */
+const STORE_KEY = 'changzheng_fragments';
+
+/* 全部碎片登记表：本关只发放 xueshan，其余关卡在各自会话里发放，
+   这里一并登记是为了让「档案册」显示未获得碎片的剪影，形成主线收集感。 */
+const FRAGMENTS = {
+  zunyi: {
+    icon: '📜',
+    name: '方向碎片',
+    from: '遵义会议',
+    when: '第三幕 · 记录纸完成后',
+    desc: '你记录下了关键判断。红军在危急关头重新看清方向。',
+    effect: '地图上「遵义→赤水」一段路线变亮，重新争取主动。',
+    fact: '1935 年 1 月遵义会议确立了毛泽东在红军和党中央的领导地位，是中国革命的伟大转折点。'
+  },
+  luding: {
+    icon: '⛓️',
+    name: '铁索碎片',
+    from: '飞夺泸定桥',
+    when: '成功到达对岸后',
+    desc: '你跟随突击队冲过铁索，帮助红军打开前进通道。',
+    effect: '地图上「泸定桥」节点亮起，队伍突破险关。',
+    fact: '1935 年 5 月，红军 22 名勇士冒着枪林弹雨攀踏铁索，夺取泸定桥，打通了北上通道。'
+  },
+  xueshan: {
+    icon: '🥾',
+    name: '草鞋碎片',
+    from: '爬雪山过草地',
+    when: '走出雪山草地、与红四方面军会合后',
+    desc: '你带领队伍翻过雪山、走出草地，红军以血肉之躯战胜了自然的极限。',
+    effect: '地图上「夹金山—松潘草地」一段贯通，胜利会师。',
+    fact: '1935 年，红军翻越夹金山等大雪山、穿越松潘草地，缺氧严寒、断粮沼泽，无数战士长眠于此，写下长征最悲壮的一章。'
+  }
+};
+/* 档案册中的展示顺序（按长征时间线） */
+const FRAG_ORDER = ['zunyi', 'luding', 'xueshan'];
+/* 本关对应的碎片 */
+const THIS_LEVEL_FRAG = 'xueshan';
+
+function getCollected() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+  catch (e) { return []; }
+}
+function saveCollected(arr) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch (e) {}
+}
+function hasFrag(id) { return getCollected().indexOf(id) !== -1; }
+function addFrag(id) {
+  const arr = getCollected();
+  if (arr.indexOf(id) === -1) { arr.push(id); saveCollected(arr); }
+  updateArchiveCount();
+}
+function updateArchiveCount() {
+  document.getElementById('archiveCnt').textContent = getCollected().length;
+}
+
+/* --- 碎片获得弹窗 --- */
+function showFragmentReward(id, onDone) {
+  const f = FRAGMENTS[id];
+  document.getElementById('fragIcon').textContent = f.icon;
+  document.getElementById('fragName').innerHTML = '获得 · <span class="red">' + f.name + '</span>';
+  document.getElementById('fragFrom').textContent = '来自「' + f.from + '」· ' + f.when;
+  document.getElementById('fragDesc').textContent = '“' + f.desc + '”';
+  document.getElementById('fragEffect').textContent = '▸ ' + f.effect;
+  const btn = document.getElementById('fragCollectBtn');
+  btn.onclick = function () {
+    addFrag(id);
+    document.getElementById('fragOverlay').classList.remove('active');
+    if (typeof onDone === 'function') onDone();
+  };
+  document.getElementById('fragOverlay').classList.add('active');
+}
+
+/* --- 档案册 --- */
+function renderArchive() {
+  const grid = document.getElementById('fragGrid');
+  grid.innerHTML = FRAG_ORDER.map(function (id) {
+    const f = FRAGMENTS[id];
+    if (hasFrag(id)) {
+      return '<div class="frag-cell got" onclick="showFragDetail(\'' + id + '\')">' +
+        '<div class="ci">' + f.icon + '</div>' +
+        '<div class="cn">' + f.name + '</div>' +
+        '<div class="cf">' + f.from + '</div></div>';
+    }
+    return '<div class="frag-cell locked">' +
+      '<div class="ci">❔</div>' +
+      '<div class="cn">未获得</div>' +
+      '<div class="cf">' + f.from + '</div>' +
+      '<div class="clk">🔒 通关后解锁</div></div>';
+  }).join('');
+  document.getElementById('fragDetail').classList.remove('show');
+}
+function showFragDetail(id) {
+  const f = FRAGMENTS[id];
+  const box = document.getElementById('fragDetail');
+  box.innerHTML = '<div class="dt">' + f.icon + '　' + f.name + ' · ' + f.from + '</div>' + f.fact;
+  box.classList.add('show');
+}
+function openArchive() { renderArchive(); document.getElementById('archiveOverlay').classList.add('active'); }
+function closeArchive() { document.getElementById('archiveOverlay').classList.remove('active'); }
+
+updateArchiveCount();
+
 function showVictory() {
   show('victory');
-  // 会师界面停留 3 秒后跳转到结尾资料界面
-  setTimeout(() => show('ending'), 3000);
+  // 会师界面停留 3 秒 → 弹出碎片获得弹窗 → 收进档案袋后进入结尾资料界面
+  setTimeout(function () {
+    showFragmentReward(THIS_LEVEL_FRAG, function () { show('ending'); });
+  }, 3000);
 }
 
 function finishLevel() {
-  window.parent?.postMessage({ type: "changzheng-level-complete", levelId: "snow-grassland" }, "*");
+  window.parent?.postMessage({ type: 'changzheng-level-complete', levelId: 'snow-grassland' }, '*');
 }
 
 function restartAll() {

@@ -1,4 +1,4 @@
-const COVER_IMAGE_SRC = "assets/cover/cover.png";
+const COVER_IMAGE_SRC = "assets/cover/cover.jpg";
 
 export function renderHomeView(root) {
   root.innerHTML = `

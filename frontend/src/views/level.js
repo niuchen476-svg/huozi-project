@@ -3,7 +3,7 @@ import { markCompleted, resetLevelProgress, hasCrossedBridge, markBridgeCrossed 
 import { preloadBridgeActionAssets, renderBridgeAction } from "./bridgeAction.js";
 import { renderEmbeddedLevel } from "./embeddedLevel.js";
 import { renderZunyiMeeting } from "./zunyiMeeting.js";
-import { showArchiveFragmentReward } from "../archiveFragments.js";
+import { collectArchiveFragmentForLevel, showArchiveFragmentReward } from "../archiveFragments.js";
 
 const ACTION_SCENES = {
   "ruijin-departure": renderRuijinDepartureAction25dLazy,
@@ -123,7 +123,11 @@ export async function renderLevelView(root, levelId) {
 
     if (actionResult === "completed") {
       markCompleted(levelId);
-      await showArchiveFragmentReward(root, levelId);
+      if (levelId === "snow-grassland") {
+        collectArchiveFragmentForLevel(levelId);
+      } else {
+        await showArchiveFragmentReward(root, levelId);
+      }
       window.location.hash = "#/map";
       return;
     }

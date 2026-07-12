@@ -1,50 +1,46 @@
-import { cp, mkdir, readFile, rm, writeFile, readdir, stat } from "node:fs/promises";
+import { readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { build } from "vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "..");
 const distDir = path.join(projectRoot, "dist");
 const basePath = process.argv.includes("--pages") ? "/huozi-project/" : "/";
-
-await rm(distDir, { recursive: true, force: true });
-await mkdir(distDir, { recursive: true });
-await cp(path.join(projectRoot, "public"), distDir, { recursive: true });
-await cp(path.join(projectRoot, "src"), path.join(distDir, "src"), { recursive: true });
-
-const indexHtml = await readFile(path.join(projectRoot, "index.html"), "utf-8");
 const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
-const builtHtml = indexHtml
-  .replace('href="/src/style.css"', `href="${normalizedBase}src/style.css"`)
-  .replace('src="/src/main.js"', `src="${normalizedBase}src/main.js"`)
-  .replace(
-    '<script type="module"',
-    `<script>window.__STATIC_MODE__ = true; window.__BASE_PATH__ = "${normalizedBase}";</script>\n    <script type="module"`
-  );
 
-await writeFile(path.join(distDir, "index.html"), builtHtml);
+await build({
+  root: projectRoot,
+  base: normalizedBase,
+  configFile: path.join(projectRoot, "vite.config.js"),
+  build: {
+    outDir: distDir,
+    emptyOutDir: true,
+  },
+});
 
-// Rewrite absolute asset paths in all copied source files (CSS / JS)
-// so url("/assets/...") works under the subdirectory base path
+// Asset paths stored as JavaScript data are not rewritten by Vite. Fix those
+// literals in the production bundle so GitHub Pages can serve them below /huozi-project/.
 if (normalizedBase !== "/") {
-  const srcDistDir = path.join(distDir, "src");
-  async function walk(dir) {
+  async function rewriteAssetPaths(dir) {
     const entries = await readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) await walk(full);
-      if (!entry.isFile()) continue;
-      const ext = path.extname(entry.name);
-      if (ext !== ".css" && ext !== ".js" && ext !== ".mjs") continue;
-      let content = await readFile(full, "utf-8");
-      // Replace "/assets/" references in url(), inline styles, JS strings.
-      // Use a capture group for the leading quote/paren so it is preserved
-      // (otherwise eating the quote breaks JS string literals and CSS url()).
-      content = content.replace(/(["'(\/])\/assets\//g, `$1${normalizedBase}assets/`);
-      await writeFile(full, content);
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await rewriteAssetPaths(fullPath);
+        continue;
+      }
+      if (!entry.isFile() || ![".css", ".js", ".mjs"].includes(path.extname(entry.name))) {
+        continue;
+      }
+
+      const content = await readFile(fullPath, "utf-8");
+      const rewritten = content.replace(/(["'(\/])\/assets\//g, `$1${normalizedBase}assets/`);
+      if (rewritten !== content) await writeFile(fullPath, rewritten);
     }
   }
-  await walk(srcDistDir);
+
+  await rewriteAssetPaths(distDir);
 }
 
-console.log(`static build written to ${path.relative(projectRoot, distDir)}`);
+console.log(`production bundle written to ${path.relative(projectRoot, distDir)}`);

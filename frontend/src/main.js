@@ -1,6 +1,6 @@
 import { renderHomeView } from "./views/home.js";
 import { renderLandingView } from "./views/landing.js";
-import { preloadMapAssets, renderMapView } from "./views/map.js";
+import { renderMapView } from "./views/map.js";
 import { renderLevelView } from "./views/level.js";
 import { resumeBgmAfterMedia, setupBgm } from "./bgm.js";
 
@@ -28,12 +28,3 @@ function route() {
 window.addEventListener("hashchange", route);
 route();
 setupBgm();
-idle(preloadMapAssets);
-
-function idle(callback) {
-  if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(callback, { timeout: 2000 });
-    return;
-  }
-  window.setTimeout(callback, 500);
-}
