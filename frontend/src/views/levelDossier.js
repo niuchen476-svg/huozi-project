@@ -1,7 +1,15 @@
 import { submitReflection } from "../api.js";
 
 const POEM_FORMS = ["七律", "绝句", "词"];
-export function renderLevelDossier({ root, level, challenge: specialChallenge, completedAction, onRestart, onComplete }) {
+export function renderLevelDossier({
+  root,
+  level,
+  challenge: specialChallenge,
+  completedAction,
+  useUnifiedExpression = false,
+  onRestart,
+  onComplete,
+}) {
   root.innerHTML = `
     <div class="view view-level">
       <a class="back-link" href="#/map">← 返回路线图</a>
@@ -25,14 +33,18 @@ export function renderLevelDossier({ root, level, challenge: specialChallenge, c
           </div>
         </section>
 
-        ${specialChallenge ? renderSpecialChallenge(specialChallenge) : renderReflectionTask()}
+        ${specialChallenge
+          ? renderSpecialChallenge(specialChallenge)
+          : useUnifiedExpression
+            ? `<section class="dossier__inference dossier__inference--expression" data-level-expression-slot></section>`
+            : renderReflectionTask()}
       </div>
     </div>
   `;
 
   if (specialChallenge) {
     attachSpecialChallenge(root, specialChallenge, { onRestart, onComplete });
-  } else {
+  } else if (!useUnifiedExpression) {
     root.querySelector("#submit-reflection")
       .addEventListener("click", () => handleSubmit(root, level.levelId, { onRestart, onComplete }));
   }
@@ -294,7 +306,11 @@ async function completeSpecialChallenge(root, challenge, { onRestart, onComplete
     </div>
   `;
   panel.querySelector("[data-restart-level]")?.addEventListener("click", onRestart);
-  await onComplete({ reward: true, redirect: "if-reward" });
+  const completion = await onComplete({ reward: true, redirect: "if-reward" });
+  if (completion?.deferred) {
+    panel.querySelector(".challenge-complete__eyebrow").textContent = "行动完成";
+    panel.querySelector(".level-complete-actions")?.remove();
+  }
 }
 
 function renderCard(card) {

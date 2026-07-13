@@ -1,6 +1,12 @@
 import { Router } from "express";
-import { loadLevelsIndex, loadLevelCards } from "../services/levelsData.js";
+import {
+  loadExhibition,
+  loadLevelCards,
+  loadLevelExperience,
+  loadLevelsIndex,
+} from "../services/levelsData.js";
 import { generateReflection } from "../services/reflect.js";
+import { generateLevelExpression } from "../services/expression.js";
 
 const router = Router();
 
@@ -41,6 +47,24 @@ router.get("/levels/:id", async (req, res) => {
   }
 });
 
+router.get("/levels/:id/experience", async (req, res) => {
+  try {
+    const experience = await loadLevelExperience(req.params.id);
+    res.json(experience);
+  } catch (err) {
+    res.status(404).json({ error: "该关卡尚未配置第二期体验协议" });
+  }
+});
+
+router.get("/exhibition", async (req, res) => {
+  try {
+    const exhibition = await loadExhibition();
+    res.json(exhibition);
+  } catch (err) {
+    res.status(404).json({ error: "数字展台尚未配置" });
+  }
+});
+
 router.post("/levels/:id/reflect", aiRateLimit, async (req, res) => {
   const { reflection, form } = req.body;
   if (!reflection || typeof reflection !== "string") {
@@ -58,6 +82,15 @@ router.post("/levels/:id/reflect", aiRateLimit, async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/levels/:id/expression", aiRateLimit, async (req, res) => {
+  try {
+    const result = await generateLevelExpression(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message || "表达生成失败" });
   }
 });
 
