@@ -9,6 +9,8 @@ LevelHost.js        关卡加载、生命周期、结算、重开和页面状态
 protocol.js         所有关卡必须遵守的返回协议
 registry.js         关卡 ID 到独立适配器的唯一注册表
 assetPreload.js     适配器共用的轻量预加载工具
+sourceDrawer.js     右上角“本关史料”抽屉组件
+expressionPanel.js  统一“我的表达”面板（史料选择、短输入、结果展示）
 adapters/           每关一个文件，只连接本关内容与统一协议
 ```
 
@@ -30,6 +32,8 @@ cancelLevel();                            // 生命周期被中止
   root,       // 关卡渲染根节点
   level,      // 当前关卡数据
   levelId,
+  experience, // 本关统一五段式、史料、表达、音频和碎片配置
+  runtime,    // 公共遮罩状态；runtime.paused / runtime.setOverlayOpen()
   signal      // 离开关卡或重开时会 abort
 }
 ```
@@ -42,8 +46,21 @@ export default {
   challenge: null,
   preload(context) {},
   play(context) {},
+  pause(context) {},  // 可选：史料抽屉等公共遮罩打开时暂停计时/动画
+  resume(context) {}, // 可选：公共遮罩全部关闭后恢复
   dispose(context) {},
 };
+```
+
+适配器如需把玩家操作带入统一表达阶段，可在 `LevelResult.data` 中返回：
+
+```js
+completeLevel({
+  actionCompleted: true,
+  data: {
+    expressionChoices: [{ id: "route-a", label: "选择北上路线" }]
+  }
+});
 ```
 
 ## 新增关卡
@@ -54,6 +71,53 @@ export default {
 4. 完成时只返回统一 `LevelResult`，不要在关卡内部写地图跳转、进度存储或碎片发放。
 
 地图跳转、通关记录、碎片奖励和重开均由 `LevelHost` 负责。
+
+## 本关史料抽屉
+
+`createLevelSourceDrawer()` 是独立公共组件，最多显示 8 份 `visibleInSourceDrawer: true` 的史料。它负责右上角入口、可滚动列表、展开详情、Esc 关闭和焦点循环。
+
+组件只通过 `onOpenChange(open)` 报告开关状态，不直接暂停关卡或控制音频。
+`LevelHost` 负责调用适配器可选的 `pause/resume` 钩子、发布
+`levelhost:pausechange` 事件，并在抽屉打开时把公共背景音乐降低到原音量的 30%。
+
+关卡开发者不复制或修改该组件，只填写本关 `experience.json` 中的史料数据。
+
+## 统一 AI 表达
+
+`createLevelExpressionPanel()` 是独立公共组件。关卡只提供操作选择和
+`experience.json` 配置，不直接调用 MiMo，也不能保存或读取 API Key。
+
+统一请求协议：
+
+```js
+POST /api/levels/:levelId/expression
+{
+  sourceIds: ["本关已审核史料 ID"],
+  choiceIds: ["本关操作选择 ID"],
+  userText: "玩家最多 80 字的表达",
+  outputType: "必须与本关配置一致"
+}
+```
+
+统一响应协议：
+
+```js
+{
+  title: "我的展品说明",
+  text: "整理后的第一人称表达",
+  sourceIds: ["实际采用的史料 ID"],
+  label: "AI根据玩家选择生成",
+  usedFallback: false
+}
+```
+
+模型超时、断网或密钥未配置时，服务端返回相同结构的固定模板，且
+`usedFallback: true`，不会阻断通关。浏览器完全断网、请求无法到达服务端时，
+`LevelHost` 也会依据同一份关卡配置生成本地兜底结果。
+
+`LevelHost` 只在 `phases.expression.enabled: true` 时挂载表达面板。普通档案关卡
+会用它替代旧赋诗输入区；带特殊挑战的关卡会在挑战结束后进入表达阶段；直接
+完成的嵌入式关卡会先进入表达页，再统一发放碎片。
 
 `huiningJoin.js` 已作为会宁会师的独立挂载点。当前保持档案页行为不变，
 后续可直接在该适配器中接入会议室、3D碎片合成和AI个人展台。

@@ -4,25 +4,36 @@ const MIMO_API_BASE = process.env.MIMO_API_BASE;
 const MIMO_API_KEY = process.env.MIMO_API_KEY;
 const MIMO_MODEL = process.env.MIMO_MODEL || "mimo-v2.5";
 
-export async function callMimo({ system, prompt, maxTokens = 4096 }) {
+export async function callMimo({ system, prompt, maxTokens = 4096, timeoutMs = 10000 }) {
   if (!MIMO_API_BASE || !MIMO_API_KEY) {
     throw new Error("缺少 MIMO_API_BASE 或 MIMO_API_KEY，请检查 backend/.env");
   }
 
-  const res = await fetch(`${MIMO_API_BASE}/v1/messages`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": MIMO_API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: MIMO_MODEL,
-      max_tokens: maxTokens,
-      system,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  let res;
+  try {
+    res = await fetch(`${MIMO_API_BASE}/v1/messages`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": MIMO_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: MIMO_MODEL,
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: "user", content: prompt }],
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err?.name === "AbortError") throw new Error("MiMo API 请求超时");
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) {
     const text = await res.text();
