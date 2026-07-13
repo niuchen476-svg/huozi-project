@@ -10,6 +10,9 @@
     "build:pages": "npm --prefix frontend run build:pages",
     "sync-data": "node scripts/sync-level-data.mjs",
     "check-data": "node scripts/check-level-data-sync.mjs",
-    "deploy-reflect": "supabase functions deploy reflect --project-ref pfkamgzktfwfotirlocd"
+    "test:source-drawer": "node --test frontend/src/views/levelRuntime/sourceDrawer.test.js",
+    "test:expression": "node --test backend/src/services/expression.test.js frontend/src/views/levelRuntime/expressionPanel.test.js",
+    "deploy-reflect": "supabase functions deploy reflect --project-ref pfkamgzktfwfotirlocd",
+    "deploy-expression": "supabase functions deploy expression --project-ref pfkamgzktfwfotirlocd"
   }
 }
