@@ -1,0 +1,245 @@
+/* ---------- 历史背景前置 ---------- */
+
+.history-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px;
+  background: rgba(10, 8, 6, 0.68);
+  text-align: center;
+}
+
+.history-intro__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: rgba(237, 228, 205, 0.75);
+}
+
+.history-intro__title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--color-paper);
+  margin: 0;
+}
+
+.history-intro__text {
+  max-width: 620px;
+  color: rgba(237, 228, 205, 0.9);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.bridge-intro-source {
+  width: min(520px, calc(100vw - 48px));
+  margin: 0;
+  padding: 10px;
+  border: 1px solid rgba(248, 230, 168, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 246, 214, 0.1);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
+}
+
+.bridge-intro-source img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 5px;
+  filter: sepia(0.1) contrast(1.04) brightness(0.9);
+}
+
+.bridge-intro-source figcaption {
+  margin-top: 8px;
+  color: rgba(237, 228, 205, 0.82);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+#history-intro-start {
+  margin-top: 12px;
+  padding: 12px 32px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-paper);
+  background: var(--color-red);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+#history-intro-start:hover {
+  background: var(--color-red-deep);
+  transform: translateY(-2px);
+}
+
+.bridge-role-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6, 5, 4, 0.42);
+}
+
+.bridge-role-prompt__card {
+  width: min(420px, calc(100vw - 48px));
+  padding: 26px 28px;
+  text-align: center;
+  border: 1px solid rgba(248, 230, 168, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(55, 35, 22, 0.94), rgba(18, 13, 9, 0.96));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.bridge-role-prompt__card p {
+  margin: 0 0 10px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.bridge-role-prompt__card h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.45;
+}
+
+.bridge-role-prompt__card span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(237, 228, 205, 0.82);
+  line-height: 1.75;
+}
+
+.bridge-role-prompt__card button {
+  margin-top: 22px;
+  padding: 10px 24px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(242, 201, 76, 0.54);
+  border-radius: 999px;
+  background: rgba(156, 35, 27, 0.82);
+  cursor: pointer;
+}
+
+.bridge-role-prompt__card button:hover {
+  background: rgba(111, 23, 18, 0.9);
+}
+
+.bridge-video-bubble {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 10px 18px;
+  color: #f8e6a8;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(248, 230, 168, 0.44);
+  border-radius: 999px;
+  background: rgba(18, 13, 9, 0.58);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  animation: bridge-video-bubble-float 2.8s ease-in-out infinite;
+}
+
+.bridge-video-bubble:hover {
+  color: #fff6d6;
+  border-color: rgba(242, 201, 76, 0.78);
+  background: rgba(111, 23, 18, 0.72);
+}
+
+@keyframes bridge-video-bubble-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.bridge-video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.bridge-video-modal[hidden] {
+  display: none;
+}
+
+.bridge-video-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(5, 4, 3, 0.76);
+  cursor: pointer;
+}
+
+.bridge-video-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(920px, calc(100vw - 48px));
+  padding: 16px;
+  border: 1px solid rgba(248, 230, 168, 0.32);
+  border-radius: 8px;
+  background: rgba(18, 13, 9, 0.94);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+}
+
+.bridge-video-modal__panel video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: min(72vh, 620px);
+  border-radius: 6px;
+  background: #000;
+}
+
+.bridge-video-modal__close {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 2;
+  padding: 8px 14px;
+  color: #f8e6a8;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(248, 230, 168, 0.38);
+  border-radius: 999px;
+  background: rgba(18, 13, 9, 0.82);
+  cursor: pointer;
+}
+
+.bridge-video-modal__close:hover {
+  border-color: rgba(242, 201, 76, 0.78);
+  background: rgba(111, 23, 18, 0.72);
+}
+

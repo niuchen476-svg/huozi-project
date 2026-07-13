@@ -1,0 +1,187 @@
+/* ---------- 敢死队选人 ---------- */
+
+.squad-select {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  transition: opacity 0.5s ease;
+}
+
+.squad-select--fadeout {
+  opacity: 0;
+}
+
+.squad-select__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.squad-select__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 8, 6, 0.65) 0%,
+    rgba(10, 8, 6, 0.15) 30%,
+    rgba(10, 8, 6, 0.15) 70%,
+    rgba(10, 8, 6, 0.65) 100%
+  );
+}
+
+.squad-select__title {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 640px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--color-paper);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.squad-select__slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 132px;
+  height: 176px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: var(--font-serif);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  text-align: center;
+  border: 2px dashed rgba(237, 228, 205, 0.78);
+  color: var(--color-paper);
+  background: rgba(156, 35, 27, 0.15);
+  animation: bridge-warning-pulse 1.4s ease-in-out infinite;
+}
+
+.squad-select__player {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 128px;
+  height: 292px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-paper);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.44));
+  animation: squad-soldier-breathe 1.2s ease-in-out infinite;
+}
+
+.squad-select__player img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.squad-select__player--locked {
+  cursor: default;
+  animation: none;
+  filter:
+    drop-shadow(0 0 12px rgba(242, 201, 76, 0.42))
+    drop-shadow(0 18px 18px rgba(0, 0, 0, 0.44));
+}
+
+@keyframes squad-soldier-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-5px);
+  }
+}
+
+.squad-select__hint {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: rgba(237, 228, 205, 0.9);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.bridge-instruction {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6, 5, 4, 0.46);
+}
+
+.bridge-instruction[hidden] {
+  display: none;
+}
+
+.bridge-instruction__card {
+  width: min(460px, calc(100vw - 48px));
+  padding: 24px 28px;
+  text-align: center;
+  border: 1px solid rgba(248, 230, 168, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(55, 35, 22, 0.94), rgba(18, 13, 9, 0.96));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.bridge-instruction__card p {
+  margin: 0 0 10px;
+  color: #f2c94c;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.bridge-instruction__card h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.45;
+}
+
+.bridge-instruction__card span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(237, 228, 205, 0.84);
+  line-height: 1.8;
+}
+
+.bridge-instruction__card button {
+  margin-top: 22px;
+  padding: 10px 24px;
+  color: #fff6d6;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: 1px solid rgba(242, 201, 76, 0.54);
+  border-radius: 999px;
+  background: rgba(156, 35, 27, 0.82);
+  cursor: pointer;
+}
+
+.bridge-instruction__card button:hover {
+  background: rgba(111, 23, 18, 0.9);
+}
+

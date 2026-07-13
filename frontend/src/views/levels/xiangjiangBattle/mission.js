@@ -1,6 +1,4 @@
-import { renderHistoricalMission25d } from "./historicalMission25d.js";
-
-const XIANGJIANG_MISSION = {
+export const XIANGJIANG_MISSION = {
   theme: "xiangjiang",
   introButton: "进入湘江战场",
   completionTitle: "主力突破第四道封锁线",
@@ -97,7 +95,3 @@ const XIANGJIANG_MISSION = {
     },
   ],
 };
-
-export function renderXiangjiangBattleAction25d(root, level) {
-  return renderHistoricalMission25d(root, level, XIANGJIANG_MISSION);
-}

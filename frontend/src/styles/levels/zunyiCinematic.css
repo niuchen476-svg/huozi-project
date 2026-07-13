@@ -1,0 +1,528 @@
+/* ---------- 遵义会议：电影化 2.5D 大改版 ---------- */
+
+.view-zunyi .zunyi-room {
+  padding: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(244, 196, 100, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(6, 5, 4, 0.18), rgba(6, 5, 4, 0.8)),
+    url("/assets/levels/zunyi-turn/meeting-painting-wide.jpg") center / cover no-repeat;
+}
+
+.view-zunyi .zunyi-room::before {
+  display: none;
+}
+
+.view-zunyi .zunyi-room__lamp {
+  top: 5vh;
+  width: 180px;
+  height: 180px;
+  opacity: 0.9;
+  filter: blur(8px);
+}
+
+.view-zunyi .zunyi-topbar {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  z-index: 40;
+}
+
+.view-zunyi .zunyi-back,
+.view-zunyi .zunyi-progress {
+  background: rgba(8, 6, 4, 0.52);
+  backdrop-filter: blur(6px);
+}
+
+.view-zunyi .zunyi-table {
+  position: relative;
+  display: block;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.view-zunyi .zunyi-stage {
+  position: relative;
+  min-height: 100vh;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(9, 7, 5, 0.12), rgba(9, 7, 5, 0.86)),
+    url("/assets/levels/zunyi-turn/meeting-table-room.jpg") center / cover no-repeat;
+  box-shadow: none;
+}
+
+.view-zunyi .zunyi-cinema-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.view-zunyi .zunyi-cinema-layer--people {
+  background:
+    radial-gradient(ellipse at 20% 34%, rgba(5, 4, 3, 0.58) 0 7%, transparent 10%),
+    radial-gradient(ellipse at 84% 36%, rgba(5, 4, 3, 0.52) 0 8%, transparent 12%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.48), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.5));
+  opacity: 0.72;
+}
+
+.view-zunyi .zunyi-cinema-layer--light {
+  background:
+    radial-gradient(circle at 49% 24%, rgba(252, 205, 118, 0.4), transparent 18%),
+    radial-gradient(circle at 50% 78%, rgba(252, 205, 118, 0.24), transparent 36%);
+  mix-blend-mode: screen;
+  opacity: 0.78;
+}
+
+.view-zunyi .zunyi-stage__header {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  z-index: 12;
+  width: min(760px, calc(100vw - 40px));
+  max-width: none;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 14px 20px;
+  text-align: center;
+  border: 1px solid rgba(237, 228, 205, 0.18);
+  border-radius: 999px;
+  background: rgba(12, 9, 7, 0.56);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+}
+
+.view-zunyi .zunyi-stage__step {
+  color: #f2c94c;
+}
+
+.view-zunyi .zunyi-stage h2 {
+  font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+}
+
+.view-zunyi .zunyi-stage__header p:last-child {
+  color: rgba(237, 228, 205, 0.86);
+  font-size: 0.9rem;
+}
+
+.view-zunyi .zunyi-workspace {
+  position: relative;
+  z-index: 8;
+  display: block;
+  min-height: 100vh;
+}
+
+.view-zunyi .zunyi-cinematic-desk {
+  position: absolute;
+  left: 50%;
+  bottom: -8vh;
+  width: min(1220px, 96vw);
+  height: min(690px, 76vh);
+  transform: translateX(-50%) perspective(1100px) rotateX(8deg);
+  transform-origin: bottom center;
+  border-radius: 24px 24px 0 0;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(242, 201, 76, 0.18), transparent 24%),
+    linear-gradient(180deg, rgba(34, 22, 14, 0.22), rgba(18, 11, 7, 0.64)),
+    var(--zunyi-desk-bg) center / cover no-repeat,
+    linear-gradient(90deg, #3b2417, #5b3822 42%, #2b1a12);
+  box-shadow:
+    0 -24px 60px rgba(0, 0, 0, 0.34),
+    inset 0 0 80px rgba(0, 0, 0, 0.38);
+}
+
+.view-zunyi .zunyi-desk-perspective {
+  position: absolute;
+  inset: 36px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr);
+  gap: 28px;
+  transform: perspective(900px) rotateX(2deg);
+  transform-origin: bottom center;
+}
+
+.view-zunyi .zunyi-object-bank {
+  min-height: 520px;
+  position: relative;
+}
+
+.view-zunyi .zunyi-table-props {
+  z-index: 1;
+}
+
+.view-zunyi .zunyi-prop--lamp {
+  top: 38px;
+  left: 38px;
+  width: 150px;
+  z-index: 2;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 42px rgba(245, 196, 92, 0.72));
+}
+
+.view-zunyi .zunyi-prop--letter-stack {
+  right: 70px;
+  bottom: 82px;
+  width: 210px;
+  opacity: 0.7;
+}
+
+.view-zunyi .zunyi-prop--hand-letter {
+  left: 30%;
+  bottom: 44px;
+  width: 250px;
+  opacity: 0.54;
+  transform: rotate(-8deg);
+  filter: sepia(0.2) drop-shadow(0 12px 18px rgba(0, 0, 0, 0.34));
+}
+
+.view-zunyi .zunyi-prop--cap {
+  left: 72px;
+  bottom: 96px;
+  width: 118px;
+  opacity: 0.72;
+}
+
+.view-zunyi .zunyi-prop--satchel {
+  left: 142px;
+  bottom: 38px;
+  width: 184px;
+  opacity: 0.38;
+}
+
+.view-zunyi .zunyi-prop--canteen {
+  right: 258px;
+  bottom: 38px;
+  width: 118px;
+  opacity: 0.52;
+}
+
+.view-zunyi .zunyi-prop--cup {
+  right: 330px;
+  bottom: 82px;
+  width: 54px;
+  height: 38px;
+  border-color: rgba(237, 228, 205, 0.58);
+  background: rgba(237, 228, 205, 0.08);
+}
+
+.view-zunyi .zunyi-prop--pencil {
+  right: 404px;
+  top: 96px;
+  width: 132px;
+  height: 8px;
+  background: rgba(73, 34, 20, 0.86);
+}
+
+.view-zunyi .zunyi-card {
+  width: 230px;
+  min-height: 132px;
+  padding: 16px 18px;
+  border: 1px solid rgba(92, 70, 48, 0.28);
+  border-radius: 2px;
+  box-shadow:
+    0 16px 24px rgba(0, 0, 0, 0.24),
+    inset 0 0 18px rgba(255, 255, 255, 0.18);
+  clip-path: polygon(1% 2%, 97% 0, 100% 96%, 91% 100%, 2% 98%, 0 10%);
+}
+
+.view-zunyi .zunyi-card__object {
+  width: 58%;
+  max-height: 84%;
+  opacity: 0.28;
+}
+
+.view-zunyi .zunyi-card__label {
+  right: 14px;
+  bottom: 12px;
+  font-size: 2.4rem;
+}
+
+.view-zunyi .zunyi-card:nth-child(1) {
+  left: 8%;
+  top: 13%;
+  transform: rotate(-6deg);
+}
+
+.view-zunyi .zunyi-card:nth-child(2) {
+  left: 42%;
+  top: 6%;
+  right: auto;
+  transform: rotate(5deg);
+}
+
+.view-zunyi .zunyi-card:nth-child(3) {
+  left: 18%;
+  bottom: 15%;
+  transform: rotate(3deg);
+}
+
+.view-zunyi .zunyi-card:nth-child(4) {
+  right: 8%;
+  bottom: 18%;
+  transform: rotate(-4deg);
+}
+
+.view-zunyi .zunyi-card:nth-child(5) {
+  left: 48%;
+  top: 48%;
+  transform: translate(-50%, -50%) rotate(-2deg);
+}
+
+.view-zunyi .zunyi-card:hover {
+  transform: translateY(-14px) rotate(0deg) scale(1.04);
+  box-shadow: 0 24px 42px rgba(0, 0, 0, 0.34);
+}
+
+.view-zunyi .zunyi-object--meeting-map {
+  width: 300px;
+  min-height: 175px;
+}
+
+.view-zunyi .zunyi-object--telegram {
+  width: 246px;
+}
+
+.view-zunyi .zunyi-object--record-book {
+  min-height: 150px;
+}
+
+.view-zunyi .zunyi-object--handwritten-letter {
+  width: 214px;
+  min-height: 116px;
+}
+
+.view-zunyi .zunyi-card small {
+  font-size: 0.8rem;
+  color: #8d2019;
+}
+
+.view-zunyi .zunyi-record-sheet {
+  position: relative;
+  min-height: 520px;
+  padding: 34px 24px 22px;
+  border: none;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, rgba(156, 35, 27, 0.08), transparent 18%),
+    linear-gradient(180deg, rgba(252, 247, 226, 0.96), rgba(234, 219, 180, 0.98)),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(85, 73, 60, 0.08) 31px 32px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.34),
+    inset 0 0 36px rgba(127, 91, 55, 0.14);
+  transform: rotate(1deg);
+}
+
+.view-zunyi .zunyi-record-sheet::before {
+  content: "遵义会议记录";
+  display: block;
+  margin-bottom: 18px;
+  color: #7b2118;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.view-zunyi .zunyi-record-sheet__clip {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 74px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 0 0 6px 6px;
+  background: rgba(88, 64, 44, 0.34);
+}
+
+.view-zunyi .zunyi-zone {
+  min-height: 178px;
+  background: rgba(255, 252, 238, 0.24);
+  border: 1px dashed rgba(92, 70, 48, 0.36);
+}
+
+.view-zunyi .zunyi-zone__heading {
+  border-bottom-color: rgba(92, 70, 48, 0.18);
+}
+
+.view-zunyi .zunyi-zone h3 {
+  color: #2a2420;
+  font-size: 1.08rem;
+}
+
+.view-zunyi .zunyi-feedback {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  z-index: 18;
+  transform: translateX(-50%);
+  margin: 0;
+  max-width: min(780px, calc(100vw - 44px));
+  text-align: center;
+  background: rgba(10, 7, 5, 0.66);
+  border: 1px solid rgba(237, 228, 205, 0.16);
+  backdrop-filter: blur(6px);
+}
+
+.view-zunyi .zunyi-next {
+  position: absolute;
+  right: 42px;
+  bottom: 32px;
+  z-index: 20;
+  margin: 0;
+}
+
+.view-zunyi .zunyi-note {
+  position: absolute;
+  right: 26px;
+  top: 158px;
+  z-index: 18;
+  width: 230px;
+  min-height: 0;
+  max-height: 42vh;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid rgba(237, 228, 205, 0.18);
+  border-radius: 4px;
+  background: rgba(251, 247, 234, 0.82);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
+}
+
+.view-zunyi .zunyi-note h3 {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.view-zunyi .zunyi-note ol {
+  gap: 8px;
+  font-size: 0.82rem;
+}
+
+.view-zunyi .zunyi-ai {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.view-zunyi .zunyi-choice--desk,
+.view-zunyi .zunyi-order,
+.view-zunyi .zunyi-turn-map {
+  min-height: 62vh;
+  padding: 180px 18vw 80px;
+  background:
+    linear-gradient(180deg, rgba(34, 22, 14, 0.2), rgba(18, 11, 7, 0.78)),
+    var(--zunyi-desk-bg) center / cover no-repeat;
+}
+
+.view-zunyi .zunyi-plan,
+.view-zunyi .zunyi-order .zunyi-card {
+  background:
+    linear-gradient(180deg, rgba(251, 247, 234, 0.86), rgba(238, 223, 186, 0.96)),
+    url("/assets/levels/zunyi-turn/handwriting-closeup.jpg") center / cover no-repeat;
+  border-radius: 2px;
+  clip-path: polygon(2% 0, 98% 2%, 100% 94%, 94% 100%, 0 98%);
+}
+
+.view-zunyi .zunyi-plan {
+  position: relative;
+  overflow: hidden;
+}
+
+.view-zunyi .zunyi-plan::after {
+  content: "";
+  position: absolute;
+  right: -18px;
+  bottom: -26px;
+  width: 150px;
+  height: 150px;
+  background: url("/assets/relics/victory-paper.png") center / contain no-repeat;
+  opacity: 0.18;
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.view-zunyi .zunyi-plan[data-plan="mobile"]::after {
+  background-image: url("/assets/levels/zunyi-turn/meeting-room-map.jpg");
+  opacity: 0.22;
+}
+
+.view-zunyi .zunyi-turn-map {
+  min-height: 100vh;
+  border-radius: 0;
+}
+
+.view-zunyi .zunyi-turn-map__paper {
+  top: 54%;
+  width: min(920px, 82vw);
+  height: min(520px, 56vh);
+}
+
+.view-zunyi .zunyi-turn-map__route {
+  inset: 22% 10% 16%;
+}
+
+.view-zunyi .zunyi-prop--turn-lamp {
+  left: 10vw;
+  top: 18vh;
+  width: 138px;
+  z-index: 4;
+}
+
+@media (max-width: 860px) {
+  .view-zunyi .zunyi-stage__header {
+    top: 72px;
+    border-radius: 8px;
+  }
+
+  .view-zunyi .zunyi-cinematic-desk {
+    bottom: -2vh;
+    height: auto;
+    min-height: 78vh;
+    transform: translateX(-50%);
+  }
+
+  .view-zunyi .zunyi-desk-perspective {
+    position: relative;
+    inset: auto;
+    grid-template-columns: 1fr;
+    padding: 150px 16px 96px;
+  }
+
+  .view-zunyi .zunyi-object-bank {
+    min-height: 430px;
+  }
+
+  .view-zunyi .zunyi-record-sheet {
+    min-height: 360px;
+  }
+
+  .view-zunyi .zunyi-note {
+    display: none;
+  }
+
+  .view-zunyi .zunyi-card {
+    width: min(210px, 50%);
+  }
+
+  .view-zunyi .zunyi-turn-map__route {
+    inset: 18% 6% 12%;
+  }
+
+  .view-zunyi .zunyi-turn-map__point {
+    width: 42%;
+    left: calc(4% + (var(--point-index) % 2) * 50%);
+    top: calc(10% + var(--point-index) * 20%);
+  }
+
+  .view-zunyi .zunyi-turn-map__route::before {
+    left: 50%;
+    right: auto;
+    top: 12%;
+    width: 5px;
+    height: 76%;
+  }
+}
+

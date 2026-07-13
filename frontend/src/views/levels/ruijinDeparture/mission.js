@@ -1,6 +1,4 @@
-import { renderHistoricalMission25d } from "./historicalMission25d.js";
-
-const RUIJIN_MISSION = {
+export const RUIJIN_MISSION = {
   theme: "ruijin",
   introButton: "进入秘密转移现场",
   completionTitle: "队伍已经跨过长征第一渡",
@@ -89,7 +87,3 @@ const RUIJIN_MISSION = {
     },
   ],
 };
-
-export function renderRuijinDepartureAction25d(root, level) {
-  return renderHistoricalMission25d(root, level, RUIJIN_MISSION);
-}

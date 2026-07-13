@@ -1,12 +1,13 @@
 import { renderHomeView } from "./views/home.js";
 import { renderLandingView } from "./views/landing.js";
 import { preloadMapAssets, renderMapView } from "./views/map.js";
-import { renderLevelView } from "./views/level.js";
+import { disposeLevelView, renderLevelView } from "./views/level.js";
 import { resumeBgmAfterMedia, setupBgm } from "./bgm.js";
 
 const app = document.querySelector("#app");
 
 function route() {
+  disposeLevelView();
   resumeBgmAfterMedia();
   const hash = window.location.hash.slice(1) || "/";
   const levelMatch = hash.match(/^\/level\/(.+)$/);

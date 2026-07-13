@@ -1,0 +1,12 @@
+.campaign-25d--ruijin .campaign-3d__warning {
+  background: rgba(169, 121, 63, 0.9);
+}
+
+.campaign-3d--ruijin .campaign-3d__warning {
+  background: rgba(169, 121, 63, 0.9);
+}
+
+.historical-mission__stage--ruijin-stealth .historical-mission__backdrop,
+.historical-mission__stage--ruijin-crossing .historical-mission__backdrop {
+  filter: brightness(0.68) saturate(0.76) contrast(1.08) hue-rotate(4deg);
+}

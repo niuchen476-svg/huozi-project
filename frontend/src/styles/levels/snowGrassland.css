@@ -1,0 +1,335 @@
+/* ---------- 雪山草地 ---------- */
+
+.view-snow-grassland {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 72px 18px 34px;
+  color: #f9f3de;
+  background:
+    linear-gradient(180deg, #203849 0%, #5c7180 42%, #d7d7c7 68%, #65724c 100%);
+}
+
+.view-snow-grassland--quiz {
+  background:
+    linear-gradient(180deg, #253c4c 0%, #6f7f87 44%, #dad7c5 68%, #596c45 100%);
+}
+
+.view-snow-grassland--ending {
+  background:
+    linear-gradient(180deg, #1f3446 0%, #607e86 48%, #efe7d0 72%, #6c7d48 100%);
+}
+
+.snow-mountain-scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.snow-mountain-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(20, 15, 10, 0.28), transparent 42%),
+    radial-gradient(circle at 48% 78%, rgba(255, 250, 232, 0.32), transparent 28%);
+}
+
+.snow-mountain-scene__moon {
+  position: absolute;
+  right: 11vw;
+  top: 9vh;
+  width: 58px;
+  height: 58px;
+  background: #f4efd4;
+  border-radius: 50%;
+  box-shadow: 0 0 28px rgba(244, 239, 212, 0.45);
+}
+
+.snow-mountain-scene__peak {
+  position: absolute;
+  bottom: 11vh;
+  display: block;
+  background: linear-gradient(135deg, #f4f2df 0 42%, #aab7bb 43% 66%, #536b75 67% 100%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(0 12px 18px rgba(20, 15, 10, 0.24));
+}
+
+.snow-mountain-scene__peak--left {
+  left: -7vw;
+  width: 45vw;
+  height: 50vh;
+}
+
+.snow-mountain-scene__peak--center {
+  left: 19vw;
+  width: 56vw;
+  height: 62vh;
+}
+
+.snow-mountain-scene__peak--right {
+  right: -9vw;
+  width: 46vw;
+  height: 52vh;
+}
+
+.snow-mountain-scene__ground {
+  position: absolute;
+  left: -5vw;
+  right: -5vw;
+  bottom: -8vh;
+  height: 32vh;
+  background:
+    repeating-linear-gradient(100deg, transparent 0 16px, rgba(72, 95, 55, 0.28) 17px 20px),
+    linear-gradient(180deg, #e8e2cf 0%, #9aa16f 54%, #53633c 100%);
+  transform: skewY(-4deg);
+}
+
+.snow-mountain-scene i {
+  position: absolute;
+  top: -12px;
+  width: var(--s);
+  height: var(--s);
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 50%;
+  animation: snow-fall var(--d) linear infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes snow-fall {
+  from {
+    transform: translate3d(0, -10vh, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(26px, 110vh, 0);
+    opacity: 0.15;
+  }
+}
+
+.snow-level-back {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 4;
+  padding: 8px 13px;
+  color: #fff7dc;
+  background: rgba(20, 15, 10, 0.58);
+  border: 1px solid rgba(244, 239, 212, 0.35);
+  border-radius: var(--radius);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.snow-level-panel {
+  position: relative;
+  z-index: 2;
+  width: min(860px, 100%);
+  padding: clamp(22px, 4vw, 42px);
+  background: rgba(29, 34, 32, 0.72);
+  border: 1px solid rgba(244, 239, 212, 0.32);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(20, 15, 10, 0.38);
+  backdrop-filter: blur(8px);
+}
+
+.snow-level-panel--intro,
+.snow-level-panel--ending {
+  max-width: 760px;
+}
+
+.snow-level-eyebrow {
+  margin: 0 0 8px;
+  color: #f0d389;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.snow-level-panel h1,
+.snow-level-panel h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  line-height: 1.18;
+}
+
+.snow-level-panel h1 {
+  font-size: clamp(2.2rem, 7vw, 4.7rem);
+}
+
+.snow-level-panel h2 {
+  font-size: clamp(1.35rem, 3.8vw, 2.35rem);
+}
+
+.snow-level-panel h1 span,
+.snow-level-panel h2 span {
+  color: #f0d389;
+}
+
+.snow-level-card {
+  margin: 20px 0 0;
+  padding: 18px 20px;
+  color: #fff9e8;
+  background: rgba(255, 250, 232, 0.1);
+  border: 1px solid rgba(255, 250, 232, 0.2);
+  border-radius: 6px;
+}
+
+.snow-level-card p {
+  margin: 0;
+}
+
+.snow-level-card p + p {
+  margin-top: 10px;
+}
+
+.snow-level-primary,
+.snow-level-secondary {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.snow-level-primary {
+  margin-top: 22px;
+  color: #2a2420;
+  background: #f0d389;
+  border: 1px solid rgba(42, 36, 32, 0.22);
+}
+
+.snow-level-secondary {
+  color: #fff7dc;
+  background: rgba(255, 250, 232, 0.1);
+  border: 1px solid rgba(255, 250, 232, 0.3);
+}
+
+.snow-progress {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.snow-progress span {
+  width: 42px;
+  height: 5px;
+  background: rgba(255, 250, 232, 0.24);
+  border-radius: 999px;
+}
+
+.snow-progress span.done,
+.snow-progress span.cur {
+  background: #f0d389;
+}
+
+.snow-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.snow-options button {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  min-height: 86px;
+  padding: 14px;
+  color: #fff9e8;
+  text-align: left;
+  background: rgba(255, 250, 232, 0.12);
+  border: 1px solid rgba(255, 250, 232, 0.22);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.snow-options button:hover:not(:disabled) {
+  background: rgba(255, 250, 232, 0.18);
+}
+
+.snow-options button b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #2a2420;
+  background: #f0d389;
+  border-radius: 50%;
+  font-family: var(--font-serif);
+}
+
+.snow-options button.correct {
+  background: rgba(97, 133, 76, 0.56);
+  border-color: rgba(194, 226, 158, 0.78);
+}
+
+.snow-options button.wrong {
+  background: rgba(156, 35, 27, 0.56);
+  border-color: rgba(246, 174, 140, 0.78);
+}
+
+.snow-feedback {
+  min-height: 30px;
+  margin: 18px 0 0;
+  color: transparent;
+  font-weight: 700;
+}
+
+.snow-feedback--show {
+  color: #fff5d2;
+}
+
+.snow-feedback.ok {
+  color: #dff1c9;
+}
+
+.snow-feedback.no {
+  color: #ffd2c2;
+}
+
+.snow-quote {
+  margin: 18px 0 0;
+  color: #f0d389;
+  font-family: var(--font-serif);
+  font-size: 1.16rem;
+}
+
+.snow-level-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.snow-level-actions .snow-level-primary {
+  margin-top: 0;
+}
+
+@media (max-width: 680px) {
+  .view-snow-grassland {
+    padding: 70px 12px 24px;
+  }
+
+  .snow-level-panel {
+    padding: 20px;
+  }
+
+  .snow-options {
+    grid-template-columns: 1fr;
+  }
+
+  .snow-level-panel h1 {
+    font-size: 2.25rem;
+  }
+}
+

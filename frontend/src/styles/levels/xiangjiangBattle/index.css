@@ -1,0 +1,54 @@
+.campaign-25d--xiangjiang .campaign-25d__world {
+  background:
+    radial-gradient(circle at 46% 32%, rgba(255, 203, 136, 0.18), transparent 35%),
+    linear-gradient(180deg, #384442 0%, #59613b 48%, #2d2b20 100%);
+}
+
+.campaign-25d--xiangjiang .campaign-25d__sky {
+  background:
+    linear-gradient(180deg, rgba(68, 87, 85, 0.2), transparent),
+    repeating-linear-gradient(105deg, transparent 0 92px, rgba(255, 190, 121, 0.07) 94px 96px);
+}
+
+.campaign-25d--xiangjiang .campaign-25d__ridge {
+  background: linear-gradient(180deg, #505534, #343822);
+}
+
+.campaign-25d--xiangjiang .campaign-25d__ridge--two {
+  background: linear-gradient(180deg, #433728, #292318);
+}
+
+.campaign-25d--xiangjiang .campaign-25d__route {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 3px 34px),
+    linear-gradient(90deg, transparent 0 18%, rgba(76, 59, 34, 0.82) 19% 81%, transparent 82% 100%),
+    linear-gradient(180deg, #657242 0%, #4d5632 54%, #2b281a 100%);
+}
+
+.campaign-25d--xiangjiang .campaign-25d__threat--left {
+  background: linear-gradient(90deg, rgba(255, 90, 60, 0.58), rgba(255, 90, 60, 0.1) 72%, transparent);
+}
+
+.campaign-25d--xiangjiang .campaign-25d__threat--right {
+  background: linear-gradient(270deg, rgba(255, 90, 60, 0.58), rgba(255, 90, 60, 0.1) 72%, transparent);
+}
+
+.campaign-25d--xiangjiang .campaign-3d__meter-fill {
+  background: #d85338;
+}
+
+.campaign-3d--xiangjiang .campaign-3d__meter-fill {
+  background: #d85338;
+}
+
+.historical-mission--xiangjiang {
+  --accent: #b9624b;
+  --accent-strong: #e2a275;
+  --danger: #d74335;
+  --panel: rgba(18, 20, 18, 0.92);
+}
+
+.historical-mission--xiangjiang .historical-mission__stage--danger::after {
+  background: rgba(192, 53, 39, 0.15);
+  animation: historical-combat-flash 420ms ease-in-out infinite alternate;
+}

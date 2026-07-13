@@ -7,7 +7,7 @@ import {
   createRiverGate,
   makePlane,
   renderCampaignAction3d,
-} from "./campaignStage.js";
+} from "../../action3d/campaignStage.js";
 
 const SIDE_LABEL = {
   left: "左",

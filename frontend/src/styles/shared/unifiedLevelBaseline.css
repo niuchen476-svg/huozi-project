@@ -1,0 +1,51 @@
+/* ---------- 六关统一视觉基线 ---------- */
+
+.bridge-scene .bridge-scene__bg,
+.view-zunyi .zunyi-intro-scene__bg,
+.view-zunyi .zunyi-rewrite-canvas__bg,
+.view-zunyi .zunyi-source-card__image img,
+.view-zunyi .zunyi-source-zoom__image img {
+  filter: sepia(0.14) saturate(0.8) contrast(1.06) brightness(0.9);
+}
+
+.route-map-image__bg,
+.archive-card__image,
+.bridge-intro-source img {
+  filter: sepia(0.12) saturate(0.84) contrast(1.05);
+}
+
+#history-intro-start,
+.bridge-video-bubble,
+.bridge-role-prompt__card button,
+.bridge-instruction__card button,
+.bridge-result__card button,
+.view-zunyi .zunyi-video-bubble,
+.view-zunyi .zunyi-role-prompt__card button,
+.view-zunyi .zunyi-rewrite-canvas__note button,
+.view-zunyi .zunyi-next,
+.view-zunyi .zunyi-source-card__body button,
+.view-zunyi .zunyi-record-game__choices button {
+  border-radius: 6px;
+}
+
+.history-intro,
+.view-zunyi .history-intro--zunyi {
+  color: var(--color-paper);
+  background: rgba(15, 10, 7, 0.7);
+}
+
+.historical-mission__topbar {
+  padding-left: 132px;
+}
+
+@media (max-width: 720px) {
+  .historical-mission__topbar {
+    padding-left: 122px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .embedded-level-shell__loader span {
+    animation: none;
+  }
+}
