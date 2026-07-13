@@ -6,6 +6,7 @@ import {
   loadLevelsIndex,
 } from "../services/levelsData.js";
 import { generateReflection } from "../services/reflect.js";
+import { generateLevelExpression } from "../services/expression.js";
 
 const router = Router();
 
@@ -81,6 +82,15 @@ router.post("/levels/:id/reflect", aiRateLimit, async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/levels/:id/expression", aiRateLimit, async (req, res) => {
+  try {
+    const result = await generateLevelExpression(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message || "表达生成失败" });
   }
 });
 

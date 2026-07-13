@@ -6,6 +6,7 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url)) + "/..";
 const backendDataDir = path.join(rootDir, "backend/src/data");
 const frontendDataDir = path.join(rootDir, "frontend/public/data");
 const supabaseDataFile = path.join(rootDir, "supabase/functions/reflect/data/levels-data.ts");
+const expressionDataFile = path.join(rootDir, "supabase/functions/expression/data/experience-data.ts");
 
 function readJSON(filePath) {
   return JSON.parse(readFileSync(filePath, "utf-8"));
@@ -48,9 +49,17 @@ function readSupabaseLevels() {
   return JSON.parse(match[1]);
 }
 
+function readExpressionExperiences() {
+  const source = readFileSync(expressionDataFile, "utf-8");
+  const match = source.match(/=\s*([\s\S]*);\s*$/);
+  if (!match) throw new Error(`无法解析 ${expressionDataFile}`);
+  return JSON.parse(match[1]);
+}
+
 const backend = readLevelSet(backendDataDir);
 const frontend = readLevelSet(frontendDataDir);
 const supabase = readSupabaseLevels();
+const expressionExperiences = readExpressionExperiences();
 const issues = [];
 const requiredPhases = ["briefing", "gameplay", "sources", "expression", "completion"];
 
@@ -266,6 +275,10 @@ for (const level of backend.index) {
   if (level.experienceConfig
     && stable(backend.experiences[level.id]) !== stable(frontend.experiences[level.id])) {
     issues.push(`frontend/public/data/${level.experienceConfig} 与 backend 源数据不一致`);
+  }
+  if (level.experienceConfig
+    && stable(backend.experiences[level.id]) !== stable(expressionExperiences[level.id])) {
+    issues.push(`supabase/functions/expression/data/experience-data.ts 中的 ${level.id} 与 backend 源数据不一致`);
   }
 }
 
