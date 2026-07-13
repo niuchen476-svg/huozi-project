@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "levelId": "ruijin-departure",
+  "duration": {
+    "targetSeconds": 120,
+    "minSeconds": 60,
+    "maxSeconds": 180
+  },
+  "sourceDrawer": {
+    "enabled": false,
+    "title": "本关史料",
+    "position": "top-right",
+    "maxItems": 8
+  },
+  "phases": {
+    "briefing": {
+      "enabled": false,
+      "estimatedSeconds": 15,
+      "title": "",
+      "question": ""
+    },
+    "gameplay": {
+      "enabled": true,
+      "estimatedSeconds": 90,
+      "adapterId": "ruijin-departure",
+      "helpAfterFailures": 2,
+      "assistAfterFailures": 3
+    },
+    "sources": {
+      "enabled": false,
+      "estimatedSeconds": 0,
+      "items": []
+    },
+    "expression": {
+      "enabled": false,
+      "estimatedSeconds": 0,
+      "prompt": "",
+      "inputMode": "choice-plus-short-text",
+      "maxCharacters": 40,
+      "sourceSelectionLimit": 1,
+      "outputType": "departure-note",
+      "outputLabel": "AI根据玩家选择生成",
+      "fallbackTemplates": [],
+      "ai": {
+        "enabled": false,
+        "provider": "mimo",
+        "maxOutputCharacters": 160
+      }
+    },
+    "completion": {
+      "enabled": true,
+      "estimatedSeconds": 15,
+      "reviewTitle": "",
+      "showFragmentReward": true,
+      "showShowcaseEntry": true,
+      "returnTarget": "#/map"
+    }
+  },
+  "audio": {
+    "ambience": [],
+    "narration": [],
+    "effects": [],
+    "completionMusic": null
+  },
+  "fragment": {
+    "id": "departure-map-fragment",
+    "name": "出发碎片",
+    "model": null,
+    "fallbackImage": null,
+    "legacyVisualId": "departure-map-fragment",
+    "historicalMeaning": "",
+    "sourceIds": [],
+    "narrationAudioId": null,
+    "hotspots": []
+  }
+}
