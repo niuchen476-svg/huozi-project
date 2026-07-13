@@ -11,6 +11,8 @@ const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 const STATIC_MODE = window.__STATIC_MODE__ === true || viteEnv.PROD === true;
 let levelsIndexPromise = null;
 const levelPromises = new Map();
+const levelExperiencePromises = new Map();
+let exhibitionPromise = null;
 
 function fetchJson(url, errorMessage) {
   return fetch(url, { cache: STATIC_MODE ? "no-cache" : "default" }).then((res) => {
@@ -40,6 +42,31 @@ export async function fetchLevel(id) {
     );
   }
   return levelPromises.get(id);
+}
+
+export async function fetchLevelExperience(id) {
+  const url = STATIC_MODE
+    ? `${DATA_BASE}/levels/${id}/experience.json`
+    : `${API_BASE}/levels/${id}/experience`;
+  if (!levelExperiencePromises.has(id)) {
+    levelExperiencePromises.set(
+      id,
+      fetchJson(url, "加载第二期关卡配置失败").catch((err) => {
+        levelExperiencePromises.delete(id);
+        throw err;
+      })
+    );
+  }
+  return levelExperiencePromises.get(id);
+}
+
+export async function fetchExhibition() {
+  const url = STATIC_MODE ? `${DATA_BASE}/exhibition.json` : `${API_BASE}/exhibition`;
+  exhibitionPromise ||= fetchJson(url, "加载数字展台配置失败").catch((err) => {
+    exhibitionPromise = null;
+    throw err;
+  });
+  return exhibitionPromise;
 }
 
 export function preloadLevelsIndex() {

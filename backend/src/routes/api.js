@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { loadLevelsIndex, loadLevelCards } from "../services/levelsData.js";
+import {
+  loadExhibition,
+  loadLevelCards,
+  loadLevelExperience,
+  loadLevelsIndex,
+} from "../services/levelsData.js";
 import { generateReflection } from "../services/reflect.js";
 
 const router = Router();
@@ -38,6 +43,24 @@ router.get("/levels/:id", async (req, res) => {
     res.json(level);
   } catch (err) {
     res.status(404).json({ error: "关卡不存在" });
+  }
+});
+
+router.get("/levels/:id/experience", async (req, res) => {
+  try {
+    const experience = await loadLevelExperience(req.params.id);
+    res.json(experience);
+  } catch (err) {
+    res.status(404).json({ error: "该关卡尚未配置第二期体验协议" });
+  }
+});
+
+router.get("/exhibition", async (req, res) => {
+  try {
+    const exhibition = await loadExhibition();
+    res.json(exhibition);
+  } catch (err) {
+    res.status(404).json({ error: "数字展台尚未配置" });
   }
 });
 
