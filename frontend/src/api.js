@@ -3,6 +3,7 @@ const viteEnv = import.meta.env || {};
 const runtimeBase = window.__BASE_PATH__ || viteEnv.BASE_URL || "/";
 const DATA_BASE = `${runtimeBase}data`;
 const REFLECT_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/reflect";
+const EXPRESSION_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/expression";
 const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 
 // 生产构建（GitHub Pages 静态托管）没有 Express 后端，
@@ -11,6 +12,8 @@ const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 const STATIC_MODE = window.__STATIC_MODE__ === true || viteEnv.PROD === true;
 let levelsIndexPromise = null;
 const levelPromises = new Map();
+const levelExperiencePromises = new Map();
+let exhibitionPromise = null;
 
 function fetchJson(url, errorMessage) {
   return fetch(url, { cache: STATIC_MODE ? "no-cache" : "default" }).then((res) => {
@@ -42,6 +45,31 @@ export async function fetchLevel(id) {
   return levelPromises.get(id);
 }
 
+export async function fetchLevelExperience(id) {
+  const url = STATIC_MODE
+    ? `${DATA_BASE}/levels/${id}/experience.json`
+    : `${API_BASE}/levels/${id}/experience`;
+  if (!levelExperiencePromises.has(id)) {
+    levelExperiencePromises.set(
+      id,
+      fetchJson(url, "加载第二期关卡配置失败").catch((err) => {
+        levelExperiencePromises.delete(id);
+        throw err;
+      })
+    );
+  }
+  return levelExperiencePromises.get(id);
+}
+
+export async function fetchExhibition() {
+  const url = STATIC_MODE ? `${DATA_BASE}/exhibition.json` : `${API_BASE}/exhibition`;
+  exhibitionPromise ||= fetchJson(url, "加载数字展台配置失败").catch((err) => {
+    exhibitionPromise = null;
+    throw err;
+  });
+  return exhibitionPromise;
+}
+
 export function preloadLevelsIndex() {
   fetchLevelsIndex().catch(() => {});
 }
@@ -68,5 +96,25 @@ export async function submitReflection(id, reflection, form) {
     throw new Error(err.error || "请求失败");
   }
 
+  return res.json();
+}
+
+export async function submitLevelExpression(id, payload) {
+  const res = STATIC_MODE
+    ? await fetch(EXPRESSION_FUNCTION_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", apikey: SUPABASE_ANON_KEY },
+        body: JSON.stringify({ levelId: id, ...payload }),
+      })
+    : await fetch(`${API_BASE}/levels/${id}/expression`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "表达生成失败，请稍后重试");
+  }
   return res.json();
 }

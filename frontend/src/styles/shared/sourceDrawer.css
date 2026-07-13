@@ -1,0 +1,296 @@
+/* ---------- 统一右上角本关史料抽屉 ---------- */
+
+.level-source-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+
+.level-source-drawer__launcher {
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top));
+  right: max(20px, env(safe-area-inset-right));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px 9px 16px;
+  color: #fff5d6;
+  background: linear-gradient(180deg, rgba(57, 38, 24, 0.92), rgba(20, 14, 10, 0.92));
+  border: 1px solid rgba(242, 201, 76, 0.55);
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.level-source-drawer__launcher strong {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  color: #35150f;
+  background: #f2c94c;
+  border-radius: 999px;
+}
+
+.level-source-drawer__launcher:hover,
+.level-source-drawer__launcher:focus-visible {
+  border-color: #ffe18a;
+  outline: 2px solid rgba(255, 225, 138, 0.42);
+  outline-offset: 3px;
+}
+
+.level-source-drawer__backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: rgba(8, 6, 4, 0.58);
+  border: 0;
+  opacity: 0;
+  cursor: default;
+  pointer-events: auto;
+  transition: opacity 180ms ease;
+}
+
+.level-source-drawer__panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(440px, 92vw);
+  height: 100dvh;
+  color: #2d2118;
+  background:
+    linear-gradient(rgba(249, 241, 220, 0.97), rgba(232, 217, 184, 0.98)),
+    #efe1bf;
+  border-left: 1px solid rgba(74, 47, 31, 0.34);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.42);
+  transform: translateX(102%);
+  pointer-events: auto;
+  transition: transform 180ms ease;
+}
+
+.level-source-drawer--open .level-source-drawer__backdrop {
+  opacity: 1;
+}
+
+.level-source-drawer--open .level-source-drawer__panel {
+  transform: translateX(0);
+}
+
+.level-source-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(82, 55, 35, 0.22);
+}
+
+.level-source-drawer__header p,
+.level-source-drawer__header h2 {
+  margin: 0;
+}
+
+.level-source-drawer__header p {
+  color: #8f3026;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.level-source-drawer__header h2 {
+  margin-top: 5px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+}
+
+.level-source-drawer__header span {
+  display: inline-block;
+  margin-top: 5px;
+  color: #725e49;
+  font-size: 0.82rem;
+}
+
+.level-source-drawer__close {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  color: #4e3023;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(78, 48, 35, 0.28);
+  border-radius: 50%;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.level-source-drawer__close:focus-visible {
+  outline: 3px solid rgba(143, 48, 38, 0.35);
+  outline-offset: 2px;
+}
+
+.level-source-drawer__scroller {
+  min-height: 0;
+  padding: 18px 18px 36px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.level-source-drawer__list {
+  display: grid;
+  gap: 12px;
+}
+
+.level-source-drawer__item {
+  overflow: clip;
+  background: rgba(255, 252, 242, 0.72);
+  border: 1px solid rgba(84, 57, 36, 0.2);
+  border-radius: 10px;
+}
+
+.level-source-drawer__item--core {
+  border-color: rgba(146, 44, 35, 0.42);
+  box-shadow: inset 3px 0 0 #9b3027;
+}
+
+.level-source-drawer__item summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 76px;
+  padding: 12px 14px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.level-source-drawer__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.level-source-drawer__item summary:focus-visible {
+  outline: 3px solid rgba(143, 48, 38, 0.3);
+  outline-offset: -3px;
+}
+
+.level-source-drawer__number {
+  color: #9b3027;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.level-source-drawer__item-title {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.level-source-drawer__item-title strong {
+  overflow: hidden;
+  color: #302116;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.level-source-drawer__item-title small {
+  overflow: hidden;
+  color: #77634f;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.level-source-drawer__item summary em {
+  padding: 4px 7px;
+  color: #8b2b23;
+  background: rgba(155, 48, 39, 0.1);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.level-source-drawer__content {
+  display: grid;
+  gap: 11px;
+  padding: 0 16px 18px 46px;
+  color: #514131;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.level-source-drawer__content p,
+.level-source-drawer__content blockquote {
+  margin: 0;
+}
+
+.level-source-drawer__content blockquote {
+  padding: 10px 12px;
+  background: rgba(112, 83, 53, 0.08);
+  border-left: 3px solid rgba(143, 48, 38, 0.58);
+}
+
+.level-source-drawer__content a {
+  width: fit-content;
+  color: #8b2b23;
+  font-weight: 800;
+}
+
+.level-source-drawer__empty {
+  margin: 28px 10px;
+  color: #76624e;
+  text-align: center;
+}
+
+body.level-source-drawer-is-open {
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  .level-source-drawer__launcher {
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    min-height: 40px;
+    font-size: 0.82rem;
+  }
+
+  .level-source-drawer__header {
+    padding: 22px 18px 16px;
+  }
+
+  .level-source-drawer__scroller {
+    padding: 14px 12px 28px;
+  }
+
+  .level-source-drawer__item summary {
+    gap: 9px;
+    min-height: 70px;
+    padding: 10px;
+  }
+
+  .level-source-drawer__content {
+    padding: 0 12px 15px 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-source-drawer__backdrop,
+  .level-source-drawer__panel {
+    transition: none;
+  }
+}
