@@ -1,8 +1,32 @@
 {
   "levelId": "huining-join",
   "title": "会宁会师",
-  "scenario": "TODO：待史料确认后填写情境压力描述（敌情/地形/时间窗口/物资状况）。",
-  "playerQuestion": "TODO：待填写本关推断问题。",
-  "cards": [],
-  "_note": "结构参照 backend/src/data/levels/luding-bridge/cards.json 这一范式样本，史料到位后按同样字段补充 scenario / playerQuestion / cards。本关额外用于生成结尾数字展厅总结，可在 _note 之外自行加字段。"
+  "date": "1936年10月",
+  "location": "甘肃会宁地区",
+  "scenario": "经过漫长而艰苦的行军，红军三大主力先后在会宁、将台堡地区实现胜利会师。会师不是一个简单的终点，而是分散力量重新汇聚、共同承担新任务的历史时刻。",
+  "playerQuestion": "会师为什么既是长征胜利的标志，也是新的起点？",
+  "actionDebrief": "你把三路行军线接入了正确的会师节点，也为一路获得的历史碎片找到了共同的落点。",
+  "cards": [
+    {
+      "id": "huining-telegram",
+      "title": "会合情况电报",
+      "rawText": "一、四方面军会合后，指战员情绪高涨，同时仍面临燃料等现实困难。",
+      "translation": "胜利会师并不意味着困难消失，它让分散的力量重新汇聚，也让新的任务成为可能。",
+      "image": "/assets/levels/huining-join/huining-hall-xinhua.jpg"
+    },
+    {
+      "id": "huining-sites",
+      "title": "会宁与将台堡",
+      "rawText": "1936年10月，红一、红四方面军在会宁会合，红一、红二方面军随后在将台堡会师。",
+      "translation": "三大主力的胜利会师是一段由多个时间节点共同构成的历史过程。",
+      "image": "/assets/levels/huining-join/huining-site-xinhua.jpg"
+    },
+    {
+      "id": "huining-new-start",
+      "title": "从胜利走向新任务",
+      "rawText": "大会合使红军力量进一步汇聚，为推动抗日民族统一战线提供了重要支撑。",
+      "translation": "会师的意义不仅在于抵达，更在于汇聚之后共同走向新的历史阶段。",
+      "image": "/assets/levels/huining-join/huining-site-xinhua.jpg"
+    }
+  ]
 }

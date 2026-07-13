@@ -5,6 +5,31 @@
   "allowPartialAssembly": true,
   "minimumFragments": 1,
   "fullAssemblyFragments": 6,
+  "maximumSelectedFragments": 3,
+  "zeroFragmentMode": {
+    "enabled": true,
+    "title": "从会师史料开始组展",
+    "description": "尚未获得前六关碎片时，玩家仍可使用会师路线和本关史料完成基础数字展台。"
+  },
+  "meetingNodes": [
+    {
+      "id": "huining-oct9",
+      "name": "会宁",
+      "date": "1936年10月9日",
+      "accepts": ["front-one", "front-four"]
+    },
+    {
+      "id": "jiangtaibao-oct22",
+      "name": "将台堡",
+      "date": "1936年10月22日",
+      "accepts": ["front-two"]
+    }
+  ],
+  "themes": [
+    { "id": "unity", "name": "力量在会合中汇聚", "shortLabel": "团结会合" },
+    { "id": "arrival", "name": "每一次抵达都有代价", "shortLabel": "艰难抵达" },
+    { "id": "new-start", "name": "会师之后走向新的任务", "shortLabel": "新的起点" }
+  ],
   "fragmentSlots": [
     {
       "fragmentId": "departure-map-fragment",
