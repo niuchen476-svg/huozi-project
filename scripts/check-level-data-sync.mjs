@@ -76,6 +76,9 @@ function validateLevelIndex(index) {
     if (!["experience", "showcase"].includes(level.role)) {
       addIssue(`${prefix} 的 role 必须是 experience 或 showcase`);
     }
+    if (level.experienceConfig !== `levels/${level.id}/experience.json`) {
+      addIssue(`${prefix} 必须指向本关自己的 experience.json`);
+    }
     if (!isNumberInRange(level.minDurationSeconds, 60, 180)) {
       addIssue(`${prefix} 的 minDurationSeconds 必须在 60～180 秒之间`);
     }
@@ -104,6 +107,16 @@ function validateExperience(level, experience) {
     addIssue(`${prefix} 的 duration 必须与 levels.json 保持一致`);
   }
 
+  const drawer = experience.sourceDrawer || {};
+  if (typeof drawer.enabled !== "boolean"
+    || drawer.title !== "本关史料"
+    || drawer.position !== "top-right"
+    || !Number.isInteger(drawer.maxItems)
+    || drawer.maxItems < 1
+    || drawer.maxItems > 8) {
+    addIssue(`${prefix} 缺少合法的右上角本关史料配置`);
+  }
+
   for (const phaseName of requiredPhases) {
     const phase = experience.phases?.[phaseName];
     if (!phase || typeof phase.enabled !== "boolean") {
@@ -111,9 +124,72 @@ function validateExperience(level, experience) {
     }
   }
 
+  const enabledDuration = requiredPhases.reduce((total, phaseName) => {
+    const phase = experience.phases?.[phaseName];
+    return total + (phase?.enabled ? Number(phase.estimatedSeconds || 0) : 0);
+  }, 0);
+  if (!isNumberInRange(enabledDuration, duration.minSeconds, duration.maxSeconds)) {
+    addIssue(`${prefix} 已启用阶段的预计总时长必须在 60～180 秒之间`);
+  }
+
   const sources = experience.phases?.sources?.items;
   if (!Array.isArray(sources) || !hasUniqueIds(sources)) {
     addIssue(`${prefix} 的史料必须是带唯一 id 的数组`);
+  }
+  if (Array.isArray(sources) && sources.length > drawer.maxItems) {
+    addIssue(`${prefix} 的史料数量不能超过 sourceDrawer.maxItems`);
+  }
+  const rightsStatuses = new Set(["pending", "reviewed", "cleared", "restricted"]);
+  for (const source of sources || []) {
+    for (const field of ["title", "type", "summary", "sourceName"]) {
+      if (!source[field]?.trim()) addIssue(`${prefix} 的史料 ${source.id} 缺少 ${field}`);
+    }
+    if (!rightsStatuses.has(source.rightsStatus)) {
+      addIssue(`${prefix} 的史料 ${source.id} 缺少合法 rightsStatus`);
+    }
+    for (const field of ["activeInGameplay", "visibleInSourceDrawer", "availableForAiExpression"]) {
+      if (typeof source[field] !== "boolean") {
+        addIssue(`${prefix} 的史料 ${source.id} 缺少布尔字段 ${field}`);
+      }
+    }
+  }
+  const activeSources = (sources || []).filter((source) => source.activeInGameplay);
+  if (activeSources.length > 3) addIssue(`${prefix} 参与玩法的核心史料不能超过 3 份`);
+  if (experience.phases?.sources?.enabled && activeSources.length < 1) {
+    addIssue(`${prefix} 启用史料阶段后至少需要 1 份参与玩法的史料`);
+  }
+  if (drawer.enabled && !(sources || []).some((source) => source.visibleInSourceDrawer)) {
+    addIssue(`${prefix} 启用本关史料入口后至少需要 1 份可见史料`);
+  }
+
+  const expression = experience.phases?.expression || {};
+  if (!expression.outputType?.trim() || expression.outputLabel !== "AI根据玩家选择生成") {
+    addIssue(`${prefix} 缺少合法的 AI 表达输出类型或标签`);
+  }
+  if (!isNumberInRange(expression.maxCharacters, 1, 80)) {
+    addIssue(`${prefix} 的玩家表达输入必须限制在 1～80 字`);
+  }
+  if (!Number.isInteger(expression.sourceSelectionLimit)
+    || expression.sourceSelectionLimit < 1
+    || expression.sourceSelectionLimit > 3) {
+    addIssue(`${prefix} 的 AI 史料选择数量必须在 1～3 份之间`);
+  }
+  if (!Array.isArray(expression.fallbackTemplates)) {
+    addIssue(`${prefix} 的 fallbackTemplates 必须是数组`);
+  }
+  for (const fallback of expression.fallbackTemplates || []) {
+    if (!fallback?.title?.trim() || !fallback?.text?.trim()) {
+      addIssue(`${prefix} 的 AI 固定兜底模板必须包含 title 和 text`);
+    }
+  }
+  const ai = expression.ai || {};
+  if (typeof ai.enabled !== "boolean"
+    || ai.provider !== "mimo"
+    || !isNumberInRange(ai.maxOutputCharacters, 1, 160)) {
+    addIssue(`${prefix} 缺少合法的 MiMo 表达配置`);
+  }
+  if (ai.enabled && !expression.enabled) {
+    addIssue(`${prefix} 启用 MiMo 前必须先启用表达阶段`);
   }
 
   const audio = experience.audio || {};
@@ -129,9 +205,13 @@ function validateExperience(level, experience) {
   }
 
   const fragment = experience.fragment;
-  if (!fragment?.id) addIssue(`${prefix} 必须提供 fragment.id`);
-  if (fragment && !fragment.model && !fragment.fallbackImage && !fragment.legacyVisualId) {
-    addIssue(`${prefix} 的碎片必须提供 model、fallbackImage 或 legacyVisualId`);
+  if (level.role === "experience") {
+    if (!fragment?.id) addIssue(`${prefix} 必须提供 fragment.id`);
+    if (fragment && !fragment.model && !fragment.fallbackImage && !fragment.legacyVisualId) {
+      addIssue(`${prefix} 的碎片必须提供 model、fallbackImage 或 legacyVisualId`);
+    }
+  } else if (fragment !== null) {
+    addIssue(`${prefix} 的数字展台关卡不应产生第七块碎片`);
   }
   const sourceIds = new Set((sources || []).map((source) => source.id));
   for (const sourceId of fragment?.sourceIds || []) {

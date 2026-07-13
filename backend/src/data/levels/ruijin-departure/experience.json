@@ -6,6 +6,12 @@
     "minSeconds": 60,
     "maxSeconds": 180
   },
+  "sourceDrawer": {
+    "enabled": false,
+    "title": "本关史料",
+    "position": "top-right",
+    "maxItems": 8
+  },
   "phases": {
     "briefing": {
       "enabled": false,
@@ -32,7 +38,14 @@
       "inputMode": "choice-plus-short-text",
       "maxCharacters": 40,
       "sourceSelectionLimit": 1,
-      "fallbackTemplates": []
+      "outputType": "departure-note",
+      "outputLabel": "AI根据玩家选择生成",
+      "fallbackTemplates": [],
+      "ai": {
+        "enabled": false,
+        "provider": "mimo",
+        "maxOutputCharacters": 160
+      }
     },
     "completion": {
       "enabled": true,
