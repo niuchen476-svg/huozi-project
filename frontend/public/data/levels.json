@@ -22,7 +22,8 @@
     "role": "experience",
     "targetDurationSeconds": 120,
     "minDurationSeconds": 60,
-    "maxDurationSeconds": 180
+    "maxDurationSeconds": 180,
+    "experienceConfig": "levels/xiangjiang-battle/experience.json"
   },
   {
     "id": "zunyi-turn",
@@ -34,7 +35,8 @@
     "role": "experience",
     "targetDurationSeconds": 120,
     "minDurationSeconds": 60,
-    "maxDurationSeconds": 180
+    "maxDurationSeconds": 180,
+    "experienceConfig": "levels/zunyi-turn/experience.json"
   },
   {
     "id": "sidu-chishui",
@@ -46,7 +48,8 @@
     "role": "experience",
     "targetDurationSeconds": 120,
     "minDurationSeconds": 60,
-    "maxDurationSeconds": 180
+    "maxDurationSeconds": 180,
+    "experienceConfig": "levels/sidu-chishui/experience.json"
   },
   {
     "id": "luding-bridge",
@@ -58,7 +61,8 @@
     "role": "experience",
     "targetDurationSeconds": 120,
     "minDurationSeconds": 60,
-    "maxDurationSeconds": 180
+    "maxDurationSeconds": 180,
+    "experienceConfig": "levels/luding-bridge/experience.json"
   },
   {
     "id": "snow-grassland",
@@ -70,7 +74,8 @@
     "role": "experience",
     "targetDurationSeconds": 120,
     "minDurationSeconds": 60,
-    "maxDurationSeconds": 180
+    "maxDurationSeconds": 180,
+    "experienceConfig": "levels/snow-grassland/experience.json"
   },
   {
     "id": "huining-join",
@@ -82,6 +87,7 @@
     "role": "showcase",
     "targetDurationSeconds": 120,
     "minDurationSeconds": 60,
-    "maxDurationSeconds": 180
+    "maxDurationSeconds": 180,
+    "experienceConfig": "levels/huining-join/experience.json"
   }
 ]
