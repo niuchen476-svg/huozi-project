@@ -1,4 +1,13 @@
 const DEFAULT_MAX_CHARACTERS = 40;
+const OUTPUT_TITLES = {
+  "departure-note": "我的出发札记",
+  "exhibit-caption": "我的展品说明",
+  "meeting-summary": "我的会议记录",
+  "route-reflection": "我的路线思考",
+  "action-telegram": "我的行动电报",
+  "memory-card": "我的长征记忆",
+  "exhibition-guide": "我的展台讲解",
+};
 
 export function getExpressionSources(experience) {
   return (experience?.phases?.sources?.items || [])
@@ -11,6 +20,23 @@ export function createExpressionPayload({ selectedSourceIds = [], selectedChoice
     choiceIds: [...new Set(selectedChoiceIds)].slice(0, 6),
     userText: String(userText).trim(),
     outputType: config.outputType,
+  };
+}
+
+export function createClientExpressionFallback(experience, payload) {
+  const config = experience?.phases?.expression || {};
+  const sources = getExpressionSources(experience);
+  const selectedSource = sources.find((source) => payload.sourceIds?.includes(source.id));
+  const template = config.fallbackTemplates?.find((item) => item?.title && item?.text);
+  let text = template?.text || String(payload.userText || "").trim();
+  if (!text && selectedSource) text = `我从《${selectedSource.title}》中，看见了历史选择背后的责任与坚持。`;
+  if (!text) text = "我愿意记住这一段行程，也继续理解其中每一次选择的重量。";
+  return {
+    title: template?.title || OUTPUT_TITLES[config.outputType] || "我的长征表达",
+    text: text.slice(0, config.ai?.maxOutputCharacters || 160),
+    sourceIds: payload.sourceIds || [],
+    label: config.outputLabel || "AI根据玩家选择生成",
+    usedFallback: true,
   };
 }
 
@@ -152,7 +178,7 @@ class LevelExpressionPanel {
     try {
       const value = await this.onSubmit(payload);
       this.showResult(value);
-      this.onComplete(value);
+      await this.onComplete(value);
     } catch (err) {
       this.showError(err.message || "生成失败，请稍后重试");
     } finally {
