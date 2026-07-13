@@ -17,3 +17,16 @@ export async function loadLevelCards(levelId) {
   );
   return JSON.parse(raw);
 }
+
+export async function loadLevelExperience(levelId) {
+  const raw = await readFile(
+    path.join(dataDir, "levels", levelId, "experience.json"),
+    "utf-8"
+  );
+  return JSON.parse(raw);
+}
+
+export async function loadExhibition() {
+  const raw = await readFile(path.join(dataDir, "exhibition.json"), "utf-8");
+  return JSON.parse(raw);
+}

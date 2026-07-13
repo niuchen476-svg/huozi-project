@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "levelId": "huining-join",
+  "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
+  "sourceDrawer": { "enabled": false, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "phases": {
+    "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
+    "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "huining-join", "helpAfterFailures": 2, "assistAfterFailures": 3 },
+    "sources": { "enabled": false, "estimatedSeconds": 0, "items": [] },
+    "expression": {
+      "enabled": false,
+      "estimatedSeconds": 0,
+      "prompt": "",
+      "inputMode": "choice-plus-short-text",
+      "maxCharacters": 80,
+      "sourceSelectionLimit": 3,
+      "outputType": "exhibition-guide",
+      "outputLabel": "AI根据玩家选择生成",
+      "fallbackTemplates": [],
+      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+    },
+    "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": false, "showShowcaseEntry": true, "returnTarget": "#/map" }
+  },
+  "audio": { "ambience": [], "narration": [], "effects": [], "completionMusic": null },
+  "fragment": null
+}
