@@ -12,6 +12,7 @@
     "check-data": "node scripts/check-level-data-sync.mjs",
     "test:source-drawer": "node --test frontend/src/views/levelRuntime/sourceDrawer.test.js",
     "test:expression": "node --test backend/src/services/expression.test.js frontend/src/views/levelRuntime/expressionPanel.test.js",
+    "test:huining": "node --test frontend/src/views/levels/huiningJoin/index.test.js",
     "deploy-reflect": "supabase functions deploy reflect --project-ref pfkamgzktfwfotirlocd",
     "deploy-expression": "supabase functions deploy expression --project-ref pfkamgzktfwfotirlocd"
   }

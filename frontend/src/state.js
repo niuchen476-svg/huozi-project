@@ -1,6 +1,7 @@
 const PROGRESS_KEY = "changzheng-progress";
 const BRIDGE_KEY = "changzheng-bridge-progress";
 const ARCHIVE_FRAGMENTS_KEY = "changzheng-archive-fragments";
+const HUINING_SHOWCASE_KEY = "changzheng-huining-showcase";
 
 function readJSON(key) {
   try {
@@ -50,4 +51,20 @@ export function collectArchiveFragment(fragmentId) {
   fragments[fragmentId] = true;
   localStorage.setItem(ARCHIVE_FRAGMENTS_KEY, JSON.stringify(fragments));
   return !alreadyCollected;
+}
+
+export function getHuiningShowcase() {
+  return readJSON(HUINING_SHOWCASE_KEY) || null;
+}
+
+export function saveHuiningShowcase(showcase) {
+  const safeShowcase = {
+    themeId: String(showcase?.themeId || ""),
+    fragmentIds: Array.isArray(showcase?.fragmentIds)
+      ? showcase.fragmentIds.slice(0, 3).map(String)
+      : [],
+    completedAt: new Date().toISOString(),
+  };
+  localStorage.setItem(HUINING_SHOWCASE_KEY, JSON.stringify(safeShowcase));
+  return safeShowcase;
 }

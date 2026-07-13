@@ -19,5 +19,5 @@ public/embedded/                  四渡赤水、雪山草地独立iframe实现
 2. 每个关卡只通过自己的 adapter 接入统一运行时。
 3. 关卡内部不直接发碎片、写通关状态或跳转地图。
 4. 共用引擎只放真正复用的交互能力，历史内容留在关卡配置中。
-5. 会宁会师从 `huiningJoin.js` 接入，当前保持草稿状态和原档案页行为。
+5. 会宁会师从 `huiningJoin.js` 接入，专属实现位于 `views/levels/huiningJoin/`；适配器只负责加载数据并把结果交回 `LevelHost`。
 6. 所有结构迁移先保持内容、DOM类名、CSS顺序和交互参数不变。

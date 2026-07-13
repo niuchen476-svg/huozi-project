@@ -1,11 +1,32 @@
-import { continueLevel } from "../protocol.js";
+import { fetchExhibition } from "../../../api.js";
+import { renderHuiningJoinExperience } from "../../levels/huiningJoin/index.js";
+import { completeLevel, cancelLevel } from "../protocol.js";
+import { preloadImage } from "../assetPreload.js";
 
-// 会宁会师当前仍使用统一档案页。未来的会议室、3D碎片合成或
-// AI个人展台从这个适配器接入，不需要再修改 LevelHost。
 export default {
   id: "huining-join",
-  preload() {},
-  play() {
-    return continueLevel({ actionCompleted: false });
+  preload() {
+    return Promise.all([
+      preloadImage("assets/levels/huining-join/huining-site-xinhua.jpg"),
+      preloadImage("assets/levels/huining-join/huining-hall-xinhua.jpg"),
+    ]);
+  },
+  async play(context) {
+    const exhibition = await fetchExhibition();
+    const outcome = await renderHuiningJoinExperience({ ...context, exhibition });
+    if (!outcome) return cancelLevel();
+    return completeLevel({
+      actionCompleted: true,
+      data: { expressionChoices: outcome.expressionChoices },
+    });
+  },
+  pause({ root }) {
+    root.querySelector(".huining-experience")?.classList.add("is-paused");
+  },
+  resume({ root }) {
+    root.querySelector(".huining-experience")?.classList.remove("is-paused");
+  },
+  dispose({ root }) {
+    root.querySelector(".huining-experience")?.remove();
   },
 };
