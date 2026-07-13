@@ -10,6 +10,7 @@ protocol.js         所有关卡必须遵守的返回协议
 registry.js         关卡 ID 到独立适配器的唯一注册表
 assetPreload.js     适配器共用的轻量预加载工具
 sourceDrawer.js     右上角“本关史料”抽屉组件
+expressionPanel.js  统一“我的表达”面板（史料选择、短输入、结果展示）
 adapters/           每关一个文件，只连接本关内容与统一协议
 ```
 
@@ -63,6 +64,38 @@ export default {
 组件只通过 `onOpenChange(open)` 报告开关状态，不直接暂停关卡或控制音频。计时暂停、背景音降低和数据加载将在后续由 `LevelHost` 统一接入。
 
 关卡开发者不复制或修改该组件，只填写本关 `experience.json` 中的史料数据。
+
+## 统一 AI 表达
+
+`createLevelExpressionPanel()` 是独立公共组件。关卡只提供操作选择和
+`experience.json` 配置，不直接调用 MiMo，也不能保存或读取 API Key。
+
+统一请求协议：
+
+```js
+POST /api/levels/:levelId/expression
+{
+  sourceIds: ["本关已审核史料 ID"],
+  choiceIds: ["本关操作选择 ID"],
+  userText: "玩家最多 80 字的表达",
+  outputType: "必须与本关配置一致"
+}
+```
+
+统一响应协议：
+
+```js
+{
+  title: "我的展品说明",
+  text: "整理后的第一人称表达",
+  sourceIds: ["实际采用的史料 ID"],
+  label: "AI根据玩家选择生成",
+  usedFallback: false
+}
+```
+
+模型超时、断网或密钥未配置时，服务端返回相同结构的固定模板，且
+`usedFallback: true`，不会阻断通关。该面板将在下一步由 `LevelHost` 统一挂载。
 
 `huiningJoin.js` 已作为会宁会师的独立挂载点。当前保持档案页行为不变，
 后续可直接在该适配器中接入会议室、3D碎片合成和AI个人展台。
