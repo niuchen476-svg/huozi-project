@@ -37,14 +37,30 @@ const DEFAULT_THEMES = [
   { id: "new-start", name: "会师之后走向新的任务", shortLabel: "新的起点" },
 ];
 
+const HOOF_STEPS = ["左前蹄", "右前蹄", "左后蹄", "右后蹄"];
+
+const DEFAULT_TIMELINE_EVENTS = [
+  { id: "capture", date: "10月2日", label: "攻占会宁城", detail: "打开会师通道" },
+  { id: "first-fourth", date: "10月9日", label: "一、四方面军会合", detail: "会宁正式会合" },
+  { id: "jiangtaibao", date: "10月22日", label: "将台堡会师", detail: "红二方面军总部抵达" },
+  { id: "xinglong", date: "10月23日", label: "兴隆镇会合", detail: "红六军团接续会合" },
+];
+
 export function isCorrectMeetingNode(routeId, nodeId) {
   return ROUTES.some((route) => route.id === routeId && route.target === nodeId);
+}
+
+export function isCorrectTimelineOrder(eventIds, events = DEFAULT_TIMELINE_EVENTS) {
+  return eventIds.length === events.length
+    && events.every((event, index) => event.id === eventIds[index]);
 }
 
 export function buildHuiningExpressionChoices(theme, fragments = []) {
   if (!theme) return [];
   return [
+    { id: "hooves-wrapped", label: "完成马蹄裹布奔袭" },
     { id: "routes-assembled", label: "完成三路会合" },
+    { id: "timeline-restored", label: "复原四个会师节点" },
     { id: `theme-${theme.id}`, label: theme.shortLabel },
     ...fragments.slice(0, 3).map((fragment) => ({
       id: fragment.id,
@@ -64,9 +80,15 @@ class HuiningJoinExperience {
     this.exhibition = exhibition || {};
     this.signal = signal;
     this.phase = "intro";
+    this.wrappedHooves = new Set();
     this.selectedRoute = null;
     this.placedRoutes = new Map();
     this.wrongAttempts = 0;
+    this.timelineEvents = this.exhibition.timelineEvents || DEFAULT_TIMELINE_EVENTS;
+    this.timelineOptions = shuffleItems(this.timelineEvents);
+    this.timelineOrder = [];
+    this.timelineAttempts = 0;
+    this.timelineAssisted = false;
     this.fragments = getArchiveFragmentItems();
     this.selectedFragments = new Set();
     this.selectedTheme = null;
@@ -102,11 +124,11 @@ class HuiningJoinExperience {
         <header class="huining-topbar">
           <a class="huining-topbar__back" href="#/map" aria-label="返回路线图">←</a>
           <div class="huining-topbar__identity">
-            <span>长征档案行 · 最终章</span>
+            <span>重走长征路 · 最终章</span>
             <strong>会宁会师</strong>
           </div>
           <ol class="huining-progress" aria-label="关卡进度">
-            ${["进入会宁", "三路会合", "数字组展"].map((label, index) => `
+            ${["打开会宁", "会师进程", "数字组展"].map((label, index) => `
               <li class="${index + 1 <= this.phaseNumber ? "is-active" : ""}${index + 1 === this.phaseNumber ? " is-current" : ""}">
                 <span>0${index + 1}</span><em>${label}</em>
               </li>
@@ -120,7 +142,7 @@ class HuiningJoinExperience {
   }
 
   get phaseNumber() {
-    return { intro: 1, routes: 2, showcase: 3 }[this.phase] || 1;
+    return { intro: 1, hoof: 1, routes: 2, timeline: 2, showcase: 3 }[this.phase] || 1;
   }
 
   renderIntro() {
@@ -146,8 +168,66 @@ class HuiningJoinExperience {
     `, { phase: "intro" });
     this.root.querySelector("[data-huining-start]")?.addEventListener("click", () => {
       this.playTone(392, 0.08);
-      this.renderRoutes();
+      this.renderHoofWrap();
     }, { once: true });
+  }
+
+  renderHoofWrap() {
+    this.renderShell(`
+      <section class="huining-hoof-layout" aria-labelledby="huining-hoof-title">
+        <div class="huining-hoof-story">
+          <p class="huining-kicker">1936年10月2日 · 会宁西津门</p>
+          <h1 id="huining-hoof-title">马蹄裹布，昼伏夜行</h1>
+          <p>红十五军团直属骑兵团向会宁急进。为了隐藏马蹄声，骑兵用布裹住马蹄，抢在敌军之前打开会师通道。</p>
+          <aside><strong>微互动 · 约15秒</strong><span>依次点击四只马蹄完成裹布，没有失败惩罚。</span></aside>
+        </div>
+        <div class="huining-hoof-workbench" aria-label="马蹄裹布操作台">
+          <div class="huining-hoof-workbench__cloth" aria-hidden="true"><i></i><span>裹蹄布卷</span></div>
+          <div class="huining-hoof-grid">
+            ${HOOF_STEPS.map((label, index) => `
+              <button type="button" data-hoof-index="${index}" aria-label="为${label}裹布">
+                <span class="huining-hoof-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+                <strong>${label}</strong><small>点击裹布</small>
+              </button>
+            `).join("")}
+          </div>
+          <div class="huining-hoof-status" role="status" aria-live="polite">
+            <span data-hoof-message>先为第一只马蹄裹布。</span><strong data-hoof-count>0 / 4</strong>
+          </div>
+          <button class="huining-primary-button huining-primary-button--hoof" type="button" data-hoof-complete disabled>
+            <span>隐蔽奔袭，打开西津门</span><b aria-hidden="true">→</b>
+          </button>
+        </div>
+      </section>
+    `, { phase: "hoof", background: "site" });
+    this.attachHoofInteractions();
+  }
+
+  attachHoofInteractions() {
+    this.root.querySelectorAll("[data-hoof-index]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const index = Number(button.dataset.hoofIndex);
+        if (this.wrappedHooves.has(index)) return;
+        this.wrappedHooves.add(index);
+        button.classList.add("is-wrapped");
+        button.setAttribute("disabled", "");
+        button.querySelector("small").textContent = "已经裹好";
+        const count = this.wrappedHooves.size;
+        const countNode = this.root.querySelector("[data-hoof-count]");
+        const message = this.root.querySelector("[data-hoof-message]");
+        if (countNode) countNode.textContent = `${count} / 4`;
+        if (message) message.textContent = count === HOOF_STEPS.length
+          ? "马蹄声已经收住，可以隐蔽奔袭。"
+          : `继续为第 ${count + 1} 只马蹄裹布。`;
+        const complete = this.root.querySelector("[data-hoof-complete]");
+        if (complete) complete.disabled = count !== HOOF_STEPS.length;
+        this.playTone(280 + count * 55, 0.08);
+      });
+    });
+    this.root.querySelector("[data-hoof-complete]")?.addEventListener("click", () => {
+      this.playTone(523.25, 0.12);
+      this.renderRoutes();
+    });
   }
 
   renderRoutes() {
@@ -196,7 +276,7 @@ class HuiningJoinExperience {
             <p>会宁与将台堡等节点，共同构成长征胜利会师的历史进程。</p>
           </div>
           <button class="huining-primary-button huining-primary-button--continue" type="button" data-routes-complete disabled>
-            <span>进入数字展台</span><b aria-hidden="true">→</b>
+            <span>继续核对时间线</span><b aria-hidden="true">→</b>
           </button>
         </div>
       </section>
@@ -225,7 +305,7 @@ class HuiningJoinExperience {
     }
     this.root.querySelector("[data-routes-complete]")?.addEventListener("click", () => {
       this.playTone(523.25, 0.12);
-      this.renderShowcase();
+      this.renderTimeline();
     });
   }
 
@@ -288,6 +368,106 @@ class HuiningJoinExperience {
     if (!target) return;
     target.textContent = message;
     target.classList.toggle("is-error", isError);
+  }
+
+  renderTimeline() {
+    this.renderShell(`
+      <section class="huining-timeline-layout" aria-labelledby="huining-timeline-title">
+        <div class="huining-mission-panel huining-timeline-copy">
+          <p class="huining-kicker">任务 01 · 还原会师进程</p>
+          <h1 id="huining-timeline-title">四个节点，不是同一天</h1>
+          <p>三路队伍已经接通。现在按照发生时间依次点击四张事件卡，复原从打开会宁通道到接续会合的过程。</p>
+          <div class="huining-process-summary">
+            <span><b>10月9日</b>红一、红四方面军在会宁会合</span>
+            <span><b>10月22日</b>红二方面军抵达将台堡</span>
+          </div>
+          <p class="huining-timeline-hint">需要帮助时，可以打开右上角“本关史料”。第二次排序错误后系统会直接标出正确顺序。</p>
+        </div>
+        <div class="huining-timeline-board">
+          <header><span>会师进程档案</span><strong>1936 · 10</strong></header>
+          <ol class="huining-timeline-slots" aria-label="会师时间线" data-timeline-slots>
+            ${this.timelineEvents.map((_, index) => `
+              <li><i>0${index + 1}</i><span>等待历史节点</span></li>
+            `).join("")}
+          </ol>
+          <div class="huining-timeline-options" aria-label="待排序历史节点">
+            ${this.timelineOptions.map((event) => `
+              <button type="button" data-timeline-event="${event.id}">
+                <span>${event.date}</span><strong>${event.label}</strong><small>${event.detail}</small>
+              </button>
+            `).join("")}
+          </div>
+          <div class="huining-timeline-actions">
+            <button type="button" data-timeline-undo disabled>撤回上一步</button>
+            <p role="status" aria-live="polite" data-timeline-message>选择最早发生的节点。</p>
+            <button class="huining-primary-button" type="button" data-timeline-confirm disabled>
+              <span>确认会师进程</span><b aria-hidden="true">→</b>
+            </button>
+          </div>
+        </div>
+      </section>
+    `, { phase: "timeline", background: "hall" });
+    this.attachTimelineInteractions();
+    this.updateTimelineUI();
+  }
+
+  attachTimelineInteractions() {
+    this.root.querySelectorAll("[data-timeline-event]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const id = button.dataset.timelineEvent;
+        if (this.timelineOrder.includes(id) || this.timelineOrder.length >= this.timelineEvents.length) return;
+        this.timelineOrder.push(id);
+        this.updateTimelineUI();
+        this.playTone(330 + this.timelineOrder.length * 48, 0.07);
+      });
+    });
+    this.root.querySelector("[data-timeline-undo]")?.addEventListener("click", () => {
+      this.timelineOrder.pop();
+      this.updateTimelineUI();
+    });
+    this.root.querySelector("[data-timeline-confirm]")?.addEventListener("click", () => this.confirmTimeline());
+  }
+
+  updateTimelineUI(message = "") {
+    const slots = [...this.root.querySelectorAll("[data-timeline-slots] li")];
+    slots.forEach((slot, index) => {
+      const event = this.timelineEvents.find((item) => item.id === this.timelineOrder[index]);
+      slot.classList.toggle("is-filled", Boolean(event));
+      slot.querySelector("span").textContent = event ? `${event.date} · ${event.label}` : "等待历史节点";
+    });
+    this.root.querySelectorAll("[data-timeline-event]").forEach((button) => {
+      const used = this.timelineOrder.includes(button.dataset.timelineEvent);
+      button.classList.toggle("is-used", used);
+      button.disabled = used;
+    });
+    const undo = this.root.querySelector("[data-timeline-undo]");
+    if (undo) undo.disabled = !this.timelineOrder.length || this.timelineAssisted;
+    const confirm = this.root.querySelector("[data-timeline-confirm]");
+    if (confirm) {
+      confirm.disabled = this.timelineOrder.length !== this.timelineEvents.length;
+      confirm.querySelector("span").textContent = this.timelineAssisted ? "进入数字展台" : "确认会师进程";
+    }
+    const status = this.root.querySelector("[data-timeline-message]");
+    if (status) status.textContent = message || `已归位 ${this.timelineOrder.length} / ${this.timelineEvents.length}`;
+  }
+
+  confirmTimeline() {
+    if (isCorrectTimelineOrder(this.timelineOrder, this.timelineEvents)) {
+      this.playTone(659.25, 0.14);
+      this.renderShowcase();
+      return;
+    }
+    this.timelineAttempts += 1;
+    if (this.timelineAttempts >= 2) {
+      this.timelineOrder = this.timelineEvents.map((event) => event.id);
+      this.timelineAssisted = true;
+      this.updateTimelineUI("正确顺序已经标出：2日打开通道，9日会宁会合，22日将台堡会师，23日兴隆镇会合。");
+      this.playTone(392, 0.1);
+      return;
+    }
+    this.timelineOrder = [];
+    this.updateTimelineUI("时间和地点还未对齐。提示：先打开通道，再到会宁、将台堡和兴隆镇。");
+    this.playTone(196, 0.08);
   }
 
   renderShowcase() {
@@ -426,4 +606,13 @@ class HuiningJoinExperience {
       // 声音不可用时不影响通关。
     }
   }
+}
+
+function shuffleItems(items) {
+  const copy = [...items];
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[target]] = [copy[target], copy[index]];
+  }
+  return copy;
 }
