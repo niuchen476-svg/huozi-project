@@ -4,6 +4,7 @@ import { showArchiveFragmentReward } from "../../archiveFragments.js";
 import { getLevelAdapter } from "./registry.js";
 import { assertLevelResult, LEVEL_STATUS } from "./protocol.js";
 import { createLevelSourceDrawer } from "./sourceDrawer.js";
+import { createLevelChrome, normalizeLevelPhase } from "./levelChrome.js";
 import {
   createClientExpressionFallback,
   createLevelExpressionPanel,
@@ -19,6 +20,7 @@ export class LevelHost {
     if (!this.session) return;
     this.session.disposing = true;
     this.session.sourceDrawer?.destroy();
+    this.session.levelChrome?.destroy();
     this.session.expressionPanel?.destroy();
     this.restoreRuntimeAudio(this.session);
     this.session.controller.abort();
@@ -39,6 +41,9 @@ export class LevelHost {
       context: null,
       experience: null,
       sourceDrawer: null,
+      levelChrome: null,
+      phase: "briefing",
+      phaseBeforeOverlay: null,
       expressionPanel: null,
       expressionCompleted: false,
       result: null,
@@ -89,6 +94,8 @@ export class LevelHost {
     };
     session.adapter = adapter;
     session.context = context;
+    this.mountLevelChrome(session);
+    this.attachPhaseEvents(session);
     this.mountSourceDrawer(session);
 
     let result;
@@ -125,6 +132,7 @@ export class LevelHost {
     }
 
     const useUnifiedExpression = this.isExpressionEnabled(session);
+    this.setPhase(session, "completion");
     this.renderDossier({
       root,
       level,
@@ -154,6 +162,7 @@ export class LevelHost {
 
   async completeLevel(session, options = {}) {
     if (!this.isActive(session)) return false;
+    this.setPhase(session, "completion");
     markCompleted(session.levelId);
 
     const showedReward = options.reward
@@ -186,8 +195,43 @@ export class LevelHost {
       title: config.title,
       sources,
       maxItems: config.maxItems,
-      onOpenChange: (open) => this.setOverlayOpen(session, "source-drawer", open),
+      onOpenChange: (open) => {
+        if (open) {
+          session.phaseBeforeOverlay = session.phase;
+          this.setPhase(session, "sources");
+        } else if (session.phaseBeforeOverlay) {
+          this.setPhase(session, session.phaseBeforeOverlay);
+          session.phaseBeforeOverlay = null;
+        }
+        this.setOverlayOpen(session, "source-drawer", open);
+      },
     }).mount(document.body);
+  }
+
+  mountLevelChrome(session) {
+    session.levelChrome = createLevelChrome({
+      level: session.context.level,
+      phase: session.phase,
+      onRestart: () => this.restart(session),
+    }).mount(document.body);
+  }
+
+  attachPhaseEvents(session) {
+    session.root.addEventListener("levelruntime:phase", (event) => {
+      this.setPhase(session, event.detail?.phase);
+    }, { signal: session.controller.signal });
+    session.root.addEventListener("click", (event) => {
+      const trigger = event.target instanceof Element
+        ? event.target.closest("[data-level-phase]")
+        : null;
+      if (trigger?.dataset.levelPhase) this.setPhase(session, trigger.dataset.levelPhase);
+    }, { signal: session.controller.signal });
+  }
+
+  setPhase(session, phase) {
+    const nextPhase = normalizeLevelPhase(phase);
+    session.phase = nextPhase;
+    session.levelChrome?.setPhase(nextPhase);
   }
 
   createRuntimeApi(session) {
@@ -198,6 +242,9 @@ export class LevelHost {
       },
       setOverlayOpen(id, open) {
         host.setOverlayOpen(session, id, open);
+      },
+      setPhase(phase) {
+        host.setPhase(session, phase);
       },
     });
   }
@@ -241,6 +288,7 @@ export class LevelHost {
   }
 
   renderExpressionPhase(session, completionOptions) {
+    this.setPhase(session, "expression");
     session.root.innerHTML = `
       <div class="view view-level level-expression-phase">
         <a class="back-link" href="#/map">← 返回路线图</a>

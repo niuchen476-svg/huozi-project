@@ -76,16 +76,17 @@ export function buildHuiningExpressionChoices(theme, fragments = []) {
   ];
 }
 
-export function renderHuiningJoinExperience({ root, level, exhibition, signal }) {
-  return new HuiningJoinExperience({ root, level, exhibition, signal }).start();
+export function renderHuiningJoinExperience({ root, level, exhibition, signal, runtime }) {
+  return new HuiningJoinExperience({ root, level, exhibition, signal, runtime }).start();
 }
 
 class HuiningJoinExperience {
-  constructor({ root, level, exhibition, signal }) {
+  constructor({ root, level, exhibition, signal, runtime }) {
     this.root = root;
     this.level = level;
     this.exhibition = exhibition || {};
     this.signal = signal;
+    this.runtime = runtime;
     this.phase = "intro";
     this.wrappedHooves = new Set();
     this.selectedRoute = null;
@@ -122,6 +123,7 @@ class HuiningJoinExperience {
 
   renderShell(content, { phase, background = "site" } = {}) {
     this.phase = phase;
+    this.runtime?.setPhase(phase === "intro" ? "briefing" : "gameplay");
     const image = SCENE_IMAGES[background] || SCENE_IMAGES.site;
     this.root.innerHTML = `
       <main class="huining-experience huining-experience--${phase}" style="--huining-scene: url('${image}')">

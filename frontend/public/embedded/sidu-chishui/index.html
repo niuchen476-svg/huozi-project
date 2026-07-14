@@ -573,6 +573,7 @@
 
       /* ---------------- 前置界面 ---------------- */
       function renderIntro() {
+        window.parent?.postMessage({ type: "changzheng-level-phase", levelId: "sidu-chishui", phase: "briefing" }, "*");
         app.innerHTML = `
           <div class="scene scene--intro">
             <div class="scene__bg"></div>
@@ -588,7 +589,10 @@
             </div>
           </div>
         `;
-        document.querySelector("#start-btn").addEventListener("click", () => startGame(0));
+        document.querySelector("#start-btn").addEventListener("click", () => {
+          window.parent?.postMessage({ type: "changzheng-level-phase", levelId: "sidu-chishui", phase: "gameplay" }, "*");
+          startGame(0);
+        });
       }
 
       /* ---------------- 拖动关卡 ---------------- */

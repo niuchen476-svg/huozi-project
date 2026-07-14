@@ -1060,6 +1060,7 @@ function show(id) {
 }
 
 function startQuiz() {
+  window.parent?.postMessage({ type: 'changzheng-level-phase', levelId: 'snow-grassland', phase: 'gameplay' }, '*');
   cur = 0;
   renderScene();
   show('quiz');
@@ -1075,6 +1076,7 @@ function finishLevel() {
 }
 
 function restartAll() {
+  window.parent?.postMessage({ type: 'changzheng-level-phase', levelId: 'snow-grassland', phase: 'briefing' }, '*');
   cur = 0;
   show('intro');
 }

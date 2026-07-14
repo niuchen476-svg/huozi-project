@@ -96,6 +96,10 @@ export function renderHistoricalMission25d(root, level, config) {
     function startMission() {
       if (!introOpen) return;
       introOpen = false;
+      nodes.stage.dispatchEvent(new CustomEvent("levelruntime:phase", {
+        bubbles: true,
+        detail: { phase: "gameplay" },
+      }));
       nodes.intro.remove();
       window.scrollTo({ top: 0, behavior: "auto" });
       nodes.topbar.hidden = false;

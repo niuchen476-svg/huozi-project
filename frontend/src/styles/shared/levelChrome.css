@@ -1,0 +1,251 @@
+/* ---------- Level Host 统一关卡顶栏 ---------- */
+
+.level-runtime-chrome {
+  position: fixed;
+  z-index: 190;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  right: max(168px, calc(env(safe-area-inset-right) + 154px));
+  display: grid;
+  grid-template-columns: auto minmax(150px, 220px) minmax(400px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 58px;
+  padding: 7px 9px;
+  color: #f7edd7;
+  background: linear-gradient(180deg, rgba(37, 28, 21, 0.95), rgba(19, 15, 12, 0.93));
+  border: 1px solid rgba(228, 202, 150, 0.28);
+  border-radius: 10px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(14px);
+  font-family: var(--font-sans);
+  pointer-events: auto;
+}
+
+.level-runtime-chrome a,
+.level-runtime-chrome button {
+  color: inherit;
+  font: inherit;
+}
+
+.level-runtime-chrome__back,
+.level-runtime-chrome__restart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 64px;
+  height: 42px;
+  padding: 0 10px;
+  color: #f3e7cd;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(228, 202, 150, 0.26);
+  border-radius: 7px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.level-runtime-chrome__back:hover,
+.level-runtime-chrome__restart:hover,
+.level-runtime-chrome__back:focus-visible,
+.level-runtime-chrome__restart:focus-visible {
+  color: #fff7e6;
+  background: rgba(143, 48, 38, 0.72);
+  border-color: rgba(245, 214, 147, 0.72);
+  outline: none;
+}
+
+.level-runtime-chrome__back span,
+.level-runtime-chrome__restart span {
+  font-size: 1.12rem;
+  line-height: 1;
+}
+
+.level-runtime-chrome__back em,
+.level-runtime-chrome__restart em,
+.level-runtime-chrome__progress em {
+  font-style: normal;
+}
+
+.level-runtime-chrome__identity {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.level-runtime-chrome__identity span {
+  overflow: hidden;
+  color: #c8b99d;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.level-runtime-chrome__identity strong {
+  overflow: hidden;
+  color: #fff1d2;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.level-runtime-chrome__progress {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(70px, 1fr));
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.level-runtime-chrome__progress li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, auto);
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  color: rgba(226, 213, 187, 0.45);
+  font-size: 0.72rem;
+}
+
+.level-runtime-chrome__progress li:not(:last-child)::after {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: calc(50% + 18px);
+  right: calc(-50% + 18px);
+  height: 1px;
+  content: "";
+  background: rgba(220, 199, 158, 0.18);
+}
+
+.level-runtime-chrome__progress li span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: #bcae92;
+  background: #262018;
+  border: 1px solid rgba(220, 199, 158, 0.28);
+  border-radius: 50%;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.level-runtime-chrome__progress li em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.level-runtime-chrome__progress li.is-complete,
+.level-runtime-chrome__progress li.is-current {
+  color: #f6e8c9;
+}
+
+.level-runtime-chrome__progress li.is-complete span {
+  color: #3a2117;
+  background: #c3a45d;
+  border-color: #e0c982;
+}
+
+.level-runtime-chrome__progress li.is-current span {
+  color: #fff4d7;
+  background: #9b3027;
+  border-color: #e1a36e;
+  box-shadow: 0 0 0 4px rgba(155, 48, 39, 0.2);
+}
+
+/* 公共顶栏接管返回动作；关卡自己的局部进度和玩法 HUD 继续保留。 */
+.level-runtime-chrome-is-mounted .historical-mission__back,
+.level-runtime-chrome-is-mounted .bridge-action__back,
+.level-runtime-chrome-is-mounted .zunyi-back,
+.level-runtime-chrome-is-mounted .huining-topbar__back,
+.level-runtime-chrome-is-mounted .embedded-level-shell__back {
+  display: none !important;
+}
+
+.level-runtime-chrome-is-mounted #app .back-link {
+  display: none !important;
+}
+
+.level-runtime-chrome-is-mounted .huining-topbar {
+  display: none !important;
+}
+
+@media (max-width: 1100px) {
+  .level-runtime-chrome {
+    grid-template-columns: auto minmax(120px, 180px) minmax(300px, 1fr) auto;
+  }
+
+  .level-runtime-chrome__progress li {
+    grid-template-columns: 22px;
+  }
+
+  .level-runtime-chrome__progress li em {
+    position: absolute;
+    top: 31px;
+    display: none;
+    padding: 2px 6px;
+    background: rgba(24, 18, 14, 0.94);
+    border-radius: 4px;
+  }
+
+  .level-runtime-chrome__progress li.is-current em {
+    display: block;
+  }
+}
+
+@media (max-width: 760px) {
+  .level-runtime-chrome {
+    right: max(108px, calc(env(safe-area-inset-right) + 98px));
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 52px;
+    gap: 8px;
+    padding: 5px 6px;
+  }
+
+  .level-runtime-chrome__progress {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: min(300px, calc(100vw - 28px));
+    padding: 5px 8px;
+    background: rgba(24, 18, 14, 0.88);
+    border: 1px solid rgba(228, 202, 150, 0.2);
+    border-radius: 8px;
+  }
+
+  .level-runtime-chrome__back,
+  .level-runtime-chrome__restart {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+  }
+
+  .level-runtime-chrome__back em,
+  .level-runtime-chrome__restart em,
+  .level-runtime-chrome__identity span {
+    display: none;
+  }
+
+  .level-runtime-chrome__identity strong {
+    font-size: 0.88rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-runtime-chrome *,
+  .level-runtime-chrome *::before,
+  .level-runtime-chrome *::after {
+    transition: none !important;
+  }
+}

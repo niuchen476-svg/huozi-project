@@ -75,7 +75,7 @@ export function renderBridgeAction(root, level) {
               <figcaption>史料线索：桥面木板被拆后，突击队必须面对“只剩铁索”的险境。</figcaption>
             </figure>
             <p class="history-intro__text">${level.scenario}</p>
-            <button type="button" id="history-intro-start">开始行动</button>
+            <button type="button" id="history-intro-start" data-level-phase="gameplay">开始行动</button>
             <button class="bridge-video-bubble" type="button" id="bridge-video-open">点击查看相关视频</button>
           </div>
 

@@ -18,5 +18,6 @@
 @import "./styles/levels/zunyiInference.css";
 @import "./styles/levels/huiningJoin/index.css";
 @import "./styles/shared/unifiedLevelBaseline.css";
+@import "./styles/shared/levelChrome.css";
 @import "./styles/shared/sourceDrawer.css";
 @import "./styles/shared/expressionPanel.css";
