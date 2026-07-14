@@ -46,6 +46,13 @@ const DEFAULT_TIMELINE_EVENTS = [
   { id: "xinglong", date: "10月23日", label: "兴隆镇会合", detail: "红六军团接续会合" },
 ];
 
+const SCENE_IMAGES = {
+  site: "assets/levels/huining-join/huining-site-xinhua.jpg",
+  hall: "assets/levels/huining-join/huining-hall-xinhua.jpg",
+  victory: "assets/levels/huining-join/victory-meeting-painting.png",
+  reunion: "assets/levels/huining-join/reunion-painting.png",
+};
+
 export function isCorrectMeetingNode(routeId, nodeId) {
   return ROUTES.some((route) => route.id === routeId && route.target === nodeId);
 }
@@ -115,9 +122,7 @@ class HuiningJoinExperience {
 
   renderShell(content, { phase, background = "site" } = {}) {
     this.phase = phase;
-    const image = background === "hall"
-      ? "assets/levels/huining-join/huining-hall-xinhua.jpg"
-      : "assets/levels/huining-join/huining-site-xinhua.jpg";
+    const image = SCENE_IMAGES[background] || SCENE_IMAGES.site;
     this.root.innerHTML = `
       <main class="huining-experience huining-experience--${phase}" style="--huining-scene: url('${image}')">
         <div class="huining-experience__wash" aria-hidden="true"></div>
@@ -136,7 +141,7 @@ class HuiningJoinExperience {
           </ol>
         </header>
         ${content}
-        <p class="huining-credit">场景参考：新华网会宁会师旧址影像</p>
+        <p class="huining-credit">场景与史料图像：项目资料库</p>
       </main>
     `;
   }
@@ -165,7 +170,7 @@ class HuiningJoinExperience {
           <p>接通三路行军线，再把一路获得的碎片组成自己的长征数字展台。</p>
         </aside>
       </section>
-    `, { phase: "intro" });
+    `, { phase: "intro", background: "victory" });
     this.root.querySelector("[data-huining-start]")?.addEventListener("click", () => {
       this.playTone(392, 0.08);
       this.renderHoofWrap();
@@ -256,6 +261,7 @@ class HuiningJoinExperience {
           </div>
         </div>
         <div class="huining-map-table" aria-label="会师节点地图">
+          <img class="huining-map-table__historical-map" src="assets/levels/huining-join/three-armies-map.png" alt="红军三大主力会师示意图" loading="lazy" decoding="async" />
           <div class="huining-map-table__topography" aria-hidden="true"></div>
           <div class="huining-map-table__legend">
             <span>会师区域示意</span><em>1936 · 10</em>
@@ -381,6 +387,10 @@ class HuiningJoinExperience {
             <span><b>10月9日</b>红一、红四方面军在会宁会合</span>
             <span><b>10月22日</b>红二方面军抵达将台堡</span>
           </div>
+          <figure class="huining-timeline-photo">
+            <img src="assets/levels/huining-join/front-fourth-photo.png" alt="长征到达陕北的红四方面军历史照片" loading="lazy" decoding="async" />
+            <figcaption>长征到达陕北的红四方面军</figcaption>
+          </figure>
           <p class="huining-timeline-hint">需要帮助时，可以打开右上角“本关史料”。第二次排序错误后系统会直接标出正确顺序。</p>
         </div>
         <div class="huining-timeline-board">
@@ -491,6 +501,7 @@ class HuiningJoinExperience {
           </div>
         </div>
         <div class="huining-showcase-stage">
+          <img class="huining-showcase-stage__painting" src="assets/levels/huining-join/reunion-painting.png" alt="红军会师主题油画" loading="lazy" decoding="async" />
           <div class="huining-showcase-stage__hall" aria-hidden="true"></div>
           <div class="huining-showcase-stage__title"><span>我的长征</span><strong>数字展台</strong></div>
           <div class="huining-showcase-pedestal" data-showcase-pedestal>
