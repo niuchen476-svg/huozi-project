@@ -25,6 +25,32 @@
       "accepts": ["front-two"]
     }
   ],
+  "timelineEvents": [
+    {
+      "id": "capture",
+      "date": "10月2日",
+      "label": "攻占会宁城",
+      "detail": "打开会师通道"
+    },
+    {
+      "id": "first-fourth",
+      "date": "10月9日",
+      "label": "一、四方面军会合",
+      "detail": "会宁正式会合"
+    },
+    {
+      "id": "jiangtaibao",
+      "date": "10月22日",
+      "label": "将台堡会师",
+      "detail": "红二方面军总部抵达"
+    },
+    {
+      "id": "xinglong",
+      "date": "10月23日",
+      "label": "兴隆镇会合",
+      "detail": "红六军团接续会合"
+    }
+  ],
   "themes": [
     { "id": "unity", "name": "力量在会合中汇聚", "shortLabel": "团结会合" },
     { "id": "arrival", "name": "每一次抵达都有代价", "shortLabel": "艰难抵达" },

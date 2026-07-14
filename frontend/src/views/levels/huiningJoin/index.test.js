@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   buildHuiningExpressionChoices,
   isCorrectMeetingNode,
+  isCorrectTimelineOrder,
 } from "./index.js";
 
 test("三路队伍只接受对应的会师节点", () => {
@@ -10,6 +11,23 @@ test("三路队伍只接受对应的会师节点", () => {
   assert.equal(isCorrectMeetingNode("front-four", "huining-oct9"), true);
   assert.equal(isCorrectMeetingNode("front-two", "jiangtaibao-oct22"), true);
   assert.equal(isCorrectMeetingNode("front-two", "huining-oct9"), false);
+});
+
+test("四个会师节点必须按跨日进程排列", () => {
+  const events = [
+    { id: "capture" },
+    { id: "first-fourth" },
+    { id: "jiangtaibao" },
+    { id: "xinglong" },
+  ];
+  assert.equal(isCorrectTimelineOrder(
+    ["capture", "first-fourth", "jiangtaibao", "xinglong"],
+    events
+  ), true);
+  assert.equal(isCorrectTimelineOrder(
+    ["first-fourth", "capture", "jiangtaibao", "xinglong"],
+    events
+  ), false);
 });
 
 test("数字展台选择会被整理为统一表达选项并限制三块碎片", () => {
@@ -21,7 +39,9 @@ test("数字展台选择会被整理为统一表达选项并限制三块碎片",
     { id: "four", name: "四号碎片" },
   ];
   assert.deepEqual(buildHuiningExpressionChoices(theme, fragments), [
+    { id: "hooves-wrapped", label: "完成马蹄裹布奔袭" },
     { id: "routes-assembled", label: "完成三路会合" },
+    { id: "timeline-restored", label: "复原四个会师节点" },
     { id: "theme-people", label: "同行的人" },
     { id: "one", label: "选择一号碎片" },
     { id: "two", label: "选择二号碎片" },
