@@ -71,7 +71,7 @@ export async function callMimoTts({
   style = "沉稳、温暖、清晰的中文博物馆讲解语气，语速稍慢。",
   voice = "白桦",
   format = "mp3",
-  timeoutMs = 60000,
+  timeoutMs = 120000,
   fetchImpl = fetch,
   apiBase = MIMO_API_BASE,
   apiKey = MIMO_API_KEY,

@@ -31,7 +31,7 @@ function getEndpoint(apiBase: string) {
 async function synthesize(text: string) {
   if (!MIMO_API_BASE || !MIMO_API_KEY) throw new Error("MiMo TTS 服务尚未配置");
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 60000);
+  const timer = setTimeout(() => controller.abort(), 120000);
   try {
     const response = await fetch(getEndpoint(MIMO_API_BASE), {
       method: "POST",
