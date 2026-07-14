@@ -6,7 +6,30 @@
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "xiangjiang-battle", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
+    "sources": {
+      "enabled": true,
+      "estimatedSeconds": 0,
+      "items": [
+        {
+          "id": "source-xiangjiang-operation-map",
+          "title": "全州、兴安方向作战部署图",
+          "type": "作战部署图影印件",
+          "date": "1934年11月25日前后",
+          "creator": "红军总部相关作战机关",
+          "summary": "手绘部署图呈现全州、兴安一带的道路、地域与行动方向，为理解湘江战役中的渡江窗口和阻击压力提供空间线索。",
+          "plainExplanation": "地图上的路线和位置关系说明，突破湘江不仅取决于勇气，也取决于部队能否在有限时间内协同通过。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体题名与馆藏待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/xiangjiang-battle/sources/xiangjiang-operation-map-feishu.jpg",
+          "imageAlt": "湘江战役全州兴安方向手绘作战部署图",
+          "imageCaption": "飞书资料标注：1934年11月25日前后全州、兴安方向作战部署材料；具体题名与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
     "expression": {
       "enabled": true,
       "estimatedSeconds": 25,

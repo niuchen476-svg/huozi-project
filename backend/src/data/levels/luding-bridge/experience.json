@@ -6,7 +6,30 @@
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "luding-bridge", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
+    "sources": {
+      "enabled": true,
+      "estimatedSeconds": 0,
+      "items": [
+        {
+          "id": "source-luding-strategic-telegram",
+          "title": "《控制泸定桥渡河点取得战略胜利的部署》",
+          "type": "万万火急军事电报影印件",
+          "date": "1935年5月26日",
+          "creator": "朱德签发",
+          "summary": "电报把控制泸定桥渡河点作为取得战略主动的重要部署，为关卡中的抢时间、夺通道提供历史依据。",
+          "plainExplanation": "泸定桥的价值不只在桥本身，它还是部队能否迅速渡过大渡河、摆脱围堵的关键通道。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/luding-bridge/sources/luding-strategic-telegram-feishu.jpg",
+          "imageAlt": "控制泸定桥渡河点部署电报原件影印图",
+          "imageCaption": "飞书资料标注：1935年5月26日朱德签发的泸定桥渡河点部署电报；馆藏与授权状态待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
     "expression": {
       "enabled": true,
       "estimatedSeconds": 25,

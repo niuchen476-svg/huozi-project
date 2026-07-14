@@ -161,6 +161,12 @@ function validateExperience(level, experience) {
         addIssue(`${prefix} 的史料 ${source.id} 缺少布尔字段 ${field}`);
       }
     }
+    if (typeof source.image === "string" && source.image.startsWith("/")) {
+      const localImagePath = path.join(rootDir, "frontend/public", source.image.replace(/^\/+/, ""));
+      if (!existsSync(localImagePath)) {
+        addIssue(`${prefix} 的史料 ${source.id} 图片不存在：${source.image}`);
+      }
+    }
   }
   const activeSources = (sources || []).filter((source) => source.activeInGameplay);
   if (activeSources.length > 3) addIssue(`${prefix} 参与玩法的核心史料不能超过 3 份`);

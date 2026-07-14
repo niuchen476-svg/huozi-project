@@ -6,7 +6,30 @@
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "sidu-chishui", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
+    "sources": {
+      "enabled": true,
+      "estimatedSeconds": 0,
+      "items": [
+        {
+          "id": "source-sidu-military-telegrams",
+          "title": "四渡赤水相关军委电报原件",
+          "type": "军事电报影印件",
+          "date": "1935年1月至3月",
+          "creator": "红军总部相关机关",
+          "summary": "多份电报并置呈现命令随战局连续发出和调整的形态，是理解四渡赤水机动指挥的重要材料。",
+          "plainExplanation": "四渡赤水不是按一张固定路线图执行到底，而是在敌情、时间和空间变化中不断调整行动。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体电报题名与日期待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/sidu-chishui/sources/sidu-military-telegram-feishu.jpg",
+          "imageAlt": "四渡赤水相关多份军委电报原件影印图",
+          "imageCaption": "飞书资料标注为四渡赤水相关军委电报原件；具体题名、日期与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
     "expression": {
       "enabled": true,
       "estimatedSeconds": 25,

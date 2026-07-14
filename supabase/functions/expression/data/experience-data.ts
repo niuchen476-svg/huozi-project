@@ -94,6 +94,24 @@ export const EXPERIENCES: Record<string, any> = {
             "activeInGameplay": false,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
+          },
+          {
+            "id": "source-huining-campaign-plan",
+            "title": "《通庄静会战役计划》原件",
+            "type": "战役计划影印件",
+            "date": "1936年9月28日",
+            "creator": "朱德、张国焘签发（飞书资料标注）",
+            "summary": "会师前夕形成的战役计划展示了部队在通渭、庄浪、静宁、会宁一带的行动部署，为理解会师为何发生在这一战略区域提供材料。",
+            "plainExplanation": "三大主力会合并非偶然相遇，而是在敌军围堵和北上部署中逐步形成的战略结果。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/huining-join/sources/huining-campaign-plan-feishu.png",
+            "imageAlt": "通庄静会战役计划文书原件照片",
+            "imageCaption": "飞书资料标注：1936年9月28日《通庄静会战役计划》原件；馆藏与授权状态待审核。",
+            "activeInGameplay": false,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
           }
         ]
       },
@@ -224,7 +242,26 @@ export const EXPERIENCES: Record<string, any> = {
       "sources": {
         "enabled": true,
         "estimatedSeconds": 0,
-        "items": []
+        "items": [
+          {
+            "id": "source-luding-strategic-telegram",
+            "title": "《控制泸定桥渡河点取得战略胜利的部署》",
+            "type": "万万火急军事电报影印件",
+            "date": "1935年5月26日",
+            "creator": "朱德签发",
+            "summary": "电报把控制泸定桥渡河点作为取得战略主动的重要部署，为关卡中的抢时间、夺通道提供历史依据。",
+            "plainExplanation": "泸定桥的价值不只在桥本身，它还是部队能否迅速渡过大渡河、摆脱围堵的关键通道。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/luding-bridge/sources/luding-strategic-telegram-feishu.jpg",
+            "imageAlt": "控制泸定桥渡河点部署电报原件影印图",
+            "imageCaption": "飞书资料标注：1935年5月26日朱德签发的泸定桥渡河点部署电报；馆藏与授权状态待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          }
+        ]
       },
       "expression": {
         "enabled": true,
@@ -323,7 +360,26 @@ export const EXPERIENCES: Record<string, any> = {
       "sources": {
         "enabled": true,
         "estimatedSeconds": 0,
-        "items": []
+        "items": [
+          {
+            "id": "source-ruijin-action-schedule",
+            "title": "《野战军十月十日至二十日行动日程表》",
+            "type": "行动日程手稿影印件",
+            "date": "1934年10月9日",
+            "creator": "革命军事委员会",
+            "summary": "表格按日期记录中央红军战略转移初期的行动安排，让“从瑞金出发”落到连续、具体的行军部署中。",
+            "plainExplanation": "离开中央苏区并不是一次简单启程，而是需要按时间、路线和部队协同组织的军事行动。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/ruijin-departure/sources/ruijin-action-schedule-feishu.jpg",
+            "imageAlt": "野战军十月十日至二十日行动日程表手稿影印图",
+            "imageCaption": "飞书资料标注：1934年10月9日行动日程表原始手稿；题名、馆藏与授权状态待项目审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          }
+        ]
       },
       "expression": {
         "enabled": true,
@@ -422,7 +478,26 @@ export const EXPERIENCES: Record<string, any> = {
       "sources": {
         "enabled": true,
         "estimatedSeconds": 0,
-        "items": []
+        "items": [
+          {
+            "id": "source-sidu-military-telegrams",
+            "title": "四渡赤水相关军委电报原件",
+            "type": "军事电报影印件",
+            "date": "1935年1月至3月",
+            "creator": "红军总部相关机关",
+            "summary": "多份电报并置呈现命令随战局连续发出和调整的形态，是理解四渡赤水机动指挥的重要材料。",
+            "plainExplanation": "四渡赤水不是按一张固定路线图执行到底，而是在敌情、时间和空间变化中不断调整行动。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体电报题名与日期待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/sidu-chishui/sources/sidu-military-telegram-feishu.jpg",
+            "imageAlt": "四渡赤水相关多份军委电报原件影印图",
+            "imageCaption": "飞书资料标注为四渡赤水相关军委电报原件；具体题名、日期与馆藏待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          }
+        ]
       },
       "expression": {
         "enabled": true,
@@ -521,7 +596,26 @@ export const EXPERIENCES: Record<string, any> = {
       "sources": {
         "enabled": true,
         "estimatedSeconds": 0,
-        "items": []
+        "items": [
+          {
+            "id": "source-snow-grassland-manuscript",
+            "title": "雪山草地亲历者手稿影印件",
+            "type": "长征亲历手稿",
+            "date": "1935年至1936年间形成，具体日期待审核",
+            "creator": "具体作者待史实审核",
+            "summary": "亲历者手稿把宏大的雪山草地叙事还原为个人所见、所感与生存选择，为后续加入具体人物故事提供一手材料入口。",
+            "plainExplanation": "极端环境中的历史不是抽象困难，而是一个个具体的人怎样保存体力、互相帮助并继续前进。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体题名、作者与馆藏待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/snow-grassland/sources/snow-grassland-manuscript-feishu.png",
+            "imageAlt": "雪山草地长征亲历者手写记录影印图",
+            "imageCaption": "飞书资料中的长征亲历手稿；具体题名、作者、形成日期与馆藏待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          }
+        ]
       },
       "expression": {
         "enabled": true,
@@ -620,7 +714,26 @@ export const EXPERIENCES: Record<string, any> = {
       "sources": {
         "enabled": true,
         "estimatedSeconds": 0,
-        "items": []
+        "items": [
+          {
+            "id": "source-xiangjiang-operation-map",
+            "title": "全州、兴安方向作战部署图",
+            "type": "作战部署图影印件",
+            "date": "1934年11月25日前后",
+            "creator": "红军总部相关作战机关",
+            "summary": "手绘部署图呈现全州、兴安一带的道路、地域与行动方向，为理解湘江战役中的渡江窗口和阻击压力提供空间线索。",
+            "plainExplanation": "地图上的路线和位置关系说明，突破湘江不仅取决于勇气，也取决于部队能否在有限时间内协同通过。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体题名与馆藏待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/xiangjiang-battle/sources/xiangjiang-operation-map-feishu.jpg",
+            "imageAlt": "湘江战役全州兴安方向手绘作战部署图",
+            "imageCaption": "飞书资料标注：1934年11月25日前后全州、兴安方向作战部署材料；具体题名与馆藏待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          }
+        ]
       },
       "expression": {
         "enabled": true,
@@ -719,7 +832,26 @@ export const EXPERIENCES: Record<string, any> = {
       "sources": {
         "enabled": true,
         "estimatedSeconds": 0,
-        "items": []
+        "items": [
+          {
+            "id": "source-zunyi-related-manuscript",
+            "title": "遵义会议相关手稿影印件",
+            "type": "会议史料手稿",
+            "date": "1935年1月前后",
+            "creator": "具体作者待史实审核",
+            "summary": "手写材料保留了会议相关记录形成时的原始形态，可用于区分后来的历史叙述与当时留下的文字材料。",
+            "plainExplanation": "理解遵义转折，既要看会议作出的判断，也要关注这些判断怎样被记录、整理和保存下来。",
+            "sourceName": "飞书文档《长征资源库》资料整理（具体题名、作者与馆藏待审核）",
+            "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/zunyi-turn/sources/zunyi-manuscript-feishu.jpg",
+            "imageAlt": "遵义会议相关手写史料影印图",
+            "imageCaption": "飞书资料中的遵义会议相关手稿；在正式展陈前需核对具体题名、作者、日期和馆藏。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          }
+        ]
       },
       "expression": {
         "enabled": true,

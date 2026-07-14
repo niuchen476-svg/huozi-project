@@ -6,7 +6,30 @@
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "snow-grassland", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
+    "sources": {
+      "enabled": true,
+      "estimatedSeconds": 0,
+      "items": [
+        {
+          "id": "source-snow-grassland-manuscript",
+          "title": "雪山草地亲历者手稿影印件",
+          "type": "长征亲历手稿",
+          "date": "1935年至1936年间形成，具体日期待审核",
+          "creator": "具体作者待史实审核",
+          "summary": "亲历者手稿把宏大的雪山草地叙事还原为个人所见、所感与生存选择，为后续加入具体人物故事提供一手材料入口。",
+          "plainExplanation": "极端环境中的历史不是抽象困难，而是一个个具体的人怎样保存体力、互相帮助并继续前进。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体题名、作者与馆藏待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/snow-grassland/sources/snow-grassland-manuscript-feishu.png",
+          "imageAlt": "雪山草地长征亲历者手写记录影印图",
+          "imageCaption": "飞书资料中的长征亲历手稿；具体题名、作者、形成日期与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
     "expression": {
       "enabled": true,
       "estimatedSeconds": 25,
