@@ -5,6 +5,7 @@ import { getLevelAdapter } from "./registry.js";
 import { assertLevelResult, LEVEL_STATUS } from "./protocol.js";
 import { createLevelSourceDrawer } from "./sourceDrawer.js";
 import { createLevelChrome, normalizeLevelPhase } from "./levelChrome.js";
+import { createCompletionRecap } from "./completionRecap.js";
 import {
   createClientExpressionFallback,
   createLevelExpressionPanel,
@@ -127,7 +128,7 @@ export class LevelHost {
         this.renderExpressionPhase(session, { reward: true, redirect: "if-reward" });
         return;
       }
-      await this.completeLevel(session, { reward: true, redirect: "always" });
+      this.renderCompletionPhase(session, { reward: true, redirect: "always" });
       return;
     }
 
@@ -136,6 +137,7 @@ export class LevelHost {
     this.renderDossier({
       root,
       level,
+      experience,
       challenge: adapter.challenge || null,
       completedAction: result.actionCompleted,
       useUnifiedExpression,
@@ -292,14 +294,49 @@ export class LevelHost {
     session.root.innerHTML = `
       <div class="view view-level level-expression-phase">
         <a class="back-link" href="#/map">← 返回路线图</a>
+        <div data-level-completion-recap-slot></div>
         <div data-level-expression-slot></div>
       </div>
     `;
+    session.root.querySelector("[data-level-completion-recap-slot]")?.replaceWith(
+      createCompletionRecap({
+        level: session.context.level,
+        experience: session.experience,
+        result: session.result,
+      })
+    );
     this.mountExpressionPanel(
       session,
       session.root.querySelector("[data-level-expression-slot]"),
       completionOptions
     );
+  }
+
+  renderCompletionPhase(session, completionOptions) {
+    this.setPhase(session, "completion");
+    session.root.innerHTML = `
+      <div class="view view-level level-completion-phase">
+        <a class="back-link" href="#/map">← 返回路线图</a>
+        <div data-level-completion-recap-slot></div>
+        <div class="level-complete-actions level-completion-phase__actions">
+          <button type="button" data-complete-level>领取本关碎片</button>
+          <button type="button" data-restart-level>重来</button>
+          <a href="#/map">返回路线图</a>
+        </div>
+      </div>
+    `;
+    session.root.querySelector("[data-level-completion-recap-slot]")?.replaceWith(
+      createCompletionRecap({
+        level: session.context.level,
+        experience: session.experience,
+        result: session.result,
+      })
+    );
+    session.root.querySelector("[data-complete-level]")?.addEventListener("click", async (event) => {
+      event.currentTarget.disabled = true;
+      await this.completeLevel(session, completionOptions);
+    });
+    session.root.querySelector("[data-restart-level]")?.addEventListener("click", () => this.restart(session));
   }
 
   mountExpressionInDossier(session, completionOptions = {}) {

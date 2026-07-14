@@ -1,9 +1,11 @@
 import { submitReflection } from "../api.js";
+import { createCompletionRecap } from "./levelRuntime/completionRecap.js";
 
 const POEM_FORMS = ["七律", "绝句", "词"];
 export function renderLevelDossier({
   root,
   level,
+  experience,
   challenge: specialChallenge,
   completedAction,
   useUnifiedExpression = false,
@@ -14,11 +16,8 @@ export function renderLevelDossier({
     <div class="view view-level">
       <a class="back-link" href="#/map">← 返回路线图</a>
 
-      <header class="level-header">
-        <p class="level-header__eyebrow">${level.date || ""}${level.location ? " · " + level.location : ""}</p>
-        <h1>${level.title}</h1>
-        ${completedAction ? `<p class="level-header__debrief">${specialChallenge?.debrief || level.actionDebrief || "刚才你在枪林弹雨里经历的这一切，现在写下你的感悟吧。"}</p>` : ""}
-        <p class="level-header__scenario">${level.scenario}</p>
+      <header class="level-header" data-level-recap-header>
+        <div data-level-completion-recap-slot></div>
         <div class="level-header__actions">
           <button type="button" data-restart-level-page>重新挑战本关</button>
           <a href="#/map">返回路线图</a>
@@ -41,6 +40,17 @@ export function renderLevelDossier({
       </div>
     </div>
   `;
+
+  root.querySelector("[data-level-completion-recap-slot]")?.replaceWith(
+    createCompletionRecap({
+      level,
+      experience,
+      debrief: completedAction
+        ? specialChallenge?.debrief || level.actionDebrief
+        : "行动已经结束。现在回到档案卡，用材料检查刚才的判断。",
+      variant: "dossier",
+    })
+  );
 
   if (specialChallenge) {
     attachSpecialChallenge(root, specialChallenge, { onRestart, onComplete });
