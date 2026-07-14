@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import apiRouter from "./routes/api.js";
 
 const app = express();
@@ -24,6 +26,12 @@ app.use(
   })
 );
 app.use(express.json());
+
+const imageDirectory = fileURLToPath(new URL("../storage/images/", import.meta.url));
+app.use("/images", express.static(path.resolve(imageDirectory), {
+  fallthrough: false,
+  maxAge: "1h",
+}));
 
 app.use("/api", apiRouter);
 

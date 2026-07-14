@@ -120,6 +120,13 @@ export const EXPERIENCES: Record<string, any> = {
           "enabled": true,
           "provider": "mimo",
           "maxOutputCharacters": 160
+        },
+        "artwork": {
+          "enabled": true,
+          "provider": "aihubmix",
+          "model": "qwen-image-2.0",
+          "nameMaxCharacters": 20,
+          "fallbackImage": "assets/levels/huining-join/reunion-painting.png"
         }
       },
       "completion": {

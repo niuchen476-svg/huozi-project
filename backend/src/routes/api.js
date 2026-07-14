@@ -8,6 +8,7 @@ import {
 import { generateReflection } from "../services/reflect.js";
 import { generateLevelExpression } from "../services/expression.js";
 import { generateLevelSpeech } from "../services/speech.js";
+import { generateLevelArtwork } from "../services/artwork.js";
 
 const router = Router();
 
@@ -104,6 +105,18 @@ router.post("/levels/:id/speech", aiRateLimit, async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(err.statusCode || 502).json({ error: err.message || "语音生成失败" });
+  }
+});
+
+router.post("/levels/:id/artwork", async (req, res) => {
+  if (req.params.id !== "huining-join") {
+    return res.status(409).json({ error: "AI 画作目前仅在会宁数字展台开放" });
+  }
+  try {
+    const result = await generateLevelArtwork(req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 502).json({ error: err.message || "画作生成失败" });
   }
 });
 

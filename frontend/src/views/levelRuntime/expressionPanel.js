@@ -1,3 +1,5 @@
+import { createLevelArtworkPanel } from "./artworkPanel.js";
+
 const DEFAULT_MAX_CHARACTERS = 40;
 const OUTPUT_TITLES = {
   "departure-note": "我的出发札记",
@@ -45,13 +47,14 @@ export function createLevelExpressionPanel(options = {}) {
 }
 
 class LevelExpressionPanel {
-  constructor({ experience, choices = [], onSubmit, onSpeak, onComplete } = {}) {
+  constructor({ experience, choices = [], onSubmit, onSpeak, onArtwork, onComplete } = {}) {
     this.experience = experience || {};
     this.config = this.experience.phases?.expression || {};
     this.sources = getExpressionSources(this.experience);
     this.choices = Array.isArray(choices) ? choices : [];
     this.onSubmit = typeof onSubmit === "function" ? onSubmit : null;
     this.onSpeak = typeof onSpeak === "function" ? onSpeak : null;
+    this.onArtwork = typeof onArtwork === "function" ? onArtwork : null;
     this.onComplete = typeof onComplete === "function" ? onComplete : () => {};
     this.audio = null;
     this.audioUrls = [];
@@ -60,6 +63,10 @@ class LevelExpressionPanel {
     this.spokenText = "";
     this.controller = new AbortController();
     this.element = this.build();
+    this.artworkPanel = this.config.artwork?.enabled && this.onArtwork
+      ? createLevelArtworkPanel({ config: this.config.artwork, onGenerate: this.onArtwork })
+      : null;
+    this.artworkPanel?.mount(this.element);
   }
 
   mount(container) {
@@ -72,6 +79,7 @@ class LevelExpressionPanel {
 
   destroy() {
     this.stopAudio(true);
+    this.artworkPanel?.destroy();
     this.controller.abort();
     this.element.remove();
   }
@@ -190,6 +198,7 @@ class LevelExpressionPanel {
     try {
       const value = await this.onSubmit(payload);
       this.showResult(value);
+      this.artworkPanel?.setExpression(value, payload);
       await this.onComplete(value);
     } catch (err) {
       this.showError(err.message || "生成失败，请稍后重试");
