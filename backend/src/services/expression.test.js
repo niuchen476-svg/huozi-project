@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import {
   buildExpressionPrompt,
   createExpressionFallback,
+  generateLevelExpression,
+  MIMO_EXPRESSION_MAX_TOKENS,
+  MIMO_EXPRESSION_TIMEOUT_MS,
   normalizeExpressionInput,
 } from "./expression.js";
 
@@ -64,4 +67,25 @@ test("MiMo 不可用时仍返回统一结构", () => {
     label: "AI根据玩家选择生成",
     usedFallback: true,
   });
+});
+
+test("在线表达为推理模型预留足够的输出额度和响应时间", async () => {
+  let request;
+  const result = await generateLevelExpression("huining-join", {
+    sourceIds: ["source-huining-hoof-march"],
+    choiceIds: ["unity"],
+    userText: "团结让不同的队伍走到了一起。",
+    outputType: "exhibition-guide",
+  }, {
+    callModel: async (value) => {
+      request = value;
+      return '{"title":"会宁会师","text":"我看见不同的队伍在会宁汇聚成共同的力量。"}';
+    },
+  });
+
+  assert.equal(request.maxTokens, MIMO_EXPRESSION_MAX_TOKENS);
+  assert.equal(request.timeoutMs, MIMO_EXPRESSION_TIMEOUT_MS);
+  assert.equal(MIMO_EXPRESSION_MAX_TOKENS, 2048);
+  assert.equal(MIMO_EXPRESSION_TIMEOUT_MS, 30000);
+  assert.equal(result.usedFallback, false);
 });
