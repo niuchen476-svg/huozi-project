@@ -1,7 +1,7 @@
 import { callMimoTts } from "./mimoClient.js";
 
 export const MAX_SPEECH_CHARACTERS = 220;
-export const MAX_SPEECH_CHUNK_CHARACTERS = 42;
+export const MAX_SPEECH_CHUNK_CHARACTERS = 32;
 const SAFE_ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/;
 
 function cleanSpeechText(value) {
