@@ -107,7 +107,9 @@ export class LevelHost {
       console.error(error);
       return;
     } finally {
-      this.clearActionLayout();
+      // 跳转可能已经销毁了当前会话并由新页面接管 #app。
+      // 此时旧异步任务不能再移除路线图刚设置的全屏类。
+      if (this.isActive(session)) this.clearActionLayout();
     }
 
     if (!this.isActive(session) || result.status === LEVEL_STATUS.CANCELLED) return;

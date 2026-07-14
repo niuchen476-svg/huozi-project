@@ -14,6 +14,10 @@ function route() {
   app.classList.remove("app--action-scene");
   app.classList.toggle("app--fullbleed", hash === "/map" || hash === "/");
 
+  if (hash === "/map" || hash === "/") {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }
+
   if (levelMatch) {
     renderLevelView(app, levelMatch[1]);
   } else if (hash === "/map") {
