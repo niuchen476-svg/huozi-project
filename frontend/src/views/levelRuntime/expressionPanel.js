@@ -45,13 +45,16 @@ export function createLevelExpressionPanel(options = {}) {
 }
 
 class LevelExpressionPanel {
-  constructor({ experience, choices = [], onSubmit, onComplete } = {}) {
+  constructor({ experience, choices = [], onSubmit, onSpeak, onComplete } = {}) {
     this.experience = experience || {};
     this.config = this.experience.phases?.expression || {};
     this.sources = getExpressionSources(this.experience);
     this.choices = Array.isArray(choices) ? choices : [];
     this.onSubmit = typeof onSubmit === "function" ? onSubmit : null;
+    this.onSpeak = typeof onSpeak === "function" ? onSpeak : null;
     this.onComplete = typeof onComplete === "function" ? onComplete : () => {};
+    this.audio = null;
+    this.spokenText = "";
     this.controller = new AbortController();
     this.element = this.build();
   }
@@ -65,6 +68,7 @@ class LevelExpressionPanel {
   }
 
   destroy() {
+    this.stopAudio();
     this.controller.abort();
     this.element.remove();
   }
@@ -96,7 +100,10 @@ class LevelExpressionPanel {
       </form>
       <article class="level-expression-panel__result" aria-live="polite" hidden>
         <span class="level-expression-panel__label"></span>
-        <h3></h3>
+        <div class="level-expression-panel__result-title">
+          <h3></h3>
+          <button class="level-expression-panel__speech" type="button" aria-label="朗读这段表达" title="朗读这段表达" hidden>🔊</button>
+        </div>
         <p></p>
         <small class="level-expression-panel__fallback" hidden>当前使用离线模板，体验不受影响。</small>
       </article>`;
@@ -107,6 +114,7 @@ class LevelExpressionPanel {
     this.error = section.querySelector(".level-expression-panel__error");
     this.submitButton = section.querySelector("button[type=submit]");
     this.result = section.querySelector(".level-expression-panel__result");
+    this.speechButton = section.querySelector(".level-expression-panel__speech");
     this.renderSources(section.querySelector(".level-expression-panel__chips"));
     this.renderChoices(section.querySelector(".level-expression-panel__choice-list"));
 
@@ -116,6 +124,7 @@ class LevelExpressionPanel {
     }, { signal: this.controller.signal });
     this.form.addEventListener("change", (event) => this.handleSelection(event), { signal: this.controller.signal });
     this.form.addEventListener("submit", (event) => this.handleSubmit(event), { signal: this.controller.signal });
+    this.speechButton.addEventListener("click", () => this.handleSpeech(), { signal: this.controller.signal });
     return section;
   }
 
@@ -188,12 +197,65 @@ class LevelExpressionPanel {
   }
 
   showResult(value) {
+    this.stopAudio();
+    this.spokenText = value.text || "";
     this.result.querySelector(".level-expression-panel__label").textContent = value.label || "AI根据玩家选择生成";
     this.result.querySelector("h3").textContent = value.title || "我的表达";
     this.result.querySelector("p").textContent = value.text || "";
     this.result.querySelector(".level-expression-panel__fallback").hidden = value.usedFallback !== true;
+    this.speechButton.hidden = !this.onSpeak || !this.spokenText;
+    this.setSpeechButtonState("ready");
     this.result.hidden = false;
     this.result.focus?.({ preventScroll: true });
+  }
+
+  async handleSpeech() {
+    if (this.audio && !this.audio.paused) {
+      this.audio.pause();
+      this.setSpeechButtonState("ready");
+      return;
+    }
+    if (this.audio) {
+      await this.audio.play();
+      this.setSpeechButtonState("playing");
+      return;
+    }
+
+    this.speechButton.disabled = true;
+    this.setSpeechButtonState("loading");
+    try {
+      const value = await this.onSpeak(this.spokenText);
+      if (!value?.audioDataUrl) throw new Error("语音接口没有返回音频");
+      this.audio = new Audio(value.audioDataUrl);
+      this.audio.addEventListener("ended", () => this.setSpeechButtonState("ready"), { once: false });
+      await this.audio.play();
+      this.setSpeechButtonState("playing");
+    } catch (err) {
+      this.showError(err.message || "朗读失败，请稍后重试");
+      this.setSpeechButtonState("ready");
+    } finally {
+      this.speechButton.disabled = false;
+    }
+  }
+
+  stopAudio() {
+    if (!this.audio) return;
+    this.audio.pause();
+    this.audio.removeAttribute("src");
+    this.audio.load?.();
+    this.audio = null;
+  }
+
+  setSpeechButtonState(state) {
+    const labels = {
+      loading: ["…", "正在生成朗读"],
+      playing: ["⏸", "暂停朗读"],
+      ready: ["🔊", "朗读这段表达"],
+    };
+    const [content, label] = labels[state] || labels.ready;
+    this.speechButton.textContent = content;
+    this.speechButton.setAttribute("aria-label", label);
+    this.speechButton.title = label;
   }
 
   showError(message) {

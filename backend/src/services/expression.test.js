@@ -8,7 +8,8 @@ import {
   MIMO_EXPRESSION_TIMEOUT_MS,
   normalizeExpressionInput,
 } from "./expression.js";
-import { callMimo, getMimoChatCompletionsUrl } from "./mimoClient.js";
+import { callMimo, callMimoTts, getMimoChatCompletionsUrl } from "./mimoClient.js";
+import { generateLevelSpeech } from "./speech.js";
 
 const config = {
   outputType: "exhibit-caption",
@@ -115,4 +116,40 @@ test("MiMo 表达使用关闭深度思考的 Chat Completions 协议", async () 
   assert.deepEqual(requestBody.thinking, { type: "disabled" });
   assert.equal(requestBody.messages[0].role, "system");
   assert.match(value, /队伍汇聚/);
+});
+
+test("MiMo TTS 使用 assistant 文本和博物馆音色生成 MP3", async () => {
+  let requestBody;
+  const audio = await callMimoTts({
+    text: "我看见不同的队伍在会宁汇聚。",
+    apiBase: "https://token-plan-cn.xiaomimimo.com/anthropic",
+    apiKey: "test-key",
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body);
+      return new Response(JSON.stringify({
+        choices: [{ message: { audio: { id: "audio-1", data: "YWJj" } } }],
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    },
+  });
+
+  assert.equal(requestBody.model, "mimo-v2.5-tts");
+  assert.equal(requestBody.messages[1].role, "assistant");
+  assert.equal(requestBody.audio.format, "mp3");
+  assert.equal(requestBody.audio.voice, "白桦");
+  assert.equal(audio.data, "YWJj");
+});
+
+test("关卡朗读接口返回浏览器可直接播放的音频地址", async () => {
+  const value = await generateLevelSpeech("huining-join", {
+    text: "会师是新的起点。",
+  }, {
+    callTts: async () => ({ data: "YWJj", voice: "白桦" }),
+  });
+
+  assert.deepEqual(value, {
+    audioDataUrl: "data:audio/mpeg;base64,YWJj",
+    mimeType: "audio/mpeg",
+    voice: "白桦",
+    usedFallback: false,
+  });
 });

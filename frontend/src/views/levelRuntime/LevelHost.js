@@ -1,4 +1,4 @@
-import { fetchLevel, fetchLevelExperience, submitLevelExpression } from "../../api.js";
+import { fetchLevel, fetchLevelExperience, submitLevelExpression, submitLevelSpeech } from "../../api.js";
 import { markCompleted, resetLevelProgress } from "../../state.js";
 import { showArchiveFragmentReward } from "../../archiveFragments.js";
 import { getLevelAdapter } from "./registry.js";
@@ -287,6 +287,7 @@ export class LevelHost {
           return createClientExpressionFallback(session.experience, payload);
         }
       },
+      onSpeak: (text) => submitLevelSpeech(session.levelId, text),
       onComplete: async () => {
         session.expressionCompleted = true;
         const showedReward = await this.completeLevel(session, completionOptions);

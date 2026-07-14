@@ -65,3 +65,55 @@ export async function callMimo({
   }
   return text;
 }
+
+export async function callMimoTts({
+  text,
+  style = "沉稳、温暖、清晰的中文博物馆讲解语气，语速稍慢。",
+  voice = "白桦",
+  format = "mp3",
+  timeoutMs = 60000,
+  fetchImpl = fetch,
+  apiBase = MIMO_API_BASE,
+  apiKey = MIMO_API_KEY,
+  model = "mimo-v2.5-tts",
+}) {
+  if (!apiBase || !apiKey) {
+    throw new Error("缺少 MIMO_API_BASE 或 MIMO_API_KEY，请检查 backend/.env");
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  let res;
+  try {
+    res = await fetchImpl(getMimoChatCompletionsUrl(apiBase), {
+      method: "POST",
+      headers: { "content-type": "application/json", "api-key": apiKey },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "user", content: style },
+          { role: "assistant", content: text },
+        ],
+        audio: { format, voice },
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err?.name === "AbortError") throw new Error("MiMo TTS 请求超时");
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!res.ok) {
+    const responseText = await res.text();
+    throw new Error(`MiMo TTS API error ${res.status}: ${responseText}`);
+  }
+
+  const data = await res.json();
+  const audio = data.choices?.[0]?.message?.audio;
+  if (typeof audio?.data !== "string" || !audio.data) {
+    throw new Error("MiMo TTS 返回内容中没有音频");
+  }
+  return { data: audio.data, id: audio.id, expiresAt: audio.expires_at, format, voice };
+}

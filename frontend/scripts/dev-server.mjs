@@ -53,14 +53,29 @@ function resolveStaticPath(urlPath) {
 async function proxyApi(req, res) {
   const target = new URL(req.url, backendOrigin);
   const headers = { ...req.headers, host: target.host };
+  delete headers.connection;
+  delete headers["content-length"];
+  delete headers["transfer-encoding"];
+  const hasBody = req.method !== "GET" && req.method !== "HEAD";
+  const body = hasBody
+    ? Buffer.concat(await Array.fromAsync(req))
+    : undefined;
+
+  const fetchUpstream = () => fetch(target, {
+    method: req.method,
+    headers,
+    body,
+  });
 
   try {
-    const upstream = await fetch(target, {
-      method: req.method,
-      headers,
-      body: req.method === "GET" || req.method === "HEAD" ? undefined : req,
-      duplex: "half",
-    });
+    let upstream;
+    try {
+      upstream = await fetchUpstream();
+    } catch {
+      // node --watch 重启后端时，连接池里可能短暂保留旧连接；重试一次即可恢复。
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      upstream = await fetchUpstream();
+    }
 
     res.writeHead(upstream.status, Object.fromEntries(upstream.headers));
     if (!upstream.body) {

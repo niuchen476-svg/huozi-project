@@ -4,6 +4,7 @@ const runtimeBase = window.__BASE_PATH__ || viteEnv.BASE_URL || "/";
 const DATA_BASE = `${runtimeBase}data`;
 const REFLECT_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/reflect";
 const EXPRESSION_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/expression";
+const SPEECH_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/speech";
 const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 
 // 生产构建（GitHub Pages 静态托管）没有 Express 后端，
@@ -115,6 +116,26 @@ export async function submitLevelExpression(id, payload) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "表达生成失败，请稍后重试");
+  }
+  return res.json();
+}
+
+export async function submitLevelSpeech(id, text) {
+  const res = STATIC_MODE
+    ? await fetch(SPEECH_FUNCTION_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", apikey: SUPABASE_ANON_KEY },
+        body: JSON.stringify({ levelId: id, text }),
+      })
+    : await fetch(`${API_BASE}/levels/${id}/speech`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "语音生成失败，请稍后重试");
   }
   return res.json();
 }

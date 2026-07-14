@@ -67,6 +67,23 @@
 .level-expression-panel__submit:disabled { opacity: 0.58; cursor: wait; }
 .level-expression-panel__result { margin-top: 22px; padding: 18px; background: #fffaf0; border-left: 4px solid #9b2f27; border-radius: 4px 12px 12px 4px; }
 .level-expression-panel__result h3 { margin: 6px 0 8px; }
+.level-expression-panel__result-title { display: flex; align-items: center; gap: 10px; }
+.level-expression-panel__speech {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(143, 45, 37, 0.28);
+  border-radius: 50%;
+  color: #7f211b;
+  background: #fff8ec;
+  cursor: pointer;
+}
+.level-expression-panel__speech:hover { background: #f7e7d1; }
+.level-expression-panel__speech:focus-visible { outline: 3px solid rgba(177, 70, 51, 0.3); outline-offset: 2px; }
+.level-expression-panel__speech:disabled { opacity: 0.62; cursor: wait; }
+.level-expression-panel__speech[hidden] { display: none; }
 .level-expression-panel__result p { margin: 0; white-space: pre-wrap; line-height: 1.75; }
 .level-expression-panel__fallback { display: block; margin-top: 10px; color: #756656; }
 .level-expression-panel__fallback[hidden] { display: none; }

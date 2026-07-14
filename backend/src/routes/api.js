@@ -7,6 +7,7 @@ import {
 } from "../services/levelsData.js";
 import { generateReflection } from "../services/reflect.js";
 import { generateLevelExpression } from "../services/expression.js";
+import { generateLevelSpeech } from "../services/speech.js";
 
 const router = Router();
 
@@ -94,6 +95,15 @@ router.post("/levels/:id/expression", aiRateLimit, async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message || "表达生成失败" });
+  }
+});
+
+router.post("/levels/:id/speech", aiRateLimit, async (req, res) => {
+  try {
+    const result = await generateLevelSpeech(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 502).json({ error: err.message || "语音生成失败" });
   }
 });
 
