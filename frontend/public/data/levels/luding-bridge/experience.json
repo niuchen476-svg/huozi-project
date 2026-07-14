@@ -8,16 +8,24 @@
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "luding-bridge", "helpAfterFailures": 2, "assistAfterFailures": 3 },
     "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
     "expression": {
-      "enabled": false,
-      "estimatedSeconds": 0,
-      "prompt": "",
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "请用一封短电报，报告你在极限时间里完成了什么、最想记住什么。",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "action-telegram",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成行动电报",
+      "suggestions": [
+        { "id": "race-against-time", "label": "和时间赛跑" },
+        { "id": "cross-under-fire", "label": "在危险中打开通道" },
+        { "id": "team-cooperation", "label": "突击与支援共同完成" }
+      ],
+      "fallbackTemplates": [
+        { "title": "行动电报", "text": "通道已经打开。真正需要报告的，不只是抵达，更是队伍在极限时间里彼此支援、继续向前。" },
+        { "title": "来自桥头的报告", "text": "我们争取到的不只是几分钟，而是整支队伍继续前进的机会。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 140 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

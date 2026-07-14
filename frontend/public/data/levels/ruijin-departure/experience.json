@@ -32,17 +32,25 @@
       "items": []
     },
     "expression": {
-      "enabled": false,
-      "estimatedSeconds": 0,
-      "prompt": "",
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "离开熟悉的根据地时，你最想为这次出发留下一句什么？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "departure-note",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
+      "outputLabel": "AI整理成出发札记",
+      "suggestions": [
+        { "id": "carry-necessities", "label": "带上真正需要的东西" },
+        { "id": "leave-home", "label": "告别熟悉的家园" },
+        { "id": "protect-team", "label": "为队伍保存力量" }
+      ],
+      "fallbackTemplates": [
+        { "title": "出发前的一句话", "text": "我带走的不只是行装，也是一份必须继续走下去的责任。" },
+        { "title": "离开瑞金", "text": "出发意味着告别，也意味着为了保存力量，主动走向一条未知的路。" }
+      ],
       "ai": {
-        "enabled": false,
+        "enabled": true,
         "provider": "mimo",
         "maxOutputCharacters": 160
       }

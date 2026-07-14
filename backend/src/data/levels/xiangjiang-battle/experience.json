@@ -8,16 +8,24 @@
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "xiangjiang-battle", "helpAfterFailures": 2, "assistAfterFailures": 3 },
     "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
     "expression": {
-      "enabled": false,
-      "estimatedSeconds": 0,
-      "prompt": "",
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "如果这段经历成为博物馆里的一件展品，你会怎样说明突破背后的代价？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "exhibit-caption",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成展品说明",
+      "suggestions": [
+        { "id": "time-cost", "label": "抢时间也要付出代价" },
+        { "id": "covering-force", "label": "有人留下掩护队伍" },
+        { "id": "not-easy-victory", "label": "突破不等于轻松胜利" }
+      ],
+      "fallbackTemplates": [
+        { "title": "渡江之后", "text": "这件展品提醒我，突破封锁线不是轻松的胜利，而是许多人用行动换来的继续前进。" },
+        { "title": "被时间追赶的人", "text": "路线图上的一条线，背后是抢时间、守阵地和承受损失的真实选择。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

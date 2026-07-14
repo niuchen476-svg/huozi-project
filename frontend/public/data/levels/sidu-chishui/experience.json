@@ -8,16 +8,24 @@
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "sidu-chishui", "helpAfterFailures": 2, "assistAfterFailures": 3 },
     "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
     "expression": {
-      "enabled": false,
-      "estimatedSeconds": 0,
-      "prompt": "",
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "四次改变路线之后，你怎样理解“主动”并不等于一直向前？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "route-reflection",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成路线思考",
+      "suggestions": [
+        { "id": "change-is-active", "label": "改变方向也是主动" },
+        { "id": "mislead-pursuit", "label": "让追兵判断失误" },
+        { "id": "create-opportunity", "label": "在运动中创造机会" }
+      ],
+      "fallbackTemplates": [
+        { "title": "路线不是直线", "text": "我发现，主动不是只朝一个方向冲，而是根据局面改变路线，为队伍重新创造机会。" },
+        { "title": "四次渡河之后", "text": "地图上的往返并非犹豫，它让追击者难以判断，也让队伍获得新的空间。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

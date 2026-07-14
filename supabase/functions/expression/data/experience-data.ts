@@ -105,7 +105,21 @@ export const EXPERIENCES: Record<string, any> = {
         "maxCharacters": 80,
         "sourceSelectionLimit": 3,
         "outputType": "exhibition-guide",
-        "outputLabel": "AI根据玩家选择生成",
+        "outputLabel": "AI整理成展台讲解",
+        "suggestions": [
+          {
+            "id": "many-routes-one-goal",
+            "label": "不同道路汇向同一目标"
+          },
+          {
+            "id": "unity-after-hardship",
+            "label": "艰难之后重新会合"
+          },
+          {
+            "id": "arrival-new-start",
+            "label": "抵达也是新的出发"
+          }
+        ],
         "fallbackTemplates": [
           {
             "title": "从抵达到会合",
@@ -213,19 +227,42 @@ export const EXPERIENCES: Record<string, any> = {
         "items": []
       },
       "expression": {
-        "enabled": false,
-        "estimatedSeconds": 0,
-        "prompt": "",
+        "enabled": true,
+        "estimatedSeconds": 25,
+        "prompt": "请用一封短电报，报告你在极限时间里完成了什么、最想记住什么。",
         "inputMode": "choice-plus-short-text",
-        "maxCharacters": 40,
+        "maxCharacters": 60,
         "sourceSelectionLimit": 1,
         "outputType": "action-telegram",
-        "outputLabel": "AI根据玩家选择生成",
-        "fallbackTemplates": [],
+        "outputLabel": "AI整理成行动电报",
+        "suggestions": [
+          {
+            "id": "race-against-time",
+            "label": "和时间赛跑"
+          },
+          {
+            "id": "cross-under-fire",
+            "label": "在危险中打开通道"
+          },
+          {
+            "id": "team-cooperation",
+            "label": "突击与支援共同完成"
+          }
+        ],
+        "fallbackTemplates": [
+          {
+            "title": "行动电报",
+            "text": "通道已经打开。真正需要报告的，不只是抵达，更是队伍在极限时间里彼此支援、继续向前。"
+          },
+          {
+            "title": "来自桥头的报告",
+            "text": "我们争取到的不只是几分钟，而是整支队伍继续前进的机会。"
+          }
+        ],
         "ai": {
-          "enabled": false,
+          "enabled": true,
           "provider": "mimo",
-          "maxOutputCharacters": 160
+          "maxOutputCharacters": 140
         }
       },
       "completion": {
@@ -289,17 +326,40 @@ export const EXPERIENCES: Record<string, any> = {
         "items": []
       },
       "expression": {
-        "enabled": false,
-        "estimatedSeconds": 0,
-        "prompt": "",
+        "enabled": true,
+        "estimatedSeconds": 25,
+        "prompt": "离开熟悉的根据地时，你最想为这次出发留下一句什么？",
         "inputMode": "choice-plus-short-text",
-        "maxCharacters": 40,
+        "maxCharacters": 60,
         "sourceSelectionLimit": 1,
         "outputType": "departure-note",
-        "outputLabel": "AI根据玩家选择生成",
-        "fallbackTemplates": [],
+        "outputLabel": "AI整理成出发札记",
+        "suggestions": [
+          {
+            "id": "carry-necessities",
+            "label": "带上真正需要的东西"
+          },
+          {
+            "id": "leave-home",
+            "label": "告别熟悉的家园"
+          },
+          {
+            "id": "protect-team",
+            "label": "为队伍保存力量"
+          }
+        ],
+        "fallbackTemplates": [
+          {
+            "title": "出发前的一句话",
+            "text": "我带走的不只是行装，也是一份必须继续走下去的责任。"
+          },
+          {
+            "title": "离开瑞金",
+            "text": "出发意味着告别，也意味着为了保存力量，主动走向一条未知的路。"
+          }
+        ],
         "ai": {
-          "enabled": false,
+          "enabled": true,
           "provider": "mimo",
           "maxOutputCharacters": 160
         }
@@ -365,17 +425,40 @@ export const EXPERIENCES: Record<string, any> = {
         "items": []
       },
       "expression": {
-        "enabled": false,
-        "estimatedSeconds": 0,
-        "prompt": "",
+        "enabled": true,
+        "estimatedSeconds": 25,
+        "prompt": "四次改变路线之后，你怎样理解“主动”并不等于一直向前？",
         "inputMode": "choice-plus-short-text",
-        "maxCharacters": 40,
+        "maxCharacters": 60,
         "sourceSelectionLimit": 1,
         "outputType": "route-reflection",
-        "outputLabel": "AI根据玩家选择生成",
-        "fallbackTemplates": [],
+        "outputLabel": "AI整理成路线思考",
+        "suggestions": [
+          {
+            "id": "change-is-active",
+            "label": "改变方向也是主动"
+          },
+          {
+            "id": "mislead-pursuit",
+            "label": "让追兵判断失误"
+          },
+          {
+            "id": "create-opportunity",
+            "label": "在运动中创造机会"
+          }
+        ],
+        "fallbackTemplates": [
+          {
+            "title": "路线不是直线",
+            "text": "我发现，主动不是只朝一个方向冲，而是根据局面改变路线，为队伍重新创造机会。"
+          },
+          {
+            "title": "四次渡河之后",
+            "text": "地图上的往返并非犹豫，它让追击者难以判断，也让队伍获得新的空间。"
+          }
+        ],
         "ai": {
-          "enabled": false,
+          "enabled": true,
           "provider": "mimo",
           "maxOutputCharacters": 160
         }
@@ -441,17 +524,40 @@ export const EXPERIENCES: Record<string, any> = {
         "items": []
       },
       "expression": {
-        "enabled": false,
-        "estimatedSeconds": 0,
-        "prompt": "",
+        "enabled": true,
+        "estimatedSeconds": 25,
+        "prompt": "从一个具体的人、一件具体的事出发，你想把怎样的雪山草地记忆留下来？",
         "inputMode": "choice-plus-short-text",
-        "maxCharacters": 40,
+        "maxCharacters": 60,
         "sourceSelectionLimit": 1,
         "outputType": "memory-card",
-        "outputLabel": "AI根据玩家选择生成",
-        "fallbackTemplates": [],
+        "outputLabel": "AI整理成长征记忆卡",
+        "suggestions": [
+          {
+            "id": "specific-person",
+            "label": "记住一个具体的人"
+          },
+          {
+            "id": "share-supplies",
+            "label": "在匮乏中彼此照顾"
+          },
+          {
+            "id": "hard-choice",
+            "label": "记住艰难的取舍"
+          }
+        ],
+        "fallbackTemplates": [
+          {
+            "title": "雪地里的一件小事",
+            "text": "宏大的路程也由具体的人和选择组成。我想记住困境中仍愿意照顾同伴的那一刻。"
+          },
+          {
+            "title": "留下这段记忆",
+            "text": "雪山草地不只是艰苦两个字，它也是人在匮乏中作出取舍、彼此支撑的具体故事。"
+          }
+        ],
         "ai": {
-          "enabled": false,
+          "enabled": true,
           "provider": "mimo",
           "maxOutputCharacters": 160
         }
@@ -517,17 +623,40 @@ export const EXPERIENCES: Record<string, any> = {
         "items": []
       },
       "expression": {
-        "enabled": false,
-        "estimatedSeconds": 0,
-        "prompt": "",
+        "enabled": true,
+        "estimatedSeconds": 25,
+        "prompt": "如果这段经历成为博物馆里的一件展品，你会怎样说明突破背后的代价？",
         "inputMode": "choice-plus-short-text",
-        "maxCharacters": 40,
+        "maxCharacters": 60,
         "sourceSelectionLimit": 1,
         "outputType": "exhibit-caption",
-        "outputLabel": "AI根据玩家选择生成",
-        "fallbackTemplates": [],
+        "outputLabel": "AI整理成展品说明",
+        "suggestions": [
+          {
+            "id": "time-cost",
+            "label": "抢时间也要付出代价"
+          },
+          {
+            "id": "covering-force",
+            "label": "有人留下掩护队伍"
+          },
+          {
+            "id": "not-easy-victory",
+            "label": "突破不等于轻松胜利"
+          }
+        ],
+        "fallbackTemplates": [
+          {
+            "title": "渡江之后",
+            "text": "这件展品提醒我，突破封锁线不是轻松的胜利，而是许多人用行动换来的继续前进。"
+          },
+          {
+            "title": "被时间追赶的人",
+            "text": "路线图上的一条线，背后是抢时间、守阵地和承受损失的真实选择。"
+          }
+        ],
         "ai": {
-          "enabled": false,
+          "enabled": true,
           "provider": "mimo",
           "maxOutputCharacters": 160
         }
@@ -593,17 +722,40 @@ export const EXPERIENCES: Record<string, any> = {
         "items": []
       },
       "expression": {
-        "enabled": false,
-        "estimatedSeconds": 0,
-        "prompt": "",
+        "enabled": true,
+        "estimatedSeconds": 25,
+        "prompt": "作为会议记录员，你会怎样写下这次讨论真正改变了什么？",
         "inputMode": "choice-plus-short-text",
-        "maxCharacters": 40,
+        "maxCharacters": 60,
         "sourceSelectionLimit": 1,
         "outputType": "meeting-summary",
-        "outputLabel": "AI根据玩家选择生成",
-        "fallbackTemplates": [],
+        "outputLabel": "AI整理成会议记录",
+        "suggestions": [
+          {
+            "id": "review-command",
+            "label": "先总结错误指挥"
+          },
+          {
+            "id": "change-direction",
+            "label": "重新判断前进方向"
+          },
+          {
+            "id": "take-initiative",
+            "label": "把主动权拿回来"
+          }
+        ],
+        "fallbackTemplates": [
+          {
+            "title": "记录纸上的转折",
+            "text": "我记录下的，不只是一次意见变化，而是在危急时刻重新总结问题、寻找正确方向。"
+          },
+          {
+            "title": "会议之后",
+            "text": "转折并非一句口号，它来自对失败的复盘，也来自重新作出判断的勇气。"
+          }
+        ],
         "ai": {
-          "enabled": false,
+          "enabled": true,
           "provider": "mimo",
           "maxOutputCharacters": 160
         }

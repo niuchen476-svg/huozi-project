@@ -173,7 +173,8 @@ function validateExperience(level, experience) {
   }
 
   const expression = experience.phases?.expression || {};
-  if (!expression.outputType?.trim() || expression.outputLabel !== "AI根据玩家选择生成") {
+  const outputLabel = typeof expression.outputLabel === "string" ? expression.outputLabel.trim() : "";
+  if (!expression.outputType?.trim() || !outputLabel.startsWith("AI") || outputLabel.length > 40) {
     addIssue(`${prefix} 缺少合法的 AI 表达输出类型或标签`);
   }
   if (!isNumberInRange(expression.maxCharacters, 1, 80)) {
@@ -192,11 +193,26 @@ function validateExperience(level, experience) {
       addIssue(`${prefix} 的 AI 固定兜底模板必须包含 title 和 text`);
     }
   }
+  if (expression.enabled) {
+    if (!expression.prompt?.trim()) addIssue(`${prefix} 启用 AI 表达后必须填写本关问题`);
+    if (!Array.isArray(expression.suggestions)
+      || expression.suggestions.length < 2
+      || !hasUniqueIds(expression.suggestions)
+      || expression.suggestions.some((item) => !item?.label?.trim())) {
+      addIssue(`${prefix} 启用 AI 表达后至少需要 2 个带唯一 id 的表达角度`);
+    }
+    if (!expression.fallbackTemplates?.length) {
+      addIssue(`${prefix} 启用 AI 表达后至少需要 1 个离线兜底模板`);
+    }
+  }
   const ai = expression.ai || {};
   if (typeof ai.enabled !== "boolean"
     || ai.provider !== "mimo"
     || !isNumberInRange(ai.maxOutputCharacters, 1, 160)) {
     addIssue(`${prefix} 缺少合法的 MiMo 表达配置`);
+  }
+  if (expression.enabled && ai.enabled !== true) {
+    addIssue(`${prefix} 已启用表达面板但未启用 MiMo 优先生成`);
   }
   if (ai.enabled && !expression.enabled) {
     addIssue(`${prefix} 启用 MiMo 前必须先启用表达阶段`);

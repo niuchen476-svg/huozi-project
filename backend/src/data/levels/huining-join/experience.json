@@ -95,7 +95,12 @@
       "maxCharacters": 80,
       "sourceSelectionLimit": 3,
       "outputType": "exhibition-guide",
-      "outputLabel": "AI根据玩家选择生成",
+      "outputLabel": "AI整理成展台讲解",
+      "suggestions": [
+        { "id": "many-routes-one-goal", "label": "不同道路汇向同一目标" },
+        { "id": "unity-after-hardship", "label": "艰难之后重新会合" },
+        { "id": "arrival-new-start", "label": "抵达也是新的出发" }
+      ],
       "fallbackTemplates": [
         {
           "title": "从抵达到会合",

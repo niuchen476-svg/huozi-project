@@ -8,16 +8,24 @@
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "snow-grassland", "helpAfterFailures": 2, "assistAfterFailures": 3 },
     "sources": { "enabled": true, "estimatedSeconds": 0, "items": [] },
     "expression": {
-      "enabled": false,
-      "estimatedSeconds": 0,
-      "prompt": "",
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "从一个具体的人、一件具体的事出发，你想把怎样的雪山草地记忆留下来？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "memory-card",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成长征记忆卡",
+      "suggestions": [
+        { "id": "specific-person", "label": "记住一个具体的人" },
+        { "id": "share-supplies", "label": "在匮乏中彼此照顾" },
+        { "id": "hard-choice", "label": "记住艰难的取舍" }
+      ],
+      "fallbackTemplates": [
+        { "title": "雪地里的一件小事", "text": "宏大的路程也由具体的人和选择组成。我想记住困境中仍愿意照顾同伴的那一刻。" },
+        { "title": "留下这段记忆", "text": "雪山草地不只是艰苦两个字，它也是人在匮乏中作出取舍、彼此支撑的具体故事。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },
