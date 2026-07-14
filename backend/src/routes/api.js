@@ -16,6 +16,9 @@ const RATE_LIMIT_MAX = 12; // 每个 IP 每 10 分钟最多提交这么多次（
 const aiRequestLog = new Map();
 
 function aiRateLimit(req, res, next) {
+  // 本地展馆调试会频繁重玩关卡，回环请求不计入公网计费限流。
+  if (["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(req.ip)) return next();
+
   const key = req.ip;
   const now = Date.now();
   const recent = (aiRequestLog.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);

@@ -8,6 +8,7 @@ import {
   MIMO_EXPRESSION_TIMEOUT_MS,
   normalizeExpressionInput,
 } from "./expression.js";
+import { callMimo, getMimoChatCompletionsUrl } from "./mimoClient.js";
 
 const config = {
   outputType: "exhibit-caption",
@@ -88,4 +89,30 @@ test("在线表达为推理模型预留足够的输出额度和响应时间", as
   assert.equal(MIMO_EXPRESSION_MAX_TOKENS, 4096);
   assert.equal(MIMO_EXPRESSION_TIMEOUT_MS, 60000);
   assert.equal(result.usedFallback, false);
+});
+
+test("MiMo 表达使用关闭深度思考的 Chat Completions 协议", async () => {
+  let requestUrl;
+  let requestBody;
+  const value = await callMimo({
+    system: "只返回 JSON",
+    prompt: "生成一段表达",
+    apiBase: "https://token-plan-cn.xiaomimimo.com/anthropic",
+    apiKey: "test-key",
+    model: "mimo-v2.5",
+    fetchImpl: async (url, options) => {
+      requestUrl = url;
+      requestBody = JSON.parse(options.body);
+      return new Response(JSON.stringify({
+        choices: [{ message: { content: '{"title":"团结","text":"我看见队伍汇聚。"}' } }],
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    },
+  });
+
+  assert.equal(getMimoChatCompletionsUrl("https://token-plan-cn.xiaomimimo.com/anthropic"),
+    "https://token-plan-cn.xiaomimimo.com/v1/chat/completions");
+  assert.equal(requestUrl, "https://token-plan-cn.xiaomimimo.com/v1/chat/completions");
+  assert.deepEqual(requestBody.thinking, { type: "disabled" });
+  assert.equal(requestBody.messages[0].role, "system");
+  assert.match(value, /队伍汇聚/);
 });
