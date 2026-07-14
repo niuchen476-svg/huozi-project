@@ -4,8 +4,8 @@ import { loadLevelExperience } from "./levelsData.js";
 export const MAX_EXPRESSION_INPUT = 80;
 export const MAX_EXPRESSION_SOURCES = 3;
 export const MAX_EXPRESSION_CHOICES = 6;
-export const MIMO_EXPRESSION_MAX_TOKENS = 2048;
-export const MIMO_EXPRESSION_TIMEOUT_MS = 30000;
+export const MIMO_EXPRESSION_MAX_TOKENS = 4096;
+export const MIMO_EXPRESSION_TIMEOUT_MS = 60000;
 const OUTPUT_LABEL = "AI根据玩家选择生成";
 const SAFE_ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/;
 

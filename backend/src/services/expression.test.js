@@ -85,7 +85,7 @@ test("在线表达为推理模型预留足够的输出额度和响应时间", as
 
   assert.equal(request.maxTokens, MIMO_EXPRESSION_MAX_TOKENS);
   assert.equal(request.timeoutMs, MIMO_EXPRESSION_TIMEOUT_MS);
-  assert.equal(MIMO_EXPRESSION_MAX_TOKENS, 2048);
-  assert.equal(MIMO_EXPRESSION_TIMEOUT_MS, 30000);
+  assert.equal(MIMO_EXPRESSION_MAX_TOKENS, 4096);
+  assert.equal(MIMO_EXPRESSION_TIMEOUT_MS, 60000);
   assert.equal(result.usedFallback, false);
 });
