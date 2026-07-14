@@ -106,7 +106,14 @@
           "text": "这些碎片记录了不同的考验。它们在会宁汇成同一个答案：抵达不是结束，团结起来才能走向新的任务。"
         }
       ],
-      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 },
+      "artwork": {
+        "enabled": true,
+        "provider": "aihubmix",
+        "model": "qwen-image-2.0",
+        "nameMaxCharacters": 20,
+        "fallbackImage": "assets/levels/huining-join/reunion-painting.png"
+      }
     },
     "completion": {
       "enabled": true,

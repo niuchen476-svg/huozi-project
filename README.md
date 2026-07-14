@@ -108,3 +108,25 @@ GitHub Pages 静态模式下不使用 Express 后端，而是调用 Supabase Edg
 npm run sync-data
 npm run deploy-reflect
 ```
+
+## 会宁 AI 画作
+
+会宁数字展台在 MiMo 生成讲解文字后，可以继续调用 AIHubMix 的 `qwen-image-2.0` 创作 16:9 画作，并由浏览器在右下角叠加玩家署名。其他六关不启用生图。
+
+本地密钥保存在 `backend/.env`，可运行 `scripts/configure-aihubmix-key.ps1` 使用密码弹窗配置：
+
+```text
+AIHUBMIX_API_BASE=https://aihubmix.com/v1
+AIHUBMIX_API_KEY=...
+AIHUBMIX_IMAGE_MODEL=qwen-image-2.0
+AIHUBMIX_IMAGE_ENABLED=false
+AIHUBMIX_IMAGE_DAILY_LIMIT=1
+```
+
+开发时保持 `AIHUBMIX_IMAGE_ENABLED=false`，页面会使用固定纪念画面验证回退和署名，不产生生图费用。需要真实验收时再临时开启。真实请求不会自动重试，本地每日调用记录保存在被 Git 忽略的 `backend/storage/image-usage.json`。
+
+GitHub Pages 使用已部署的 Supabase `artwork` Edge Function。API Key 必须配置为 Supabase Secret，不能写入前端或提交 Git；上线前还需显式设置 `AIHUBMIX_IMAGE_ENABLED=true` 和合适的 `AIHUBMIX_IMAGE_DAILY_LIMIT`：
+
+```bash
+npm run deploy-artwork
+```

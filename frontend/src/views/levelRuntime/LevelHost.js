@@ -1,5 +1,5 @@
-import { fetchLevel, fetchLevelExperience, submitLevelExpression, submitLevelSpeech } from "../../api.js";
-import { markCompleted, resetLevelProgress } from "../../state.js";
+import { fetchLevel, fetchLevelExperience, submitLevelArtwork, submitLevelExpression, submitLevelSpeech } from "../../api.js";
+import { getHuiningShowcase, markCompleted, resetLevelProgress } from "../../state.js";
 import { showArchiveFragmentReward } from "../../archiveFragments.js";
 import { getLevelAdapter } from "./registry.js";
 import { assertLevelResult, LEVEL_STATUS } from "./protocol.js";
@@ -288,6 +288,14 @@ export class LevelHost {
         }
       },
       onSpeak: (text) => submitLevelSpeech(session.levelId, text),
+      onArtwork: session.levelId === "huining-join" ? (payload) => {
+        const showcase = getHuiningShowcase() || {};
+        return submitLevelArtwork(session.levelId, {
+          ...payload,
+          themeId: showcase.themeId,
+          fragmentIds: showcase.fragmentIds || [],
+        });
+      } : null,
       onComplete: async () => {
         session.expressionCompleted = true;
         const showedReward = await this.completeLevel(session, completionOptions);
