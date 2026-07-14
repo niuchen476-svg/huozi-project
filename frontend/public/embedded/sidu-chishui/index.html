@@ -313,14 +313,23 @@
         font-size: clamp(1.3rem, 5vw, 1.9rem);
         font-weight: 700;
         color: #fff6d6;
+        background: rgba(39, 48, 31, 0.94);
+        border: 1px solid rgba(186, 168, 92, 0.52);
+        border-left: 4px solid #baa85c;
+        border-radius: 7px;
         text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
         opacity: 0;
         transition: opacity 0.35s ease;
         pointer-events: none;
-        padding: 0 20px;
+        padding: 10px 20px;
       }
       .toast--show { opacity: 1; }
-      .toast--error { color: #f6b0a6; }
+      .toast--error {
+        color: #fff0e9;
+        background: rgba(66, 24, 20, 0.94);
+        border-color: rgba(214, 90, 73, 0.58);
+        border-left-color: #d65a49;
+      }
 
       /* ---------- 结束界面：与“飞夺泸定桥”一致的关卡页（档案卡 + 写感悟请 AI 赋诗） ---------- */
       .view-level {
@@ -679,6 +688,9 @@
         function showToast(text, isError, dur) {
           toast.textContent = text;
           toast.className = `toast toast--show${isError ? " toast--error" : ""}`;
+          toast.dataset.feedbackTone = isError ? "error" : "success";
+          toast.setAttribute("role", isError ? "alert" : "status");
+          toast.setAttribute("aria-live", isError ? "assertive" : "polite");
           clearTimeout(showToast._t);
           showToast._t = setTimeout(() => { toast.className = "toast"; }, dur || 1600);
         }

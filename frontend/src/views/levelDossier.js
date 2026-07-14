@@ -180,7 +180,7 @@ function attachSupplyChallenge(root, challenge, callbacks) {
     if (correct) {
       completeSpecialChallenge(root, challenge, callbacks);
     } else {
-      panel.innerHTML = `<p class="challenge-feedback challenge-feedback--error">${challenge.errorText}</p>`;
+      panel.innerHTML = `<p class="challenge-feedback challenge-feedback--error" data-level-feedback data-feedback-tone="error" role="alert">${challenge.errorText}</p>`;
     }
   }
 
@@ -250,7 +250,7 @@ function attachSequenceChallenge(root, challenge, callbacks) {
     if (correct) {
       completeSpecialChallenge(root, challenge, callbacks);
     } else {
-      panel.innerHTML = `<p class="challenge-feedback challenge-feedback--error">${challenge.errorText}</p>`;
+      panel.innerHTML = `<p class="challenge-feedback challenge-feedback--error" data-level-feedback data-feedback-tone="error" role="alert">${challenge.errorText}</p>`;
     }
   }
 

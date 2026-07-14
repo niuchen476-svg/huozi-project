@@ -302,7 +302,7 @@ export function renderStep(step, state) {
           <p>${state.level.location || "贵州遵义 · 遵义会议会址"}</p>
         </header>
         ${renderWorkspace(state)}
-        <p class="zunyi-feedback" aria-live="polite">${state.feedback}</p>
+        <p class="zunyi-feedback" data-level-feedback data-feedback-tone="${state.feedbackTone || "neutral"}" aria-live="polite">${state.feedback}</p>
       </section>
 
       <aside class="zunyi-note">

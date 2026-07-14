@@ -3,6 +3,7 @@ import {
   renderArchiveFragmentVisual,
 } from "../../../archiveFragments.js";
 import { saveHuiningShowcase } from "../../../state.js";
+import { applyLevelFeedback } from "../../levelRuntime/feedbackSystem.js";
 
 const ROUTES = [
   {
@@ -259,7 +260,7 @@ class HuiningJoinExperience {
           </div>
           <div class="huining-mission-panel__status" role="status" aria-live="polite">
             <strong data-route-count>已接入 0 / 3</strong>
-            <span data-route-message>先选择一支队伍。</span>
+            <span data-level-feedback data-feedback-tone="neutral" data-route-message>先选择一支队伍。</span>
           </div>
         </div>
         <div class="huining-map-table" aria-label="会师节点地图">
@@ -374,7 +375,7 @@ class HuiningJoinExperience {
   setRouteMessage(message, isError = false) {
     const target = this.root.querySelector("[data-route-message]");
     if (!target) return;
-    target.textContent = message;
+    applyLevelFeedback(target, { message, tone: isError ? "error" : "neutral" });
     target.classList.toggle("is-error", isError);
   }
 
@@ -411,7 +412,7 @@ class HuiningJoinExperience {
           </div>
           <div class="huining-timeline-actions">
             <button type="button" data-timeline-undo disabled>撤回上一步</button>
-            <p role="status" aria-live="polite" data-timeline-message>选择最早发生的节点。</p>
+            <p role="status" aria-live="polite" data-level-feedback data-feedback-tone="neutral" data-timeline-message>选择最早发生的节点。</p>
             <button class="huining-primary-button" type="button" data-timeline-confirm disabled>
               <span>确认会师进程</span><b aria-hidden="true">→</b>
             </button>
@@ -440,7 +441,7 @@ class HuiningJoinExperience {
     this.root.querySelector("[data-timeline-confirm]")?.addEventListener("click", () => this.confirmTimeline());
   }
 
-  updateTimelineUI(message = "") {
+  updateTimelineUI(message = "", tone = "neutral") {
     const slots = [...this.root.querySelectorAll("[data-timeline-slots] li")];
     slots.forEach((slot, index) => {
       const event = this.timelineEvents.find((item) => item.id === this.timelineOrder[index]);
@@ -460,7 +461,10 @@ class HuiningJoinExperience {
       confirm.querySelector("span").textContent = this.timelineAssisted ? "进入数字展台" : "确认会师进程";
     }
     const status = this.root.querySelector("[data-timeline-message]");
-    if (status) status.textContent = message || `已归位 ${this.timelineOrder.length} / ${this.timelineEvents.length}`;
+    if (status) applyLevelFeedback(status, {
+      message: message || `已归位 ${this.timelineOrder.length} / ${this.timelineEvents.length}`,
+      tone,
+    });
   }
 
   confirmTimeline() {
@@ -473,12 +477,12 @@ class HuiningJoinExperience {
     if (this.timelineAttempts >= 2) {
       this.timelineOrder = this.timelineEvents.map((event) => event.id);
       this.timelineAssisted = true;
-      this.updateTimelineUI("正确顺序已经标出：2日打开通道，9日会宁会合，22日将台堡会师，23日兴隆镇会合。");
+      this.updateTimelineUI("正确顺序已经标出：2日打开通道，9日会宁会合，22日将台堡会师，23日兴隆镇会合。", "assist");
       this.playTone(392, 0.1);
       return;
     }
     this.timelineOrder = [];
-    this.updateTimelineUI("时间和地点还未对齐。提示：先打开通道，再到会宁、将台堡和兴隆镇。");
+    this.updateTimelineUI("时间和地点还未对齐。提示：先打开通道，再到会宁、将台堡和兴隆镇。", "error");
     this.playTone(196, 0.08);
   }
 
@@ -498,7 +502,7 @@ class HuiningJoinExperience {
               </button>
             `).join("")}
           </div>
-          <div class="huining-showcase-status" role="status" aria-live="polite" data-showcase-message>
+          <div class="huining-showcase-status" role="status" aria-live="polite" data-level-feedback data-feedback-tone="neutral" data-showcase-message>
             ${collected.length ? `你已经带来 ${collected.length} 块历史碎片。` : "你还没有获得前六关碎片，本次将使用会师史料搭建基础展台。"}
           </div>
         </div>
@@ -582,7 +586,7 @@ class HuiningJoinExperience {
   setShowcaseMessage(message, isError = false) {
     const target = this.root.querySelector("[data-showcase-message]");
     if (!target) return;
-    target.textContent = message;
+    applyLevelFeedback(target, { message, tone: isError ? "error" : "neutral" });
     target.classList.toggle("is-error", isError);
   }
 

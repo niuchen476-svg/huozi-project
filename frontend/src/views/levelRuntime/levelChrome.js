@@ -6,6 +6,16 @@ const PHASES = Object.freeze([
   { id: "completion", number: "05", label: "完成本关" },
 ]);
 
+const LEVEL_ORDER = Object.freeze({
+  "ruijin-departure": 1,
+  "xiangjiang-battle": 2,
+  "zunyi-turn": 3,
+  "sidu-chishui": 4,
+  "luding-bridge": 5,
+  "snow-grassland": 6,
+  "huining-join": 7,
+});
+
 export function normalizeLevelPhase(value) {
   return PHASES.some((phase) => phase.id === value) ? value : "briefing";
 }
@@ -61,13 +71,23 @@ class LevelChrome {
     const identity = document.createElement("div");
     identity.className = "level-runtime-chrome__identity";
     const eyebrow = document.createElement("span");
-    const order = Number.isInteger(this.level.order)
-      ? `第 ${String(this.level.order).padStart(2, "0")} 关`
+    const levelOrder = Number.isInteger(this.level.order)
+      ? this.level.order
+      : LEVEL_ORDER[this.level.levelId];
+    const order = Number.isInteger(levelOrder)
+      ? `第 ${String(levelOrder).padStart(2, "0")} 关`
       : "历史关卡";
     eyebrow.textContent = `重走长征路 · ${order}`;
     const title = document.createElement("strong");
     title.textContent = this.level.title || "长征历史现场";
-    identity.append(eyebrow, title);
+    const task = document.createElement("small");
+    task.className = "level-runtime-chrome__task";
+    const taskQuestion = this.level.conflict || this.level.playerQuestion;
+    task.textContent = taskQuestion
+      ? `本关问题 · ${taskQuestion}`
+      : "本关问题 · 在行动中寻找历史依据";
+    task.title = task.textContent;
+    identity.append(eyebrow, title, task);
 
     this.progress = document.createElement("ol");
     this.progress.className = "level-runtime-chrome__progress";

@@ -211,13 +211,15 @@
   .options.locked .opt { pointer-events: none; }
 
   .feedback {
-    margin-top: 22px; min-height: 26px;
-    font-size: 16px; letter-spacing:.05em;
+    margin-top: 22px; min-height: 26px; padding: 10px 14px;
+    font-size: 16px; letter-spacing:.05em; font-weight: 650;
     opacity:0; transition: opacity .3s;
+    border: 1px solid rgba(208,163,72,.45); border-left: 4px solid #d0a348;
+    border-radius: 7px; background: rgba(57,43,20,.92);
   }
   .feedback.show { opacity:1; }
-  .feedback.ok { color:#8bd48e; }
-  .feedback.no { color:#ff8a80; }
+  .feedback.ok { color:#f4efd8; border-left-color:#baa85c; background:rgba(39,48,31,.94); }
+  .feedback.no { color:#fff0e9; border-left-color:#d65a49; background:rgba(66,24,20,.94); }
 
   /* ===== 章节标签 / 任务提示 ===== */
   .chapter {
@@ -533,12 +535,13 @@
   .pos-feedback {
     position: absolute; left: 50%; bottom: 86px; transform: translateX(-50%); z-index: 4;
     max-width: 74vw; text-align: center; font-size: 16px; letter-spacing: .04em;
-    padding: 8px 20px; background: rgba(26, 17, 11, .84); color: #ede4cd;
+    padding: 8px 20px; background: rgba(57,43,20,.92); color: #ede4cd;
+    border: 1px solid rgba(208,163,72,.45); border-left: 4px solid #d0a348; border-radius: 7px;
     opacity: 0; transition: opacity .3s;
   }
   .pos-feedback.show { opacity: 1; }
-  .pos-feedback.ok { color: #8bd48e; }
-  .pos-feedback.no { color: #ff8a80; }
+  .pos-feedback.ok { color:#f4efd8; border-left-color:#baa85c; background:rgba(39,48,31,.94); }
+  .pos-feedback.no { color:#fff0e9; border-left-color:#d65a49; background:rgba(66,24,20,.94); }
   @media (max-width: 640px) {
     .pos-layer .pos-opt { max-width: 130px; font-size: 12.5px; padding: 8px 10px; white-space: normal; }
   }

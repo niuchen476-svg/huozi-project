@@ -92,6 +92,16 @@
   white-space: nowrap;
 }
 
+.level-runtime-chrome__task {
+  overflow: hidden;
+  color: rgba(237, 220, 184, 0.72);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .level-runtime-chrome__progress {
   display: grid;
   grid-template-columns: repeat(5, minmax(70px, 1fr));
@@ -234,6 +244,10 @@
   .level-runtime-chrome__back em,
   .level-runtime-chrome__restart em,
   .level-runtime-chrome__identity span {
+    display: none;
+  }
+
+  .level-runtime-chrome__task {
     display: none;
   }
 

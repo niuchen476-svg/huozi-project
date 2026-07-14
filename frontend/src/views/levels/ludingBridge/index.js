@@ -57,8 +57,8 @@ export function renderBridgeAction(root, level) {
             <strong id="bridge-attack-arrow">→</strong>
             <small id="bridge-attack-help">向反方向躲避</small>
           </div>
-          <div class="bridge-caption" id="bridge-caption" hidden></div>
-          <div class="bridge-hint" id="bridge-hint" hidden></div>
+          <div class="bridge-caption" id="bridge-caption" data-level-feedback data-feedback-tone="neutral" hidden></div>
+          <div class="bridge-hint" id="bridge-hint" data-level-feedback data-feedback-tone="assist" hidden></div>
           <div class="bridge-controls" id="bridge-controls" hidden aria-label="过桥键盘">
             <button type="button" data-bridge-command="left" aria-label="向左躲">←</button>
             <button class="bridge-controls__advance" type="button" data-bridge-command="advance">前进</button>
