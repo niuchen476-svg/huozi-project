@@ -11,7 +11,7 @@ export const EXPERIENCES: Record<string, any> = {
       "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -188,10 +188,10 @@ export const EXPERIENCES: Record<string, any> = {
       "maxSeconds": 180
     },
     "sourceDrawer": {
-      "enabled": false,
+      "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -208,7 +208,7 @@ export const EXPERIENCES: Record<string, any> = {
         "assistAfterFailures": 3
       },
       "sources": {
-        "enabled": false,
+        "enabled": true,
         "estimatedSeconds": 0,
         "items": []
       },
@@ -264,10 +264,10 @@ export const EXPERIENCES: Record<string, any> = {
       "maxSeconds": 180
     },
     "sourceDrawer": {
-      "enabled": false,
+      "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -284,7 +284,7 @@ export const EXPERIENCES: Record<string, any> = {
         "assistAfterFailures": 3
       },
       "sources": {
-        "enabled": false,
+        "enabled": true,
         "estimatedSeconds": 0,
         "items": []
       },
@@ -340,10 +340,10 @@ export const EXPERIENCES: Record<string, any> = {
       "maxSeconds": 180
     },
     "sourceDrawer": {
-      "enabled": false,
+      "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -360,7 +360,7 @@ export const EXPERIENCES: Record<string, any> = {
         "assistAfterFailures": 3
       },
       "sources": {
-        "enabled": false,
+        "enabled": true,
         "estimatedSeconds": 0,
         "items": []
       },
@@ -416,10 +416,10 @@ export const EXPERIENCES: Record<string, any> = {
       "maxSeconds": 180
     },
     "sourceDrawer": {
-      "enabled": false,
+      "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -436,7 +436,7 @@ export const EXPERIENCES: Record<string, any> = {
         "assistAfterFailures": 3
       },
       "sources": {
-        "enabled": false,
+        "enabled": true,
         "estimatedSeconds": 0,
         "items": []
       },
@@ -492,10 +492,10 @@ export const EXPERIENCES: Record<string, any> = {
       "maxSeconds": 180
     },
     "sourceDrawer": {
-      "enabled": false,
+      "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -512,7 +512,7 @@ export const EXPERIENCES: Record<string, any> = {
         "assistAfterFailures": 3
       },
       "sources": {
-        "enabled": false,
+        "enabled": true,
         "estimatedSeconds": 0,
         "items": []
       },
@@ -568,10 +568,10 @@ export const EXPERIENCES: Record<string, any> = {
       "maxSeconds": 180
     },
     "sourceDrawer": {
-      "enabled": false,
+      "enabled": true,
       "title": "本关史料",
       "position": "top-right",
-      "maxItems": 8
+      "maxItems": 12
     },
     "phases": {
       "briefing": {
@@ -588,7 +588,7 @@ export const EXPERIENCES: Record<string, any> = {
         "assistAfterFailures": 3
       },
       "sources": {
-        "enabled": false,
+        "enabled": true,
         "estimatedSeconds": 0,
         "items": []
       },

@@ -122,7 +122,7 @@ function validateExperience(level, experience) {
     || drawer.position !== "top-right"
     || !Number.isInteger(drawer.maxItems)
     || drawer.maxItems < 1
-    || drawer.maxItems > 8) {
+    || drawer.maxItems > 12) {
     addIssue(`${prefix} 缺少合法的右上角本关史料配置`);
   }
 
@@ -164,10 +164,11 @@ function validateExperience(level, experience) {
   }
   const activeSources = (sources || []).filter((source) => source.activeInGameplay);
   if (activeSources.length > 3) addIssue(`${prefix} 参与玩法的核心史料不能超过 3 份`);
-  if (experience.phases?.sources?.enabled && activeSources.length < 1) {
+  const hasSourceContent = Array.isArray(sources) && sources.length > 0;
+  if (hasSourceContent && experience.phases?.sources?.enabled && activeSources.length < 1) {
     addIssue(`${prefix} 启用史料阶段后至少需要 1 份参与玩法的史料`);
   }
-  if (drawer.enabled && !(sources || []).some((source) => source.visibleInSourceDrawer)) {
+  if (hasSourceContent && drawer.enabled && !(sources || []).some((source) => source.visibleInSourceDrawer)) {
     addIssue(`${prefix} 启用本关史料入口后至少需要 1 份可见史料`);
   }
 

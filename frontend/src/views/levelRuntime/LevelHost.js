@@ -178,7 +178,10 @@ export class LevelHost {
   mountSourceDrawer(session) {
     const config = session.experience?.sourceDrawer;
     const sources = session.experience?.phases?.sources?.items || [];
-    if (!config?.enabled || !sources.some((source) => source.visibleInSourceDrawer === true)) return;
+    // The entry is part of the shared level shell. Keep it available even when
+    // a level's source list is still being curated so every level has the same
+    // predictable top-right affordance.
+    if (!config?.enabled) return;
     session.sourceDrawer = createLevelSourceDrawer({
       title: config.title,
       sources,
