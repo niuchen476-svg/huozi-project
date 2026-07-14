@@ -7,8 +7,8 @@ export default {
   id: "huining-join",
   preload() {
     return Promise.all([
+      preloadImage("assets/levels/huining-join/victory-meeting-painting.png"),
       preloadImage("assets/levels/huining-join/huining-site-xinhua.jpg"),
-      preloadImage("assets/levels/huining-join/huining-hall-xinhua.jpg"),
     ]);
   },
   async play(context) {
