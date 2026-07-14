@@ -4,7 +4,7 @@ import { withSupabase } from "@supabase/server";
 const MIMO_API_BASE = Deno.env.get("MIMO_API_BASE");
 const MIMO_API_KEY = Deno.env.get("MIMO_API_KEY");
 const MAX_SPEECH_CHARACTERS = 220;
-const MAX_SPEECH_CHUNK_CHARACTERS = 42;
+const MAX_SPEECH_CHUNK_CHARACTERS = 32;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 20;
 const rateLog = new Map<string, number[]>();
@@ -54,7 +54,7 @@ function splitSpeechText(text: string) {
 async function synthesize(text: string) {
   if (!MIMO_API_BASE || !MIMO_API_KEY) throw new Error("MiMo TTS 服务尚未配置");
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 60000);
+  const timer = setTimeout(() => controller.abort(), 30000);
   try {
     const response = await fetch(getEndpoint(MIMO_API_BASE), {
       method: "POST",

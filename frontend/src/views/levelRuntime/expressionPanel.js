@@ -56,6 +56,7 @@ class LevelExpressionPanel {
     this.audio = null;
     this.audioUrls = [];
     this.audioIndex = 0;
+    this.utterance = null;
     this.spokenText = "";
     this.controller = new AbortController();
     this.element = this.build();
@@ -212,6 +213,16 @@ class LevelExpressionPanel {
   }
 
   async handleSpeech() {
+    if (this.utterance && "speechSynthesis" in window) {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+        this.setSpeechButtonState("playing");
+      } else {
+        window.speechSynthesis.pause();
+        this.setSpeechButtonState("ready");
+      }
+      return;
+    }
     if (this.audio && !this.audio.paused) {
       this.audio.pause();
       this.setSpeechButtonState("ready");
@@ -238,11 +249,35 @@ class LevelExpressionPanel {
       this.audioIndex = 0;
       await this.playAudioSegment();
     } catch (err) {
-      this.showError(err.message || "朗读失败，请稍后重试");
-      this.setSpeechButtonState("ready");
+      if (!this.speakWithBrowser()) {
+        this.showError(err.message || "朗读失败，请稍后重试");
+        this.setSpeechButtonState("ready");
+      }
     } finally {
       this.speechButton.disabled = false;
     }
+  }
+
+  speakWithBrowser() {
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") return false;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(this.spokenText);
+    utterance.lang = "zh-CN";
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.onend = () => {
+      this.utterance = null;
+      this.setSpeechButtonState("ready");
+    };
+    utterance.onerror = () => {
+      this.utterance = null;
+      this.setSpeechButtonState("ready");
+      this.showError("朗读失败，请稍后重试");
+    };
+    this.utterance = utterance;
+    window.speechSynthesis.speak(utterance);
+    this.setSpeechButtonState("playing");
+    return true;
   }
 
   async playAudioSegment() {
@@ -269,6 +304,10 @@ class LevelExpressionPanel {
   }
 
   stopAudio(clearCache = false) {
+    if (this.utterance && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      this.utterance = null;
+    }
     if (this.audio) {
       this.audio.pause();
       this.audio.removeAttribute("src");
