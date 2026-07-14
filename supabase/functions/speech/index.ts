@@ -4,6 +4,7 @@ import { withSupabase } from "@supabase/server";
 const MIMO_API_BASE = Deno.env.get("MIMO_API_BASE");
 const MIMO_API_KEY = Deno.env.get("MIMO_API_KEY");
 const MAX_SPEECH_CHARACTERS = 220;
+const MAX_SPEECH_CHUNK_CHARACTERS = 42;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 20;
 const rateLog = new Map<string, number[]>();
@@ -26,6 +27,28 @@ function getEndpoint(apiBase: string) {
   return normalized.endsWith("/v1")
     ? `${normalized}/chat/completions`
     : `${normalized}/v1/chat/completions`;
+}
+
+function splitSpeechText(text: string) {
+  const sentences = text.match(/[^。！？；!?;]+[。！？；!?;]?/g) ?? [];
+  const chunks: string[] = [];
+  let current = "";
+  for (const sentence of sentences) {
+    if (sentence.length > MAX_SPEECH_CHUNK_CHARACTERS) {
+      if (current) chunks.push(current);
+      current = "";
+      for (let index = 0; index < sentence.length; index += MAX_SPEECH_CHUNK_CHARACTERS) {
+        chunks.push(sentence.slice(index, index + MAX_SPEECH_CHUNK_CHARACTERS));
+      }
+    } else if (!current || current.length + sentence.length <= MAX_SPEECH_CHUNK_CHARACTERS) {
+      current += sentence;
+    } else {
+      chunks.push(current);
+      current = sentence;
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks.filter(Boolean);
 }
 
 async function synthesize(text: string) {
@@ -86,7 +109,17 @@ export default {
     }
 
     try {
-      return json(await synthesize(text));
+      const chunks = splitSpeechText(text);
+      const audioParts = await Promise.all(chunks.map((chunk) => synthesize(chunk)));
+      const audioDataUrls = audioParts.map((part) => part.audioDataUrl);
+      return json({
+        audioDataUrl: audioDataUrls[0],
+        audioDataUrls,
+        mimeType: "audio/mpeg",
+        voice: "白桦",
+        segmentCount: audioDataUrls.length,
+        usedFallback: false,
+      });
     } catch (err) {
       console.error(`[speech] ${(err as Error).message}`);
       return json({ error: "语音生成失败，请稍后重试" }, 502);

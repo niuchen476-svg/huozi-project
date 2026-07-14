@@ -9,7 +9,7 @@ import {
   normalizeExpressionInput,
 } from "./expression.js";
 import { callMimo, callMimoTts, getMimoChatCompletionsUrl } from "./mimoClient.js";
-import { generateLevelSpeech } from "./speech.js";
+import { generateLevelSpeech, splitSpeechText } from "./speech.js";
 
 const config = {
   outputType: "exhibit-caption",
@@ -148,8 +148,17 @@ test("关卡朗读接口返回浏览器可直接播放的音频地址", async ()
 
   assert.deepEqual(value, {
     audioDataUrl: "data:audio/mpeg;base64,YWJj",
+    audioDataUrls: ["data:audio/mpeg;base64,YWJj"],
     mimeType: "audio/mpeg",
     voice: "白桦",
+    segmentCount: 1,
     usedFallback: false,
   });
+});
+
+test("较长表达按自然标点切段并限制单段长度", () => {
+  const chunks = splitSpeechText("第一段讲述马蹄裹布奔袭会宁。第二段讲述不同队伍终于会合；第三段说明会师也是新的起点。", 20);
+  assert.ok(chunks.length >= 3);
+  assert.ok(chunks.every((chunk) => chunk.length <= 20));
+  assert.equal(chunks.join(""), "第一段讲述马蹄裹布奔袭会宁。第二段讲述不同队伍终于会合；第三段说明会师也是新的起点。");
 });

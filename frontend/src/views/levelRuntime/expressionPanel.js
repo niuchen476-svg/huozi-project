@@ -54,6 +54,8 @@ class LevelExpressionPanel {
     this.onSpeak = typeof onSpeak === "function" ? onSpeak : null;
     this.onComplete = typeof onComplete === "function" ? onComplete : () => {};
     this.audio = null;
+    this.audioUrls = [];
+    this.audioIndex = 0;
     this.spokenText = "";
     this.controller = new AbortController();
     this.element = this.build();
@@ -68,7 +70,7 @@ class LevelExpressionPanel {
   }
 
   destroy() {
-    this.stopAudio();
+    this.stopAudio(true);
     this.controller.abort();
     this.element.remove();
   }
@@ -197,7 +199,7 @@ class LevelExpressionPanel {
   }
 
   showResult(value) {
-    this.stopAudio();
+    this.stopAudio(true);
     this.spokenText = value.text || "";
     this.result.querySelector(".level-expression-panel__label").textContent = value.label || "AI根据玩家选择生成";
     this.result.querySelector("h3").textContent = value.title || "我的表达";
@@ -220,16 +222,21 @@ class LevelExpressionPanel {
       this.setSpeechButtonState("playing");
       return;
     }
+    if (this.audioUrls.length) {
+      await this.playAudioSegment();
+      return;
+    }
 
     this.speechButton.disabled = true;
     this.setSpeechButtonState("loading");
     try {
       const value = await this.onSpeak(this.spokenText);
-      if (!value?.audioDataUrl) throw new Error("语音接口没有返回音频");
-      this.audio = new Audio(value.audioDataUrl);
-      this.audio.addEventListener("ended", () => this.setSpeechButtonState("ready"), { once: false });
-      await this.audio.play();
-      this.setSpeechButtonState("playing");
+      this.audioUrls = Array.isArray(value?.audioDataUrls) && value.audioDataUrls.length
+        ? value.audioDataUrls
+        : value?.audioDataUrl ? [value.audioDataUrl] : [];
+      if (!this.audioUrls.length) throw new Error("语音接口没有返回音频");
+      this.audioIndex = 0;
+      await this.playAudioSegment();
     } catch (err) {
       this.showError(err.message || "朗读失败，请稍后重试");
       this.setSpeechButtonState("ready");
@@ -238,12 +245,38 @@ class LevelExpressionPanel {
     }
   }
 
-  stopAudio() {
-    if (!this.audio) return;
-    this.audio.pause();
-    this.audio.removeAttribute("src");
-    this.audio.load?.();
-    this.audio = null;
+  async playAudioSegment() {
+    const source = this.audioUrls[this.audioIndex];
+    if (!source) {
+      this.audio = null;
+      this.audioIndex = 0;
+      this.setSpeechButtonState("ready");
+      return;
+    }
+    this.audio = new Audio(source);
+    this.audio.addEventListener("ended", () => {
+      this.audio = null;
+      this.audioIndex += 1;
+      if (this.audioIndex < this.audioUrls.length) {
+        this.playAudioSegment().catch((err) => this.showError(err.message || "朗读失败，请稍后重试"));
+      } else {
+        this.audioIndex = 0;
+        this.setSpeechButtonState("ready");
+      }
+    }, { once: true });
+    await this.audio.play();
+    this.setSpeechButtonState("playing");
+  }
+
+  stopAudio(clearCache = false) {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.removeAttribute("src");
+      this.audio.load?.();
+      this.audio = null;
+    }
+    this.audioIndex = 0;
+    if (clearCache) this.audioUrls = [];
   }
 
   setSpeechButtonState(state) {
