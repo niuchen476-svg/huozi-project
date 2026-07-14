@@ -7,6 +7,7 @@ import {
 } from "../services/levelsData.js";
 import { generateReflection } from "../services/reflect.js";
 import { generateLevelExpression } from "../services/expression.js";
+import { generateLevelSpeech } from "../services/speech.js";
 
 const router = Router();
 
@@ -16,6 +17,9 @@ const RATE_LIMIT_MAX = 12; // 每个 IP 每 10 分钟最多提交这么多次（
 const aiRequestLog = new Map();
 
 function aiRateLimit(req, res, next) {
+  // 本地展馆调试会频繁重玩关卡，回环请求不计入公网计费限流。
+  if (["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(req.ip)) return next();
+
   const key = req.ip;
   const now = Date.now();
   const recent = (aiRequestLog.get(key) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
@@ -91,6 +95,15 @@ router.post("/levels/:id/expression", aiRateLimit, async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message || "表达生成失败" });
+  }
+});
+
+router.post("/levels/:id/speech", aiRateLimit, async (req, res) => {
+  try {
+    const result = await generateLevelSpeech(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 502).json({ error: err.message || "语音生成失败" });
   }
 });
 

@@ -429,3 +429,9 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/expression/deno.json"
 entrypoint = "./functions/expression/index.ts"
+
+[functions.speech]
+enabled = true
+verify_jwt = false
+import_map = "./functions/speech/deno.json"
+entrypoint = "./functions/speech/index.ts"

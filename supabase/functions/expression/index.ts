@@ -109,24 +109,30 @@ async function callMimo(prompt: string) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), MIMO_EXPRESSION_TIMEOUT_MS);
   try {
-    const response = await fetch(`${MIMO_API_BASE}/v1/messages`, {
+    const normalizedBase = MIMO_API_BASE.replace(/\/$/, "").replace(/\/anthropic$/, "");
+    const endpoint = normalizedBase.endsWith("/v1")
+      ? `${normalizedBase}/chat/completions`
+      : `${normalizedBase}/v1/chat/completions`;
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-api-key": MIMO_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "api-key": MIMO_API_KEY,
       },
       body: JSON.stringify({
         model: MIMO_MODEL,
         max_tokens: MIMO_EXPRESSION_MAX_TOKENS,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: prompt }],
+        thinking: { type: "disabled" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: prompt },
+        ],
       }),
       signal: controller.signal,
     });
     if (!response.ok) throw new Error(`MiMo API error ${response.status}`);
     const data = await response.json();
-    const raw = data.content?.find((block: any) => block.type === "text")?.text;
+    const raw = data.choices?.[0]?.message?.content;
     if (!raw) throw new Error("MiMo 返回内容为空");
     const start = raw.indexOf("{");
     const end = raw.lastIndexOf("}");
