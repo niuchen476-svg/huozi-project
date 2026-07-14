@@ -8,12 +8,12 @@ export function renderHomeView(root) {
       <div class="view-home__scrim"></div>
       <div class="view-home__content">
         <header class="map-header">
-          <p class="map-header__eyebrow">数字图书馆馆员任务档案</p>
+          <p class="map-header__eyebrow">少年长征史料互动体验</p>
           <h1>重走长征路</h1>
-          <p class="map-header__subtitle">重建长征关键路线 · 用史料检验你的每一次判断</p>
+          <p class="map-header__subtitle">纪念长征胜利90周年 · 用史料让小朋友重建长征关键路线</p>
         </header>
         <div class="home-actions">
-          <button type="button" id="join-army" class="home-cta">加入红军，一起重温长征路</button>
+          <button type="button" id="join-army" class="home-cta">加入红军，一起重走长征路</button>
         </div>
       </div>
     </div>
