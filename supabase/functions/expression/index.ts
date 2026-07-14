@@ -6,6 +6,8 @@ const MIMO_API_BASE = Deno.env.get("MIMO_API_BASE");
 const MIMO_API_KEY = Deno.env.get("MIMO_API_KEY");
 const MIMO_MODEL = Deno.env.get("MIMO_MODEL") ?? "mimo-v2.5";
 const OUTPUT_LABEL = "AI根据玩家选择生成";
+const MIMO_EXPRESSION_MAX_TOKENS = 4096;
+const MIMO_EXPRESSION_TIMEOUT_MS = 60000;
 const SAFE_ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 30;
@@ -105,7 +107,7 @@ ${sourceContext}
 async function callMimo(prompt: string) {
   if (!MIMO_API_BASE || !MIMO_API_KEY) throw new Error("MiMo 服务尚未配置");
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10000);
+  const timer = setTimeout(() => controller.abort(), MIMO_EXPRESSION_TIMEOUT_MS);
   try {
     const response = await fetch(`${MIMO_API_BASE}/v1/messages`, {
       method: "POST",
@@ -116,7 +118,7 @@ async function callMimo(prompt: string) {
       },
       body: JSON.stringify({
         model: MIMO_MODEL,
-        max_tokens: 320,
+        max_tokens: MIMO_EXPRESSION_MAX_TOKENS,
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: prompt }],
       }),

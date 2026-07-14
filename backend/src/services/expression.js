@@ -4,6 +4,8 @@ import { loadLevelExperience } from "./levelsData.js";
 export const MAX_EXPRESSION_INPUT = 80;
 export const MAX_EXPRESSION_SOURCES = 3;
 export const MAX_EXPRESSION_CHOICES = 6;
+export const MIMO_EXPRESSION_MAX_TOKENS = 4096;
+export const MIMO_EXPRESSION_TIMEOUT_MS = 60000;
 const OUTPUT_LABEL = "AI根据玩家选择生成";
 const SAFE_ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/;
 
@@ -124,7 +126,12 @@ export async function generateLevelExpression(levelId, body, { callModel = callM
   try {
     const prompt = buildExpressionPrompt(experience, input, approvedSources);
     const result = parseMimoResult(
-      await callModel({ system: SYSTEM_PROMPT, prompt, maxTokens: 320, timeoutMs: 10000 }),
+      await callModel({
+        system: SYSTEM_PROMPT,
+        prompt,
+        maxTokens: MIMO_EXPRESSION_MAX_TOKENS,
+        timeoutMs: MIMO_EXPRESSION_TIMEOUT_MS,
+      }),
       config.ai.maxOutputCharacters
     );
     return { ...result, sourceIds: input.sourceIds, label: OUTPUT_LABEL, usedFallback: false };
