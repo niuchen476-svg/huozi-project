@@ -69,6 +69,7 @@
 .level-expression-panel__result h3 { margin: 6px 0 8px; }
 .level-expression-panel__result p { margin: 0; white-space: pre-wrap; line-height: 1.75; }
 .level-expression-panel__fallback { display: block; margin-top: 10px; color: #756656; }
+.level-expression-panel__fallback[hidden] { display: none; }
 
 @media (max-width: 520px) {
   .level-expression-panel { width: calc(100vw - 20px); margin: 10px auto; border-radius: 14px; }

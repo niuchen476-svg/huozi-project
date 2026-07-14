@@ -191,7 +191,7 @@ class LevelExpressionPanel {
     this.result.querySelector(".level-expression-panel__label").textContent = value.label || "AI根据玩家选择生成";
     this.result.querySelector("h3").textContent = value.title || "我的表达";
     this.result.querySelector("p").textContent = value.text || "";
-    this.result.querySelector(".level-expression-panel__fallback").hidden = !value.usedFallback;
+    this.result.querySelector(".level-expression-panel__fallback").hidden = value.usedFallback !== true;
     this.result.hidden = false;
     this.result.focus?.({ preventScroll: true });
   }
