@@ -56,10 +56,10 @@
   "fragment": {
     "id": "iron-chain-fragment",
     "name": "铁索碎片",
-    "model": null,
-    "fallbackImage": "/assets/fragments/fragment-luding-chain.png",
+    "model": "/assets/fragments/models/luding-chain.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/luding-chain.webp",
     "legacyVisualId": "iron-chain-fragment",
-    "historicalMeaning": "",
+    "historicalMeaning": "以象征性数字铁索表现泸定桥的险境与突击队打开北上通道的行动。",
     "sourceIds": [],
     "narrationAudioId": null,
     "hotspots": []

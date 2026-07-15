@@ -572,7 +572,7 @@ class HuiningJoinExperience {
         const wrapper = document.createElement("div");
         wrapper.className = "huining-showcase-fragment";
         wrapper.style.setProperty("--slot", String(index));
-        wrapper.innerHTML = `${renderArchiveFragmentVisual(fragment)}<span>${fragment.name}</span>`;
+        wrapper.innerHTML = `${renderArchiveFragmentVisual(fragment, { interactive3d: true })}<span>${fragment.name}</span>`;
         pedestal.appendChild(wrapper);
       });
     }

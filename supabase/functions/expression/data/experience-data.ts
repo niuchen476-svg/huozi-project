@@ -327,10 +327,10 @@ export const EXPERIENCES: Record<string, any> = {
     "fragment": {
       "id": "iron-chain-fragment",
       "name": "铁索碎片",
-      "model": null,
-      "fallbackImage": "/assets/fragments/fragment-luding-chain.png",
+      "model": "/assets/fragments/models/luding-chain.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/luding-chain.webp",
       "legacyVisualId": "iron-chain-fragment",
-      "historicalMeaning": "",
+      "historicalMeaning": "以象征性数字铁索表现泸定桥的险境与突击队打开北上通道的行动。",
       "sourceIds": [],
       "narrationAudioId": null,
       "hotspots": []
@@ -444,11 +444,11 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "departure-map-fragment",
-      "name": "出发碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "夜行马灯",
+      "model": "/assets/fragments/models/ruijin-lantern.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/ruijin-lantern.webp",
       "legacyVisualId": "departure-map-fragment",
-      "historicalMeaning": "",
+      "historicalMeaning": "以象征性数字马灯表现夜间集结、守密与从中央苏区出发。",
       "sourceIds": [],
       "narrationAudioId": null,
       "hotspots": []
@@ -562,11 +562,11 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "chishui-maneuver-fragment",
-      "name": "赤水碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "行军罗盘",
+      "model": "/assets/fragments/models/sidu-compass.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/sidu-compass.webp",
       "legacyVisualId": "chishui-maneuver-fragment",
-      "historicalMeaning": "",
+      "historicalMeaning": "以象征性数字罗盘表现四次渡河中的路线调整与机动作战。",
       "sourceIds": [],
       "narrationAudioId": null,
       "hotspots": []
@@ -680,11 +680,11 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "snow-grass-fragment",
-      "name": "雪草碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "信念红星",
+      "model": "/assets/fragments/models/snow-star.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/snow-star.webp",
       "legacyVisualId": "snow-grass-fragment",
-      "historicalMeaning": "",
+      "historicalMeaning": "以象征性数字红星表现雪山草地极端环境中的坚持与互助；后续可替换为人物事件相关模型。",
       "sourceIds": [],
       "narrationAudioId": null,
       "hotspots": []
@@ -798,11 +798,11 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "river-crossing-fragment",
-      "name": "渡江碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "渡江军号",
+      "model": "/assets/fragments/models/xiangjiang-bugle.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/xiangjiang-bugle.webp",
       "legacyVisualId": "river-crossing-fragment",
-      "historicalMeaning": "",
+      "historicalMeaning": "以象征性数字军号表现湘江战场上的号令、抢渡与队伍协同。",
       "sourceIds": [],
       "narrationAudioId": null,
       "hotspots": []
@@ -916,11 +916,11 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "direction-fragment",
-      "name": "方向碎片",
-      "model": null,
-      "fallbackImage": "/assets/fragments/fragment-zunyi-direction.png",
+      "name": "会议钢笔",
+      "model": "/assets/fragments/models/zunyi-pen.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/zunyi-pen.webp",
       "legacyVisualId": "direction-fragment",
-      "historicalMeaning": "",
+      "historicalMeaning": "以象征性数字钢笔表现会议记录、总结问题与重新作出战略判断。",
       "sourceIds": [],
       "narrationAudioId": null,
       "hotspots": []

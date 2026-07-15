@@ -91,11 +91,11 @@
   },
   "fragment": {
     "id": "departure-map-fragment",
-    "name": "出发碎片",
-    "model": null,
-    "fallbackImage": null,
+    "name": "夜行马灯",
+    "model": "/assets/fragments/models/ruijin-lantern.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/ruijin-lantern.webp",
     "legacyVisualId": "departure-map-fragment",
-    "historicalMeaning": "",
+    "historicalMeaning": "以象征性数字马灯表现夜间集结、守密与从中央苏区出发。",
     "sourceIds": [],
     "narrationAudioId": null,
     "hotspots": []

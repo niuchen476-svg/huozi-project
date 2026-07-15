@@ -55,11 +55,11 @@
   "audio": { "ambience": [], "narration": [], "effects": [], "completionMusic": null },
   "fragment": {
     "id": "chishui-maneuver-fragment",
-    "name": "赤水碎片",
-    "model": null,
-    "fallbackImage": null,
+    "name": "行军罗盘",
+    "model": "/assets/fragments/models/sidu-compass.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/sidu-compass.webp",
     "legacyVisualId": "chishui-maneuver-fragment",
-    "historicalMeaning": "",
+    "historicalMeaning": "以象征性数字罗盘表现四次渡河中的路线调整与机动作战。",
     "sourceIds": [],
     "narrationAudioId": null,
     "hotspots": []

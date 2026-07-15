@@ -55,11 +55,11 @@
   "audio": { "ambience": [], "narration": [], "effects": [], "completionMusic": null },
   "fragment": {
     "id": "direction-fragment",
-    "name": "方向碎片",
-    "model": null,
-    "fallbackImage": "/assets/fragments/fragment-zunyi-direction.png",
+    "name": "会议钢笔",
+    "model": "/assets/fragments/models/zunyi-pen.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/zunyi-pen.webp",
     "legacyVisualId": "direction-fragment",
-    "historicalMeaning": "",
+    "historicalMeaning": "以象征性数字钢笔表现会议记录、总结问题与重新作出战略判断。",
     "sourceIds": [],
     "narrationAudioId": null,
     "hotspots": []

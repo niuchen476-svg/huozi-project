@@ -55,11 +55,11 @@
   "audio": { "ambience": [], "narration": [], "effects": [], "completionMusic": null },
   "fragment": {
     "id": "snow-grass-fragment",
-    "name": "雪草碎片",
-    "model": null,
-    "fallbackImage": null,
+    "name": "信念红星",
+    "model": "/assets/fragments/models/snow-star.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/snow-star.webp",
     "legacyVisualId": "snow-grass-fragment",
-    "historicalMeaning": "",
+    "historicalMeaning": "以象征性数字红星表现雪山草地极端环境中的坚持与互助；后续可替换为人物事件相关模型。",
     "sourceIds": [],
     "narrationAudioId": null,
     "hotspots": []

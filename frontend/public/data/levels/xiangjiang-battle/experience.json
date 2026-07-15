@@ -55,11 +55,11 @@
   "audio": { "ambience": [], "narration": [], "effects": [], "completionMusic": null },
   "fragment": {
     "id": "river-crossing-fragment",
-    "name": "渡江碎片",
-    "model": null,
-    "fallbackImage": null,
+    "name": "渡江军号",
+    "model": "/assets/fragments/models/xiangjiang-bugle.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/xiangjiang-bugle.webp",
     "legacyVisualId": "river-crossing-fragment",
-    "historicalMeaning": "",
+    "historicalMeaning": "以象征性数字军号表现湘江战场上的号令、抢渡与队伍协同。",
     "sourceIds": [],
     "narrationAudioId": null,
     "hotspots": []
