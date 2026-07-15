@@ -2,22 +2,53 @@
   "schemaVersion": 2,
   "levelId": "zunyi-turn",
   "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
-  "sourceDrawer": { "enabled": false, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "zunyi-turn", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": false, "estimatedSeconds": 0, "items": [] },
-    "expression": {
-      "enabled": false,
+    "sources": {
+      "enabled": true,
       "estimatedSeconds": 0,
-      "prompt": "",
+      "items": [
+        {
+          "id": "source-zunyi-related-manuscript",
+          "title": "遵义会议相关手稿影印件",
+          "type": "会议史料手稿",
+          "date": "1935年1月前后",
+          "creator": "具体作者待史实审核",
+          "summary": "手写材料保留了会议相关记录形成时的原始形态，可用于区分后来的历史叙述与当时留下的文字材料。",
+          "plainExplanation": "理解遵义转折，既要看会议作出的判断，也要关注这些判断怎样被记录、整理和保存下来。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体题名、作者与馆藏待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/zunyi-turn/sources/zunyi-manuscript-feishu.jpg",
+          "imageAlt": "遵义会议相关手写史料影印图",
+          "imageCaption": "飞书资料中的遵义会议相关手稿；在正式展陈前需核对具体题名、作者、日期和馆藏。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
+    "expression": {
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "作为会议记录员，你会怎样写下这次讨论真正改变了什么？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "meeting-summary",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成会议记录",
+      "suggestions": [
+        { "id": "review-command", "label": "先总结错误指挥" },
+        { "id": "change-direction", "label": "重新判断前进方向" },
+        { "id": "take-initiative", "label": "把主动权拿回来" }
+      ],
+      "fallbackTemplates": [
+        { "title": "记录纸上的转折", "text": "我记录下的，不只是一次意见变化，而是在危急时刻重新总结问题、寻找正确方向。" },
+        { "title": "会议之后", "text": "转折并非一句口号，它来自对失败的复盘，也来自重新作出判断的勇气。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

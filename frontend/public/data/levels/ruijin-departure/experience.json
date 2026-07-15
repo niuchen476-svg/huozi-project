@@ -7,10 +7,10 @@
     "maxSeconds": 180
   },
   "sourceDrawer": {
-    "enabled": false,
+    "enabled": true,
     "title": "本关史料",
     "position": "top-right",
-    "maxItems": 8
+    "maxItems": 12
   },
   "phases": {
     "briefing": {
@@ -27,22 +27,49 @@
       "assistAfterFailures": 3
     },
     "sources": {
-      "enabled": false,
+      "enabled": true,
       "estimatedSeconds": 0,
-      "items": []
+      "items": [
+        {
+          "id": "source-ruijin-action-schedule",
+          "title": "《野战军十月十日至二十日行动日程表》",
+          "type": "行动日程手稿影印件",
+          "date": "1934年10月9日",
+          "creator": "革命军事委员会",
+          "summary": "表格按日期记录中央红军战略转移初期的行动安排，让“从瑞金出发”落到连续、具体的行军部署中。",
+          "plainExplanation": "离开中央苏区并不是一次简单启程，而是需要按时间、路线和部队协同组织的军事行动。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/ruijin-departure/sources/ruijin-action-schedule-feishu.jpg",
+          "imageAlt": "野战军十月十日至二十日行动日程表手稿影印图",
+          "imageCaption": "飞书资料标注：1934年10月9日行动日程表原始手稿；题名、馆藏与授权状态待项目审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
     },
     "expression": {
-      "enabled": false,
-      "estimatedSeconds": 0,
-      "prompt": "",
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "离开熟悉的根据地时，你最想为这次出发留下一句什么？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "departure-note",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
+      "outputLabel": "AI整理成出发札记",
+      "suggestions": [
+        { "id": "carry-necessities", "label": "带上真正需要的东西" },
+        { "id": "leave-home", "label": "告别熟悉的家园" },
+        { "id": "protect-team", "label": "为队伍保存力量" }
+      ],
+      "fallbackTemplates": [
+        { "title": "出发前的一句话", "text": "我带走的不只是行装，也是一份必须继续走下去的责任。" },
+        { "title": "离开瑞金", "text": "出发意味着告别，也意味着为了保存力量，主动走向一条未知的路。" }
+      ],
       "ai": {
-        "enabled": false,
+        "enabled": true,
         "provider": "mimo",
         "maxOutputCharacters": 160
       }

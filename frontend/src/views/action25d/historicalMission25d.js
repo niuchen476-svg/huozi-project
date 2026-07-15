@@ -7,6 +7,7 @@ import {
   renderStory,
   renderTimeline,
 } from "./historicalMissionUi.js";
+import { applyLevelFeedback } from "../levelRuntime/feedbackSystem.js";
 
 export function renderHistoricalMission25d(root, level, config) {
   if (!config?.scenes?.length) return Promise.resolve();
@@ -42,7 +43,7 @@ export function renderHistoricalMission25d(root, level, config) {
             <aside class="historical-mission__story" id="historical-story" hidden></aside>
             <div class="historical-mission__hotspots" id="historical-hotspots"></div>
             <section class="historical-mission__task" id="historical-task" hidden></section>
-            <div class="historical-mission__feedback" id="historical-feedback" hidden></div>
+            <div class="historical-mission__feedback" id="historical-feedback" data-level-feedback data-feedback-tone="neutral" hidden></div>
             <div class="historical-mission__overlay" id="historical-overlay" hidden></div>
 
             <section class="historical-mission__intro" id="historical-intro">
@@ -96,6 +97,10 @@ export function renderHistoricalMission25d(root, level, config) {
     function startMission() {
       if (!introOpen) return;
       introOpen = false;
+      nodes.stage.dispatchEvent(new CustomEvent("levelruntime:phase", {
+        bubbles: true,
+        detail: { phase: "gameplay" },
+      }));
       nodes.intro.remove();
       window.scrollTo({ top: 0, behavior: "auto" });
       nodes.topbar.hidden = false;
@@ -199,9 +204,8 @@ export function renderHistoricalMission25d(root, level, config) {
     }
 
     function report(text, tone = "neutral", duration = 1700) {
-      nodes.feedback.textContent = text;
       nodes.feedback.className = `historical-mission__feedback historical-mission__feedback--${tone}`;
-      nodes.feedback.hidden = false;
+      applyLevelFeedback(nodes.feedback, { message: text, tone });
       clearTimeout(feedbackTimer);
       feedbackTimer = setTimeout(() => {
         nodes.feedback.hidden = true;

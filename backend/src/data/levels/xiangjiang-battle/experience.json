@@ -2,22 +2,53 @@
   "schemaVersion": 2,
   "levelId": "xiangjiang-battle",
   "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
-  "sourceDrawer": { "enabled": false, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "xiangjiang-battle", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": false, "estimatedSeconds": 0, "items": [] },
-    "expression": {
-      "enabled": false,
+    "sources": {
+      "enabled": true,
       "estimatedSeconds": 0,
-      "prompt": "",
+      "items": [
+        {
+          "id": "source-xiangjiang-operation-map",
+          "title": "全州、兴安方向作战部署图",
+          "type": "作战部署图影印件",
+          "date": "1934年11月25日前后",
+          "creator": "红军总部相关作战机关",
+          "summary": "手绘部署图呈现全州、兴安一带的道路、地域与行动方向，为理解湘江战役中的渡江窗口和阻击压力提供空间线索。",
+          "plainExplanation": "地图上的路线和位置关系说明，突破湘江不仅取决于勇气，也取决于部队能否在有限时间内协同通过。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体题名与馆藏待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/xiangjiang-battle/sources/xiangjiang-operation-map-feishu.jpg",
+          "imageAlt": "湘江战役全州兴安方向手绘作战部署图",
+          "imageCaption": "飞书资料标注：1934年11月25日前后全州、兴安方向作战部署材料；具体题名与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
+    "expression": {
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "如果这段经历成为博物馆里的一件展品，你会怎样说明突破背后的代价？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "exhibit-caption",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成展品说明",
+      "suggestions": [
+        { "id": "time-cost", "label": "抢时间也要付出代价" },
+        { "id": "covering-force", "label": "有人留下掩护队伍" },
+        { "id": "not-easy-victory", "label": "突破不等于轻松胜利" }
+      ],
+      "fallbackTemplates": [
+        { "title": "渡江之后", "text": "这件展品提醒我，突破封锁线不是轻松的胜利，而是许多人用行动换来的继续前进。" },
+        { "title": "被时间追赶的人", "text": "路线图上的一条线，背后是抢时间、守阵地和承受损失的真实选择。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

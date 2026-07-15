@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "levelId": "huining-join",
   "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
-  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": {
       "enabled": true,
@@ -84,6 +84,24 @@
           "activeInGameplay": false,
           "visibleInSourceDrawer": true,
           "availableForAiExpression": true
+        },
+        {
+          "id": "source-huining-campaign-plan",
+          "title": "《通庄静会战役计划》原件",
+          "type": "战役计划影印件",
+          "date": "1936年9月28日",
+          "creator": "朱德、张国焘签发（飞书资料标注）",
+          "summary": "会师前夕形成的战役计划展示了部队在通渭、庄浪、静宁、会宁一带的行动部署，为理解会师为何发生在这一战略区域提供材料。",
+          "plainExplanation": "三大主力会合并非偶然相遇，而是在敌军围堵和北上部署中逐步形成的战略结果。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/huining-join/sources/huining-campaign-plan-feishu.png",
+          "imageAlt": "通庄静会战役计划文书原件照片",
+          "imageCaption": "飞书资料标注：1936年9月28日《通庄静会战役计划》原件；馆藏与授权状态待审核。",
+          "activeInGameplay": false,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
         }
       ]
     },
@@ -95,7 +113,12 @@
       "maxCharacters": 80,
       "sourceSelectionLimit": 3,
       "outputType": "exhibition-guide",
-      "outputLabel": "AI根据玩家选择生成",
+      "outputLabel": "AI整理成展台讲解",
+      "suggestions": [
+        { "id": "many-routes-one-goal", "label": "不同道路汇向同一目标" },
+        { "id": "unity-after-hardship", "label": "艰难之后重新会合" },
+        { "id": "arrival-new-start", "label": "抵达也是新的出发" }
+      ],
       "fallbackTemplates": [
         {
           "title": "从抵达到会合",

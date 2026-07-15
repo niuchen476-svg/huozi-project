@@ -11,9 +11,40 @@ const OUTPUT_TITLES = {
   "exhibition-guide": "我的展台讲解",
 };
 
+const OUTPUT_ACTIONS = {
+  "departure-note": "生成出发札记",
+  "exhibit-caption": "生成展品说明",
+  "meeting-summary": "生成会议记录",
+  "route-reflection": "生成路线思考",
+  "action-telegram": "生成行动电报",
+  "memory-card": "生成记忆卡",
+  "exhibition-guide": "生成展台讲解",
+};
+
+const OUTPUT_PLACEHOLDERS = {
+  "departure-note": "写一句出发前最想留下的话",
+  "exhibit-caption": "写下你希望观众看懂的代价",
+  "meeting-summary": "写下你认为会议改变的关键",
+  "route-reflection": "写下你对路线变化的理解",
+  "action-telegram": "用一句短报告写下行动与感受",
+  "memory-card": "从一个人或一件事写起",
+  "exhibition-guide": "写下你的展台最想告诉观众什么",
+};
+
 export function getExpressionSources(experience) {
   return (experience?.phases?.sources?.items || [])
     .filter((source) => source.availableForAiExpression === true);
+}
+
+export function getExpressionChoices(experience, choices = []) {
+  const runtimeChoices = Array.isArray(choices)
+    ? choices.filter((choice) => choice?.id && choice?.label)
+    : [];
+  if (runtimeChoices.length) return runtimeChoices;
+  const suggestions = experience?.phases?.expression?.suggestions;
+  return Array.isArray(suggestions)
+    ? suggestions.filter((choice) => choice?.id && choice?.label)
+    : [];
 }
 
 export function createExpressionPayload({ selectedSourceIds = [], selectedChoiceIds = [], userText = "", config = {} }) {
@@ -51,7 +82,7 @@ class LevelExpressionPanel {
     this.experience = experience || {};
     this.config = this.experience.phases?.expression || {};
     this.sources = getExpressionSources(this.experience);
-    this.choices = Array.isArray(choices) ? choices : [];
+    this.choices = getExpressionChoices(this.experience, choices);
     this.onSubmit = typeof onSubmit === "function" ? onSubmit : null;
     this.onSpeak = typeof onSpeak === "function" ? onSpeak : null;
     this.onArtwork = typeof onArtwork === "function" ? onArtwork : null;
@@ -87,12 +118,13 @@ class LevelExpressionPanel {
   build() {
     const section = document.createElement("section");
     section.className = "level-expression-panel";
+    section.dataset.outputType = this.config.outputType || "free-expression";
     section.setAttribute("aria-labelledby", "level-expression-title");
     section.innerHTML = `
       <div class="level-expression-panel__heading">
         <p class="level-expression-panel__eyebrow">我的表达</p>
         <h2 id="level-expression-title">${this.escape(this.config.prompt || "这一关，你最想留下什么？")}</h2>
-        <p>选择本关材料，也可以写一句自己的话。AI 只帮助整理，不替你作决定。</p>
+        <p>${this.escape(this.config.guidance || "选择一个表达角度，也可以写一句自己的话。AI 只帮助整理，不替你作决定。")}</p>
       </div>
       <form class="level-expression-panel__form">
         <fieldset class="level-expression-panel__sources" ${this.sources.length ? "" : "hidden"}>
@@ -100,14 +132,14 @@ class LevelExpressionPanel {
           <div class="level-expression-panel__chips"></div>
         </fieldset>
         <fieldset class="level-expression-panel__choices" ${this.choices.length ? "" : "hidden"}>
-          <legend>带上你的选择</legend>
+          <legend>选择一个表达角度</legend>
           <div class="level-expression-panel__choice-list"></div>
         </fieldset>
-        <label class="level-expression-panel__text-label" for="level-expression-input">我想说</label>
-        <textarea id="level-expression-input" rows="3" maxlength="${this.maxCharacters}" placeholder="用一句话写下你的判断或感受"></textarea>
+        <label class="level-expression-panel__text-label" for="level-expression-input">${this.escape(this.config.textLabel || "我想说")}</label>
+        <textarea id="level-expression-input" rows="3" maxlength="${this.maxCharacters}" placeholder="${this.escape(this.config.placeholder || OUTPUT_PLACEHOLDERS[this.config.outputType] || "用一句话写下你的判断或感受")}"></textarea>
         <div class="level-expression-panel__counter" aria-live="polite"><span>0</span> / ${this.maxCharacters}</div>
         <p class="level-expression-panel__error" role="alert" hidden></p>
-        <button class="level-expression-panel__submit" type="submit">生成我的表达</button>
+        <button class="level-expression-panel__submit" type="submit">${this.escape(this.config.submitLabel || OUTPUT_ACTIONS[this.config.outputType] || "生成我的表达")}</button>
       </form>
       <article class="level-expression-panel__result" aria-live="polite" hidden>
         <span class="level-expression-panel__label"></span>
@@ -126,6 +158,7 @@ class LevelExpressionPanel {
     this.submitButton = section.querySelector("button[type=submit]");
     this.result = section.querySelector(".level-expression-panel__result");
     this.speechButton = section.querySelector(".level-expression-panel__speech");
+    this.submitLabel = this.submitButton.textContent;
     this.renderSources(section.querySelector(".level-expression-panel__chips"));
     this.renderChoices(section.querySelector(".level-expression-panel__choice-list"));
 
@@ -204,7 +237,7 @@ class LevelExpressionPanel {
       this.showError(err.message || "生成失败，请稍后重试");
     } finally {
       this.submitButton.disabled = false;
-      this.submitButton.textContent = "重新生成";
+      this.submitButton.textContent = `重新${this.submitLabel}`;
     }
   }
 

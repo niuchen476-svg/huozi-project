@@ -3,6 +3,7 @@ dist/
 .env
 .DS_Store
 *.log
+backend/storage/
 supabase_db_password.txt
 .supabase
 backend/storage/images/*

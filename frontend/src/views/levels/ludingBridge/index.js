@@ -57,8 +57,8 @@ export function renderBridgeAction(root, level) {
             <strong id="bridge-attack-arrow">→</strong>
             <small id="bridge-attack-help">向反方向躲避</small>
           </div>
-          <div class="bridge-caption" id="bridge-caption" hidden></div>
-          <div class="bridge-hint" id="bridge-hint" hidden></div>
+          <div class="bridge-caption" id="bridge-caption" data-level-feedback data-feedback-tone="neutral" hidden></div>
+          <div class="bridge-hint" id="bridge-hint" data-level-feedback data-feedback-tone="assist" hidden></div>
           <div class="bridge-controls" id="bridge-controls" hidden aria-label="过桥键盘">
             <button type="button" data-bridge-command="left" aria-label="向左躲">←</button>
             <button class="bridge-controls__advance" type="button" data-bridge-command="advance">前进</button>
@@ -75,7 +75,7 @@ export function renderBridgeAction(root, level) {
               <figcaption>史料线索：桥面木板被拆后，突击队必须面对“只剩铁索”的险境。</figcaption>
             </figure>
             <p class="history-intro__text">${level.scenario}</p>
-            <button type="button" id="history-intro-start">开始行动</button>
+            <button type="button" id="history-intro-start" data-level-phase="gameplay">开始行动</button>
             <button class="bridge-video-bubble" type="button" id="bridge-video-open">点击查看相关视频</button>
           </div>
 

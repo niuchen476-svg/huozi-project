@@ -30,7 +30,7 @@ export function renderIntro(state) {
         <p class="history-intro__text">
           遵义会议是在第五次反“围剿”失败和长征初期严重受挫后召开的中共中央政治局扩大会议。会议集中总结军事指挥上的问题，批评博古、李德等人的错误军事指挥，增选毛泽东为中央政治局常委，并调整了中央军事领导。它使党和红军在极端危急的局面中开始重新掌握主动，成为长征和中国革命的重要转折。
         </p>
-        <button type="button" id="history-intro-start" data-next-step>开始记录</button>
+        <button type="button" id="history-intro-start" data-next-step data-level-phase="gameplay">开始记录</button>
         <button
           class="zunyi-video-bubble"
           type="button"
@@ -302,7 +302,7 @@ export function renderStep(step, state) {
           <p>${state.level.location || "贵州遵义 · 遵义会议会址"}</p>
         </header>
         ${renderWorkspace(state)}
-        <p class="zunyi-feedback" aria-live="polite">${state.feedback}</p>
+        <p class="zunyi-feedback" data-level-feedback data-feedback-tone="${state.feedbackTone || "neutral"}" aria-live="polite">${state.feedback}</p>
       </section>
 
       <aside class="zunyi-note">

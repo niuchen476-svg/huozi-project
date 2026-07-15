@@ -2,22 +2,53 @@
   "schemaVersion": 2,
   "levelId": "snow-grassland",
   "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
-  "sourceDrawer": { "enabled": false, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "snow-grassland", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": false, "estimatedSeconds": 0, "items": [] },
-    "expression": {
-      "enabled": false,
+    "sources": {
+      "enabled": true,
       "estimatedSeconds": 0,
-      "prompt": "",
+      "items": [
+        {
+          "id": "source-snow-grassland-manuscript",
+          "title": "雪山草地亲历者手稿影印件",
+          "type": "长征亲历手稿",
+          "date": "1935年至1936年间形成，具体日期待审核",
+          "creator": "具体作者待史实审核",
+          "summary": "亲历者手稿把宏大的雪山草地叙事还原为个人所见、所感与生存选择，为后续加入具体人物故事提供一手材料入口。",
+          "plainExplanation": "极端环境中的历史不是抽象困难，而是一个个具体的人怎样保存体力、互相帮助并继续前进。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体题名、作者与馆藏待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/snow-grassland/sources/snow-grassland-manuscript-feishu.png",
+          "imageAlt": "雪山草地长征亲历者手写记录影印图",
+          "imageCaption": "飞书资料中的长征亲历手稿；具体题名、作者、形成日期与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
+    "expression": {
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "从一个具体的人、一件具体的事出发，你想把怎样的雪山草地记忆留下来？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "memory-card",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成长征记忆卡",
+      "suggestions": [
+        { "id": "specific-person", "label": "记住一个具体的人" },
+        { "id": "share-supplies", "label": "在匮乏中彼此照顾" },
+        { "id": "hard-choice", "label": "记住艰难的取舍" }
+      ],
+      "fallbackTemplates": [
+        { "title": "雪地里的一件小事", "text": "宏大的路程也由具体的人和选择组成。我想记住困境中仍愿意照顾同伴的那一刻。" },
+        { "title": "留下这段记忆", "text": "雪山草地不只是艰苦两个字，它也是人在匮乏中作出取舍、彼此支撑的具体故事。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

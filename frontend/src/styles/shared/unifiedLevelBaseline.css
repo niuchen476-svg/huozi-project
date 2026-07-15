@@ -49,3 +49,79 @@
     animation: none;
   }
 }
+
+/* ---------- 统一身份提示 / 行动说明 / 媒体弹窗 ---------- */
+
+:is(.bridge-role-prompt, .bridge-instruction, .view-zunyi .zunyi-role-prompt) {
+  padding: clamp(18px, 3vw, 32px);
+  background: rgba(7, 5, 4, 0.64);
+  backdrop-filter: blur(7px);
+}
+
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) {
+  width: min(440px, calc(100vw - 36px));
+  padding: clamp(24px, 4vw, 34px);
+  color: #eee3cb;
+  background:
+    linear-gradient(180deg, rgba(55, 37, 25, 0.97), rgba(18, 14, 11, 0.98));
+  border: 1px solid rgba(232, 203, 145, 0.42);
+  border-radius: 10px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
+}
+
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) > p {
+  color: #d6b45d;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) > h3 {
+  color: #fff1d2;
+  font-family: var(--font-serif);
+  font-size: clamp(1.22rem, 2.4vw, 1.5rem);
+}
+
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) > span {
+  color: rgba(238, 227, 203, 0.82);
+  font-size: 0.94rem;
+  line-height: 1.8;
+}
+
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) button {
+  min-width: 104px;
+  min-height: 44px;
+  padding: 9px 22px;
+  color: #fff6df;
+  background: linear-gradient(180deg, #a53a2e, #7d241d);
+  border: 1px solid rgba(238, 187, 112, 0.72);
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  font-weight: 800;
+}
+
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) button:hover,
+:is(.bridge-role-prompt__card, .bridge-instruction__card, .view-zunyi .zunyi-role-prompt__card) button:focus-visible {
+  background: linear-gradient(180deg, #bd493a, #8f2c24);
+  border-color: #f0c36b;
+  outline: none;
+}
+
+:is(.bridge-video-modal__panel, .view-zunyi .zunyi-video-modal__panel) {
+  overflow: hidden;
+  padding: 14px;
+  background: rgba(22, 16, 12, 0.97);
+  border: 1px solid rgba(232, 203, 145, 0.34);
+  border-radius: 10px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.52);
+}
+
+:is(.bridge-video-modal__close, .view-zunyi .zunyi-video-modal__close) {
+  min-height: 38px;
+  padding: 7px 14px;
+  color: #fff0d0;
+  background: rgba(126, 39, 31, 0.9);
+  border: 1px solid rgba(232, 203, 145, 0.45);
+  border-radius: 6px;
+  font-weight: 800;
+}

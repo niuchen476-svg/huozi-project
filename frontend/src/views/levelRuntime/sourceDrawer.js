@@ -1,8 +1,9 @@
-const DEFAULT_MAX_ITEMS = 8;
+const DEFAULT_MAX_ITEMS = 12;
+const MAX_ITEMS = 24;
 
 export function normalizeSourceDrawerItems(sources, maxItems = DEFAULT_MAX_ITEMS) {
   const safeMax = Number.isInteger(maxItems) && maxItems > 0
-    ? Math.min(maxItems, DEFAULT_MAX_ITEMS)
+    ? Math.min(maxItems, MAX_ITEMS)
     : DEFAULT_MAX_ITEMS;
   if (!Array.isArray(sources)) return [];
   return sources
@@ -18,6 +19,14 @@ export function safeSourceUrl(value) {
   } catch {
     return null;
   }
+}
+
+export function safeSourceImage(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^[a-z][a-z\d+.-]*:/i.test(trimmed) || trimmed.startsWith("//")) return null;
+  return trimmed;
 }
 
 export function createLevelSourceDrawer(options = {}) {
@@ -168,9 +177,16 @@ class LevelSourceDrawer {
   renderList() {
     this.list.replaceChildren();
     if (!this.sources.length) {
-      const empty = document.createElement("p");
+      const empty = document.createElement("div");
       empty.className = "level-source-drawer__empty";
-      empty.textContent = "本关史料正在整理中。";
+      const seal = document.createElement("span");
+      seal.setAttribute("aria-hidden", "true");
+      seal.textContent = "档";
+      const heading = document.createElement("strong");
+      heading.textContent = "本关史料正在整理";
+      const description = document.createElement("p");
+      description.textContent = "你可以继续体验；史料补充后，会统一在这里展示。";
+      empty.append(seal, heading, description);
       this.list.appendChild(empty);
       return;
     }
@@ -202,6 +218,22 @@ class LevelSourceDrawer {
 
     const content = document.createElement("div");
     content.className = "level-source-drawer__content";
+    const imageSource = safeSourceImage(source.image || source.thumbnail);
+    if (imageSource) {
+      const figure = document.createElement("figure");
+      const image = document.createElement("img");
+      image.src = imageSource;
+      image.alt = source.imageAlt || source.title || "史料图片";
+      image.loading = "lazy";
+      image.decoding = "async";
+      figure.appendChild(image);
+      if (source.imageCaption) {
+        const caption = document.createElement("figcaption");
+        caption.textContent = source.imageCaption;
+        figure.appendChild(caption);
+      }
+      content.appendChild(figure);
+    }
     this.appendParagraph(content, source.summary, "摘要");
     this.appendQuote(content, source.originalExcerpt);
     this.appendParagraph(content, source.plainExplanation, "说明");

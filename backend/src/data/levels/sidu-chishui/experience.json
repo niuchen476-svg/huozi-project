@@ -2,22 +2,53 @@
   "schemaVersion": 2,
   "levelId": "sidu-chishui",
   "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
-  "sourceDrawer": { "enabled": false, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "sidu-chishui", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": false, "estimatedSeconds": 0, "items": [] },
-    "expression": {
-      "enabled": false,
+    "sources": {
+      "enabled": true,
       "estimatedSeconds": 0,
-      "prompt": "",
+      "items": [
+        {
+          "id": "source-sidu-military-telegrams",
+          "title": "四渡赤水相关军委电报原件",
+          "type": "军事电报影印件",
+          "date": "1935年1月至3月",
+          "creator": "红军总部相关机关",
+          "summary": "多份电报并置呈现命令随战局连续发出和调整的形态，是理解四渡赤水机动指挥的重要材料。",
+          "plainExplanation": "四渡赤水不是按一张固定路线图执行到底，而是在敌情、时间和空间变化中不断调整行动。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体电报题名与日期待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/sidu-chishui/sources/sidu-military-telegram-feishu.jpg",
+          "imageAlt": "四渡赤水相关多份军委电报原件影印图",
+          "imageCaption": "飞书资料标注为四渡赤水相关军委电报原件；具体题名、日期与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
+    "expression": {
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "四次改变路线之后，你怎样理解“主动”并不等于一直向前？",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "route-reflection",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成路线思考",
+      "suggestions": [
+        { "id": "change-is-active", "label": "改变方向也是主动" },
+        { "id": "mislead-pursuit", "label": "让追兵判断失误" },
+        { "id": "create-opportunity", "label": "在运动中创造机会" }
+      ],
+      "fallbackTemplates": [
+        { "title": "路线不是直线", "text": "我发现，主动不是只朝一个方向冲，而是根据局面改变路线，为队伍重新创造机会。" },
+        { "title": "四次渡河之后", "text": "地图上的往返并非犹豫，它让追击者难以判断，也让队伍获得新的空间。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 160 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

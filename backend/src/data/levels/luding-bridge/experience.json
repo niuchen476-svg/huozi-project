@@ -2,22 +2,53 @@
   "schemaVersion": 2,
   "levelId": "luding-bridge",
   "duration": { "targetSeconds": 120, "minSeconds": 60, "maxSeconds": 180 },
-  "sourceDrawer": { "enabled": false, "title": "本关史料", "position": "top-right", "maxItems": 8 },
+  "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
     "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "luding-bridge", "helpAfterFailures": 2, "assistAfterFailures": 3 },
-    "sources": { "enabled": false, "estimatedSeconds": 0, "items": [] },
-    "expression": {
-      "enabled": false,
+    "sources": {
+      "enabled": true,
       "estimatedSeconds": 0,
-      "prompt": "",
+      "items": [
+        {
+          "id": "source-luding-strategic-telegram",
+          "title": "《控制泸定桥渡河点取得战略胜利的部署》",
+          "type": "万万火急军事电报影印件",
+          "date": "1935年5月26日",
+          "creator": "朱德签发",
+          "summary": "电报把控制泸定桥渡河点作为取得战略主动的重要部署，为关卡中的抢时间、夺通道提供历史依据。",
+          "plainExplanation": "泸定桥的价值不只在桥本身，它还是部队能否迅速渡过大渡河、摆脱围堵的关键通道。",
+          "sourceName": "飞书文档《长征资源库》资料整理（具体馆藏著录待审核）",
+          "sourceUrl": "https://acnq2colhyxd.feishu.cn/docx/BZojduheyohb5ax5BrPcS1kcnmc",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/luding-bridge/sources/luding-strategic-telegram-feishu.jpg",
+          "imageAlt": "控制泸定桥渡河点部署电报原件影印图",
+          "imageCaption": "飞书资料标注：1935年5月26日朱德签发的泸定桥渡河点部署电报；馆藏与授权状态待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        }
+      ]
+    },
+    "expression": {
+      "enabled": true,
+      "estimatedSeconds": 25,
+      "prompt": "请用一封短电报，报告你在极限时间里完成了什么、最想记住什么。",
       "inputMode": "choice-plus-short-text",
-      "maxCharacters": 40,
+      "maxCharacters": 60,
       "sourceSelectionLimit": 1,
       "outputType": "action-telegram",
-      "outputLabel": "AI根据玩家选择生成",
-      "fallbackTemplates": [],
-      "ai": { "enabled": false, "provider": "mimo", "maxOutputCharacters": 160 }
+      "outputLabel": "AI整理成行动电报",
+      "suggestions": [
+        { "id": "race-against-time", "label": "和时间赛跑" },
+        { "id": "cross-under-fire", "label": "在危险中打开通道" },
+        { "id": "team-cooperation", "label": "突击与支援共同完成" }
+      ],
+      "fallbackTemplates": [
+        { "title": "行动电报", "text": "通道已经打开。真正需要报告的，不只是抵达，更是队伍在极限时间里彼此支援、继续向前。" },
+        { "title": "来自桥头的报告", "text": "我们争取到的不只是几分钟，而是整支队伍继续前进的机会。" }
+      ],
+      "ai": { "enabled": true, "provider": "mimo", "maxOutputCharacters": 140 }
     },
     "completion": { "enabled": true, "estimatedSeconds": 15, "reviewTitle": "", "showFragmentReward": true, "showShowcaseEntry": true, "returnTarget": "#/map" }
   },

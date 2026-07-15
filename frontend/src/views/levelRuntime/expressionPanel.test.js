@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   createClientExpressionFallback,
   createExpressionPayload,
+  getExpressionChoices,
   getExpressionSources,
 } from "./expressionPanel.js";
 
@@ -14,6 +15,19 @@ test("表达面板只列出允许用于 AI 表达的史料", () => {
     ] } },
   };
   assert.deepEqual(getExpressionSources(experience).map((item) => item.id), ["allowed"]);
+});
+
+test("没有玩法选择时使用本关专属表达角度", () => {
+  const experience = {
+    phases: { expression: { suggestions: [
+      { id: "specific-person", label: "记住一个具体的人" },
+      { id: "hard-choice", label: "记住艰难的取舍" },
+    ] } },
+  };
+  assert.deepEqual(getExpressionChoices(experience, []), experience.phases.expression.suggestions);
+  assert.deepEqual(getExpressionChoices(experience, [{ id: "runtime", label: "玩家刚才的选择" }]), [
+    { id: "runtime", label: "玩家刚才的选择" },
+  ]);
 });
 
 test("表达面板生成固定的接口载荷", () => {

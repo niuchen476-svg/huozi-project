@@ -57,6 +57,28 @@ test("提示词只使用服务端传入的已审核史料", () => {
   assert.match(prompt, /不超过 160 个汉字/);
 });
 
+test("不同关卡输出形式会带入专属写作要求和表达角度", () => {
+  const experience = {
+    levelId: "luding-bridge",
+    phases: {
+      expression: {
+        ...config,
+        outputType: "action-telegram",
+        prompt: "写下一封行动电报",
+        suggestions: [{ id: "race-against-time", label: "和时间赛跑" }],
+      },
+    },
+  };
+  const prompt = buildExpressionPrompt(experience, {
+    sourceIds: [],
+    choiceIds: ["race-against-time"],
+    userText: "通道已经打开。",
+  }, []);
+
+  assert.match(prompt, /简洁行动电报/);
+  assert.match(prompt, /和时间赛跑（race-against-time）/);
+});
+
 test("MiMo 不可用时仍返回统一结构", () => {
   const value = createExpressionFallback(config, {
     sourceIds: [],

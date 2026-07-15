@@ -4,6 +4,8 @@ import { showArchiveFragmentReward } from "../../archiveFragments.js";
 import { getLevelAdapter } from "./registry.js";
 import { assertLevelResult, LEVEL_STATUS } from "./protocol.js";
 import { createLevelSourceDrawer } from "./sourceDrawer.js";
+import { createLevelChrome, normalizeLevelPhase } from "./levelChrome.js";
+import { createCompletionRecap } from "./completionRecap.js";
 import {
   createClientExpressionFallback,
   createLevelExpressionPanel,
@@ -19,6 +21,7 @@ export class LevelHost {
     if (!this.session) return;
     this.session.disposing = true;
     this.session.sourceDrawer?.destroy();
+    this.session.levelChrome?.destroy();
     this.session.expressionPanel?.destroy();
     this.restoreRuntimeAudio(this.session);
     this.session.controller.abort();
@@ -39,6 +42,9 @@ export class LevelHost {
       context: null,
       experience: null,
       sourceDrawer: null,
+      levelChrome: null,
+      phase: "briefing",
+      phaseBeforeOverlay: null,
       expressionPanel: null,
       expressionCompleted: false,
       result: null,
@@ -89,6 +95,8 @@ export class LevelHost {
     };
     session.adapter = adapter;
     session.context = context;
+    this.mountLevelChrome(session);
+    this.attachPhaseEvents(session);
     this.mountSourceDrawer(session);
 
     let result;
@@ -120,14 +128,16 @@ export class LevelHost {
         this.renderExpressionPhase(session, { reward: true, redirect: "if-reward" });
         return;
       }
-      await this.completeLevel(session, { reward: true, redirect: "always" });
+      this.renderCompletionPhase(session, { reward: true, redirect: "always" });
       return;
     }
 
     const useUnifiedExpression = this.isExpressionEnabled(session);
+    this.setPhase(session, "completion");
     this.renderDossier({
       root,
       level,
+      experience,
       challenge: adapter.challenge || null,
       completedAction: result.actionCompleted,
       useUnifiedExpression,
@@ -154,6 +164,7 @@ export class LevelHost {
 
   async completeLevel(session, options = {}) {
     if (!this.isActive(session)) return false;
+    this.setPhase(session, "completion");
     markCompleted(session.levelId);
 
     const showedReward = options.reward
@@ -178,13 +189,51 @@ export class LevelHost {
   mountSourceDrawer(session) {
     const config = session.experience?.sourceDrawer;
     const sources = session.experience?.phases?.sources?.items || [];
-    if (!config?.enabled || !sources.some((source) => source.visibleInSourceDrawer === true)) return;
+    // The entry is part of the shared level shell. Keep it available even when
+    // a level's source list is still being curated so every level has the same
+    // predictable top-right affordance.
+    if (!config?.enabled) return;
     session.sourceDrawer = createLevelSourceDrawer({
       title: config.title,
       sources,
       maxItems: config.maxItems,
-      onOpenChange: (open) => this.setOverlayOpen(session, "source-drawer", open),
+      onOpenChange: (open) => {
+        if (open) {
+          session.phaseBeforeOverlay = session.phase;
+          this.setPhase(session, "sources");
+        } else if (session.phaseBeforeOverlay) {
+          this.setPhase(session, session.phaseBeforeOverlay);
+          session.phaseBeforeOverlay = null;
+        }
+        this.setOverlayOpen(session, "source-drawer", open);
+      },
     }).mount(document.body);
+  }
+
+  mountLevelChrome(session) {
+    session.levelChrome = createLevelChrome({
+      level: session.context.level,
+      phase: session.phase,
+      onRestart: () => this.restart(session),
+    }).mount(document.body);
+  }
+
+  attachPhaseEvents(session) {
+    session.root.addEventListener("levelruntime:phase", (event) => {
+      this.setPhase(session, event.detail?.phase);
+    }, { signal: session.controller.signal });
+    session.root.addEventListener("click", (event) => {
+      const trigger = event.target instanceof Element
+        ? event.target.closest("[data-level-phase]")
+        : null;
+      if (trigger?.dataset.levelPhase) this.setPhase(session, trigger.dataset.levelPhase);
+    }, { signal: session.controller.signal });
+  }
+
+  setPhase(session, phase) {
+    const nextPhase = normalizeLevelPhase(phase);
+    session.phase = nextPhase;
+    session.levelChrome?.setPhase(nextPhase);
   }
 
   createRuntimeApi(session) {
@@ -195,6 +244,9 @@ export class LevelHost {
       },
       setOverlayOpen(id, open) {
         host.setOverlayOpen(session, id, open);
+      },
+      setPhase(phase) {
+        host.setPhase(session, phase);
       },
     });
   }
@@ -238,17 +290,53 @@ export class LevelHost {
   }
 
   renderExpressionPhase(session, completionOptions) {
+    this.setPhase(session, "expression");
     session.root.innerHTML = `
       <div class="view view-level level-expression-phase">
         <a class="back-link" href="#/map">← 返回路线图</a>
+        <div data-level-completion-recap-slot></div>
         <div data-level-expression-slot></div>
       </div>
     `;
+    session.root.querySelector("[data-level-completion-recap-slot]")?.replaceWith(
+      createCompletionRecap({
+        level: session.context.level,
+        experience: session.experience,
+        result: session.result,
+      })
+    );
     this.mountExpressionPanel(
       session,
       session.root.querySelector("[data-level-expression-slot]"),
       completionOptions
     );
+  }
+
+  renderCompletionPhase(session, completionOptions) {
+    this.setPhase(session, "completion");
+    session.root.innerHTML = `
+      <div class="view view-level level-completion-phase">
+        <a class="back-link" href="#/map">← 返回路线图</a>
+        <div data-level-completion-recap-slot></div>
+        <div class="level-complete-actions level-completion-phase__actions">
+          <button type="button" data-complete-level>领取本关碎片</button>
+          <button type="button" data-restart-level>重来</button>
+          <a href="#/map">返回路线图</a>
+        </div>
+      </div>
+    `;
+    session.root.querySelector("[data-level-completion-recap-slot]")?.replaceWith(
+      createCompletionRecap({
+        level: session.context.level,
+        experience: session.experience,
+        result: session.result,
+      })
+    );
+    session.root.querySelector("[data-complete-level]")?.addEventListener("click", async (event) => {
+      event.currentTarget.disabled = true;
+      await this.completeLevel(session, completionOptions);
+    });
+    session.root.querySelector("[data-restart-level]")?.addEventListener("click", () => this.restart(session));
   }
 
   mountExpressionInDossier(session, completionOptions = {}) {

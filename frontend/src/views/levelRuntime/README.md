@@ -9,6 +9,7 @@ LevelHost.js        关卡加载、生命周期、结算、重开和页面状态
 protocol.js         所有关卡必须遵守的返回协议
 registry.js         关卡 ID 到独立适配器的唯一注册表
 assetPreload.js     适配器共用的轻量预加载工具
+levelChrome.js      统一关卡顶栏、五段式阶段、返回和重来
 sourceDrawer.js     右上角“本关史料”抽屉组件
 expressionPanel.js  统一“我的表达”面板（史料选择、短输入、结果展示）
 adapters/           每关一个文件，只连接本关内容与统一协议
@@ -33,7 +34,7 @@ cancelLevel();                            // 生命周期被中止
   level,      // 当前关卡数据
   levelId,
   experience, // 本关统一五段式、史料、表达、音频和碎片配置
-  runtime,    // 公共遮罩状态；runtime.paused / runtime.setOverlayOpen()
+  runtime,    // 公共 UI；paused / setOverlayOpen() / setPhase()
   signal      // 离开关卡或重开时会 abort
 }
 ```
@@ -72,9 +73,25 @@ completeLevel({
 
 地图跳转、通关记录、碎片奖励和重开均由 `LevelHost` 负责。
 
+## 统一关卡顶栏
+
+`levelChrome.js` 由 `LevelHost` 挂载在关卡之外，统一显示关卡名称、返回、重来和
+“进入历史—身处历史—遇见文献—作出表达—完成本关”五段式进度。关卡不得复制
+公共顶栏；自己的血量、计时、幕次和任务进度仍可保留。
+
+关卡内部发生阶段变化时只上报：
+
+```js
+runtime.setPhase("gameplay");
+```
+
+普通 DOM 关卡也可以在按钮上使用 `data-level-phase="gameplay"`，或派发冒泡的
+`levelruntime:phase` 事件。iframe 关卡通过 `changzheng-level-phase` 消息上报。
+打开史料抽屉、进入 AI 表达和完成结算时，`LevelHost` 会自动切换阶段。
+
 ## 本关史料抽屉
 
-`createLevelSourceDrawer()` 是独立公共组件，最多显示 8 份 `visibleInSourceDrawer: true` 的史料。它负责右上角入口、可滚动列表、展开详情、Esc 关闭和焦点循环。
+`createLevelSourceDrawer()` 是独立公共组件，常规最多显示 12 份 `visibleInSourceDrawer: true` 的史料。它负责右上角入口、可滚动列表、展开详情、Esc 关闭和焦点循环。
 
 组件只通过 `onOpenChange(open)` 报告开关状态，不直接暂停关卡或控制音频。
 `LevelHost` 负责调用适配器可选的 `pause/resume` 钩子、发布

@@ -35,7 +35,7 @@ export function preloadEmbeddedLevel(levelId) {
   return Promise.all([documentPreloads.get(documentUrl), imagePreloads.get(imageUrl)]);
 }
 
-export function renderEmbeddedLevel(root, level) {
+export function renderEmbeddedLevel(root, level, runtime) {
   const src = embeddedSrc(level.levelId);
   preloadEmbeddedLevel(level.levelId);
 
@@ -60,8 +60,12 @@ export function renderEmbeddedLevel(root, level) {
 
     function handleMessage(event) {
       if (event.source !== frame.contentWindow) return;
+      if (event.data?.levelId !== level.levelId) return;
+      if (event.data?.type === "changzheng-level-phase") {
+        runtime?.setPhase(event.data.phase);
+        return;
+      }
       if (event.data?.type !== "changzheng-level-complete") return;
-      if (event.data.levelId !== level.levelId) return;
       window.removeEventListener("message", handleMessage);
       resolve("completed");
     }

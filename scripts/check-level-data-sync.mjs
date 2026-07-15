@@ -122,7 +122,7 @@ function validateExperience(level, experience) {
     || drawer.position !== "top-right"
     || !Number.isInteger(drawer.maxItems)
     || drawer.maxItems < 1
-    || drawer.maxItems > 8) {
+    || drawer.maxItems > 12) {
     addIssue(`${prefix} 缺少合法的右上角本关史料配置`);
   }
 
@@ -161,18 +161,26 @@ function validateExperience(level, experience) {
         addIssue(`${prefix} 的史料 ${source.id} 缺少布尔字段 ${field}`);
       }
     }
+    if (typeof source.image === "string" && source.image.startsWith("/")) {
+      const localImagePath = path.join(rootDir, "frontend/public", source.image.replace(/^\/+/, ""));
+      if (!existsSync(localImagePath)) {
+        addIssue(`${prefix} 的史料 ${source.id} 图片不存在：${source.image}`);
+      }
+    }
   }
   const activeSources = (sources || []).filter((source) => source.activeInGameplay);
   if (activeSources.length > 3) addIssue(`${prefix} 参与玩法的核心史料不能超过 3 份`);
-  if (experience.phases?.sources?.enabled && activeSources.length < 1) {
+  const hasSourceContent = Array.isArray(sources) && sources.length > 0;
+  if (hasSourceContent && experience.phases?.sources?.enabled && activeSources.length < 1) {
     addIssue(`${prefix} 启用史料阶段后至少需要 1 份参与玩法的史料`);
   }
-  if (drawer.enabled && !(sources || []).some((source) => source.visibleInSourceDrawer)) {
+  if (hasSourceContent && drawer.enabled && !(sources || []).some((source) => source.visibleInSourceDrawer)) {
     addIssue(`${prefix} 启用本关史料入口后至少需要 1 份可见史料`);
   }
 
   const expression = experience.phases?.expression || {};
-  if (!expression.outputType?.trim() || expression.outputLabel !== "AI根据玩家选择生成") {
+  const outputLabel = typeof expression.outputLabel === "string" ? expression.outputLabel.trim() : "";
+  if (!expression.outputType?.trim() || !outputLabel.startsWith("AI") || outputLabel.length > 40) {
     addIssue(`${prefix} 缺少合法的 AI 表达输出类型或标签`);
   }
   if (!isNumberInRange(expression.maxCharacters, 1, 80)) {
@@ -191,11 +199,26 @@ function validateExperience(level, experience) {
       addIssue(`${prefix} 的 AI 固定兜底模板必须包含 title 和 text`);
     }
   }
+  if (expression.enabled) {
+    if (!expression.prompt?.trim()) addIssue(`${prefix} 启用 AI 表达后必须填写本关问题`);
+    if (!Array.isArray(expression.suggestions)
+      || expression.suggestions.length < 2
+      || !hasUniqueIds(expression.suggestions)
+      || expression.suggestions.some((item) => !item?.label?.trim())) {
+      addIssue(`${prefix} 启用 AI 表达后至少需要 2 个带唯一 id 的表达角度`);
+    }
+    if (!expression.fallbackTemplates?.length) {
+      addIssue(`${prefix} 启用 AI 表达后至少需要 1 个离线兜底模板`);
+    }
+  }
   const ai = expression.ai || {};
   if (typeof ai.enabled !== "boolean"
     || ai.provider !== "mimo"
     || !isNumberInRange(ai.maxOutputCharacters, 1, 160)) {
     addIssue(`${prefix} 缺少合法的 MiMo 表达配置`);
+  }
+  if (expression.enabled && ai.enabled !== true) {
+    addIssue(`${prefix} 已启用表达面板但未启用 MiMo 优先生成`);
   }
   if (ai.enabled && !expression.enabled) {
     addIssue(`${prefix} 启用 MiMo 前必须先启用表达阶段`);

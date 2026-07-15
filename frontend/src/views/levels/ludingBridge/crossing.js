@@ -14,6 +14,7 @@ import {
   TEAMMATE_FALL,
   VICTORY_IMAGE,
 } from "./config.js";
+import { applyLevelFeedback } from "../../levelRuntime/feedbackSystem.js";
 
 export function startCrossing(resolve) {
   const scene = document.querySelector("#bridge-scene");
@@ -95,9 +96,8 @@ export function startCrossing(resolve) {
   }
 
   function showCaption(text, type, duration = 2600) {
-    captionEl.textContent = text;
     captionEl.className = `bridge-caption bridge-caption--${type}`;
-    captionEl.hidden = false;
+    applyLevelFeedback(captionEl, { message: text, tone: type });
     clearTimeout(showCaption._t);
     showCaption._t = setTimeout(() => {
       captionEl.hidden = true;
@@ -105,8 +105,7 @@ export function startCrossing(resolve) {
   }
 
   function showHint(text) {
-    hintEl.textContent = text;
-    hintEl.hidden = false;
+    applyLevelFeedback(hintEl, { message: text, tone: "assist" });
     clearTimeout(showHint._t);
     showHint._t = setTimeout(() => {
       hintEl.hidden = true;
