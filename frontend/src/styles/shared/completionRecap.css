@@ -74,7 +74,12 @@
   width: min(860px, calc(100vw - 32px));
   box-sizing: border-box;
   margin: 0 auto 32px;
-  justify-content: flex-end;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(250, 245, 232, 0.92);
+  border: 1px solid rgba(112, 80, 42, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 12px 34px rgba(26, 18, 10, 0.12);
 }
 
 @media (max-width: 620px) {

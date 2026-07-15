@@ -126,6 +126,8 @@ router.post("/levels/:id/artwork", async (req, res) => {
       error: err.message || "画作生成失败",
       code: err.failureReason || classifyAiFailure(err),
       requestId,
+      providerStatus: err.providerStatus || null,
+      providerDetail: err.providerDetail || null,
     });
   }
 });

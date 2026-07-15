@@ -308,8 +308,8 @@ async function completeSpecialChallenge(root, challenge, { onRestart, onComplete
       <h3>${challenge.successTitle}</h3>
       <p>${challenge.successText}</p>
       <div class="level-complete-actions">
-        <button type="button" data-restart-level>重来</button>
-        <a href="#/map">返回路线图</a>
+        <a class="level-complete-actions__primary" href="#/map">完成并返回路线图</a>
+        <button class="level-complete-actions__secondary" type="button" data-restart-level>再体验一次</button>
       </div>
     </div>
   `;
@@ -376,8 +376,8 @@ function renderPoem(result) {
       ${lines}
     </div>
     <div class="level-complete-actions">
-      <button type="button" data-restart-level>重来</button>
-      <a href="#/map">返回路线图</a>
+      <a class="level-complete-actions__primary" href="#/map">完成并返回路线图</a>
+      <button class="level-complete-actions__secondary" type="button" data-restart-level>再体验一次</button>
     </div>
   `;
 }

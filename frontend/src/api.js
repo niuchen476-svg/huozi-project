@@ -29,6 +29,8 @@ function createApiError(payload, fallbackMessage) {
   const error = new Error(payload?.error || fallbackMessage);
   error.code = payload?.code || null;
   error.requestId = payload?.requestId || null;
+  error.providerStatus = payload?.providerStatus || null;
+  error.providerDetail = payload?.providerDetail || null;
   return error;
 }
 
