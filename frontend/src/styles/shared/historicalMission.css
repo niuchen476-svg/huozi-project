@@ -359,6 +359,7 @@
 }
 
 .historical-key-command {
+  appearance: none;
   min-height: 43px;
   display: flex;
   align-items: center;
@@ -372,6 +373,8 @@
   font-family: "Noto Sans SC", "PingFang SC", sans-serif;
   font-size: 14px;
   font-weight: 800;
+  text-align: center;
+  cursor: pointer;
   user-select: none;
   transition: opacity 150ms ease, border-color 150ms ease, background 150ms ease, color 150ms ease;
 }
@@ -385,6 +388,7 @@
 
 .historical-key-command--muted {
   opacity: 0.52;
+  cursor: wait;
 }
 
 .historical-key-command kbd {

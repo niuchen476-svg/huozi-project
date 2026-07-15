@@ -6,6 +6,7 @@ import { assertLevelResult, LEVEL_STATUS } from "./protocol.js";
 import { createLevelSourceDrawer } from "./sourceDrawer.js";
 import { createLevelChrome, normalizeLevelPhase } from "./levelChrome.js";
 import { createCompletionRecap } from "./completionRecap.js";
+import { showLevelIdentityPrompt } from "./identityPrompt.js";
 import {
   createClientExpressionFallback,
   createLevelExpressionPanel,
@@ -98,6 +99,13 @@ export class LevelHost {
     this.mountLevelChrome(session);
     this.attachPhaseEvents(session);
     this.mountSourceDrawer(session);
+
+    const acceptedIdentity = await showLevelIdentityPrompt({
+      levelId,
+      level,
+      signal: controller.signal,
+    });
+    if (!acceptedIdentity || !this.isActive(session)) return;
 
     let result;
     try {

@@ -25,8 +25,8 @@ export function createRepairController(scene, context) {
     ${renderTaskHeader(scene, `桥段 0 / ${points.length}`)}
     <div class="historical-mission__risk" data-risk>掩护 ${renderRisk(maxMistakes, mistakes)}</div>
     <div class="historical-mission__controls historical-mission__controls--repair">
-      ${renderKeyCommand("Space", "固定当前桥段")}
-      ${renderKeyCommand("↓", "卧倒隐蔽", "secondary")}
+      ${renderKeyCommand("Space", "固定当前桥段", "", "data-repair-command")}
+      ${renderKeyCommand("↓", "卧倒隐蔽", "secondary", "data-cover-command")}
     </div>
     <div class="historical-mission__alert" data-repair-alert hidden>
       <b>敌机正在俯冲</b>
@@ -42,6 +42,8 @@ export function createRepairController(scene, context) {
 
   const alert = nodes.task.querySelector("[data-repair-alert]");
   const risk = nodes.task.querySelector("[data-risk]");
+  const repairCommand = nodes.task.querySelector("[data-repair-command]");
+  const coverCommand = nodes.task.querySelector("[data-cover-command]");
 
   function updatePoints() {
     nodes.hotspots.querySelectorAll("[data-repair-point]").forEach((point, index) => {
@@ -143,6 +145,8 @@ export function createRepairController(scene, context) {
   }
 
   window.addEventListener("keydown", onKeyDown);
+  repairCommand.addEventListener("click", repairCurrent);
+  coverCommand.addEventListener("click", takeCover);
 
   return {
     cleanup() {
@@ -151,6 +155,8 @@ export function createRepairController(scene, context) {
       clearTimeout(dangerTimer);
       clearTimeout(repairTimer);
       window.removeEventListener("keydown", onKeyDown);
+      repairCommand.removeEventListener("click", repairCurrent);
+      coverCommand.removeEventListener("click", takeCover);
     },
   };
 }

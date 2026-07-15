@@ -483,6 +483,32 @@
       @media (max-width: 720px) {
         .dossier { grid-template-columns: 1fr; }
       }
+
+      /* 与 Level Host 的遵义样板保持同一套展馆视觉语言。 */
+      :root {
+        --color-paper: #f2e7cc;
+        --color-paper-deep: #d8c397;
+        --color-red: #982f26;
+        --color-red-deep: #681b17;
+        --color-gold: #c6a45b;
+        --radius: 7px;
+      }
+      :is(.primary-btn, .level-header__actions button, #submit-reflection) {
+        min-height: 48px;
+        color: #fff5dd;
+        background: linear-gradient(180deg, var(--color-red), var(--color-red-deep));
+        border: 1px solid rgba(239, 209, 138, 0.58);
+        border-radius: var(--radius);
+        box-shadow: 0 9px 22px rgba(0, 0, 0, 0.26);
+      }
+      :is(.level-panel, .archive-card, .poem-card) {
+        border-radius: 12px;
+      }
+      .history-intro__title,
+      .level-header h1,
+      .level-panel h2 {
+        font-family: var(--font-serif);
+      }
     </style>
   </head>
   <body>

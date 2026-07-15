@@ -24,8 +24,8 @@ export function createStealthController(scene, context) {
     ${renderTaskHeader(scene, "转移进度 0%")}
     <div class="historical-mission__risk" data-risk>隐蔽 ${renderRisk(maxMistakes, mistakes)}</div>
     <div class="historical-mission__controls historical-mission__controls--two">
-      ${renderKeyCommand("Space", "跟队前进")}
-      ${renderKeyCommand("↓", "熄灯隐蔽", "secondary")}
+      ${renderKeyCommand("Space", "跟队前进", "", "data-stealth-move")}
+      ${renderKeyCommand("↓", "熄灯隐蔽", "secondary", "data-stealth-conceal")}
     </div>
     <div class="historical-mission__alert" data-stealth-alert hidden>
       <b>侦察光正在扫过</b>
@@ -35,6 +35,8 @@ export function createStealthController(scene, context) {
 
   const alert = nodes.task.querySelector("[data-stealth-alert]");
   const risk = nodes.task.querySelector("[data-risk]");
+  const moveCommand = nodes.task.querySelector("[data-stealth-move]");
+  const concealCommand = nodes.task.querySelector("[data-stealth-conceal]");
 
   function scheduleHazard(delay = randomBetween(scene.minHazardGap || 1500, scene.maxHazardGap || 2600)) {
     clearTimeout(hazardTimer);
@@ -128,6 +130,8 @@ export function createStealthController(scene, context) {
   }
 
   window.addEventListener("keydown", onKeyDown);
+  moveCommand.addEventListener("click", move);
+  concealCommand.addEventListener("click", conceal);
 
   return {
     cleanup() {
@@ -136,6 +140,8 @@ export function createStealthController(scene, context) {
       clearTimeout(hazardTimer);
       clearTimeout(lockTimer);
       window.removeEventListener("keydown", onKeyDown);
+      moveCommand.removeEventListener("click", move);
+      concealCommand.removeEventListener("click", conceal);
     },
   };
 }

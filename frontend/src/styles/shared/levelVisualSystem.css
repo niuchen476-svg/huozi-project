@@ -1,0 +1,550 @@
+/* ---------- 第二期统一视觉系统：博物馆展台 ---------- */
+
+:root {
+  --level-ui-ink: #241811;
+  --level-ui-ink-soft: #5f4d3d;
+  --level-ui-paper: #f2e7cc;
+  --level-ui-paper-light: #fffaf0;
+  --level-ui-paper-deep: #d8c397;
+  --level-ui-red: #982f26;
+  --level-ui-red-deep: #681b17;
+  --level-ui-gold: #c6a45b;
+  --level-ui-gold-light: #efd18a;
+  --level-ui-night: #18110d;
+  --level-ui-night-soft: #2d2119;
+  --level-ui-border-dark: rgba(58, 39, 27, 0.28);
+  --level-ui-border-light: rgba(235, 207, 151, 0.34);
+  --level-ui-radius-sm: 7px;
+  --level-ui-radius-md: 12px;
+  --level-ui-radius-lg: 18px;
+  --level-ui-touch: 48px;
+  --level-ui-shadow-card: 0 18px 50px rgba(31, 20, 12, 0.22);
+  --level-ui-shadow-modal: 0 28px 90px rgba(0, 0, 0, 0.52);
+  --level-ui-paper-texture:
+    radial-gradient(rgba(63, 44, 29, 0.055) 0.7px, transparent 0.8px),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.3), transparent 42%);
+}
+
+.level-runtime-chrome,
+.level-source-drawer,
+.level-expression-panel,
+.level-completion-recap,
+[data-level-feedback] {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Level Host 统一身份提示：先确认角色，再启动关卡计时与交互。 */
+.level-identity-prompt {
+  position: fixed;
+  z-index: 260;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 3vw, 32px);
+  background: rgba(7, 5, 4, 0.74);
+  backdrop-filter: blur(9px);
+  font-family: var(--font-sans);
+}
+
+.level-identity-prompt__card {
+  width: min(500px, calc(100vw - 40px));
+  padding: clamp(28px, 4vw, 40px);
+  color: #eee3cb;
+  text-align: left;
+  background:
+    linear-gradient(145deg, rgba(152, 47, 38, 0.14), transparent 42%),
+    linear-gradient(180deg, rgba(52, 35, 25, 0.98), rgba(18, 13, 10, 0.99));
+  border: 1px solid rgba(230, 196, 120, 0.42);
+  border-top: 4px solid var(--level-ui-gold);
+  border-radius: var(--level-ui-radius-md);
+  box-shadow: var(--level-ui-shadow-modal);
+}
+
+.level-identity-prompt__card > p {
+  margin: 0 0 12px;
+  color: var(--level-ui-gold-light);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.level-identity-prompt__card > h2 {
+  margin: 0;
+  color: #fff1d2;
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  line-height: 1.5;
+}
+
+.level-identity-prompt__card > span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(238, 227, 203, 0.82);
+  font-size: 0.96rem;
+  line-height: 1.8;
+}
+
+.level-identity-prompt__card button {
+  width: 100%;
+  min-height: var(--level-ui-touch);
+  margin-top: 24px;
+  padding: 10px 22px;
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border: 1px solid rgba(239, 209, 138, 0.62);
+  border-radius: var(--level-ui-radius-sm);
+  box-shadow: 0 9px 22px rgba(0, 0, 0, 0.28);
+  font: 800 1rem/1.4 var(--font-sans);
+  cursor: pointer;
+}
+
+.level-identity-prompt__card button:hover,
+.level-identity-prompt__card button:focus-visible {
+  background: linear-gradient(180deg, #b54336, #7d241d);
+  border-color: var(--level-ui-gold-light);
+  outline: 3px solid rgba(239, 209, 138, 0.26);
+  outline-offset: 3px;
+}
+
+/* 瑞金、湘江：改成同一套红色主操作，二级操作仍保持清晰层级。 */
+.historical-mission {
+  --accent: var(--level-ui-red);
+  --accent-strong: var(--level-ui-red);
+  font-family: var(--font-serif);
+}
+
+.historical-mission .historical-key-command,
+.historical-mission button {
+  min-height: var(--level-ui-touch);
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border-color: rgba(239, 209, 138, 0.58);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.historical-mission .historical-key-command:hover:not(:disabled),
+.historical-mission button:hover:not(:disabled) {
+  color: #fff9ec;
+  background: linear-gradient(180deg, #b54336, #7d241d);
+  border-color: var(--level-ui-gold-light);
+}
+
+.historical-mission :is(
+  .historical-key-command--secondary,
+  .historical-mission__controls .historical-key-command + .historical-key-command,
+  .historical-mission__intro-actions .historical-key-command + .historical-key-command
+) {
+  color: #f8e6b2;
+  background: rgba(25, 18, 13, 0.84);
+  border-color: rgba(230, 196, 120, 0.48);
+}
+
+/* 原生关卡统一使用样板的标题字体、纸张半径与红色操作。 */
+.view-bridge-action,
+.huining-experience {
+  font-family: var(--font-sans);
+}
+
+.view-bridge-action :is(#history-intro-start, .bridge-instruction__card button, .bridge-result__card button),
+.huining-experience .huining-primary-button {
+  min-height: var(--level-ui-touch);
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border: 1px solid rgba(239, 209, 138, 0.58);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.view-bridge-action .history-intro__title,
+.huining-experience :is(h1, h2, h3) {
+  font-family: var(--font-serif);
+}
+
+/* 顶栏：同一展项的身份、进度和全局操作。 */
+.level-runtime-chrome {
+  top: max(14px, env(safe-area-inset-top));
+  left: max(16px, env(safe-area-inset-left));
+  right: max(174px, calc(env(safe-area-inset-right) + 158px));
+  min-height: 64px;
+  padding: 8px 10px;
+  background:
+    linear-gradient(180deg, rgba(45, 32, 24, 0.97), rgba(18, 13, 10, 0.96)),
+    var(--level-ui-night);
+  border-color: var(--level-ui-border-light);
+  border-top: 2px solid rgba(198, 164, 91, 0.72);
+  border-radius: var(--level-ui-radius-md);
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.38);
+}
+
+.level-runtime-chrome__back,
+.level-runtime-chrome__restart {
+  min-height: var(--level-ui-touch);
+  height: var(--level-ui-touch);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.level-runtime-chrome__identity strong {
+  color: #fff2d4;
+  font-size: 1.04rem;
+  letter-spacing: 0.03em;
+}
+
+.level-runtime-chrome__task {
+  margin-top: 2px;
+  color: rgba(244, 228, 194, 0.72);
+  font-size: 0.68rem;
+}
+
+.level-runtime-chrome__progress li.is-current span {
+  background: var(--level-ui-red);
+  border-color: var(--level-ui-gold-light);
+  box-shadow: 0 0 0 4px rgba(152, 47, 38, 0.25);
+}
+
+.level-runtime-chrome__progress li.is-complete span {
+  background: var(--level-ui-gold);
+  border-color: var(--level-ui-gold-light);
+}
+
+/* 史料抽屉：统一档案纸张、标题和触控尺寸。 */
+.level-source-drawer__launcher {
+  min-height: var(--level-ui-touch);
+  padding-inline: 17px 11px;
+  background: linear-gradient(180deg, rgba(64, 41, 27, 0.97), rgba(22, 15, 11, 0.96));
+  border-color: rgba(230, 196, 120, 0.64);
+  border-radius: var(--level-ui-radius-md);
+}
+
+.level-source-drawer__launcher strong {
+  color: #3b1c13;
+  background: var(--level-ui-gold-light);
+}
+
+.level-source-drawer__panel {
+  width: min(480px, 94vw);
+  color: var(--level-ui-ink);
+  background-color: var(--level-ui-paper);
+  background-image: var(--level-ui-paper-texture);
+  background-size: 4px 4px, auto;
+  border-left-color: rgba(72, 47, 31, 0.38);
+}
+
+.level-source-drawer__header {
+  padding: 30px 26px 21px;
+  background: rgba(255, 250, 238, 0.44);
+  border-bottom-color: var(--level-ui-border-dark);
+}
+
+.level-source-drawer__header p,
+.level-source-drawer__number {
+  color: var(--level-ui-red);
+}
+
+.level-source-drawer__item {
+  background: rgba(255, 251, 239, 0.78);
+  border-color: var(--level-ui-border-dark);
+  border-radius: var(--level-ui-radius-md);
+}
+
+.level-source-drawer__item--core {
+  border-color: rgba(152, 47, 38, 0.45);
+  box-shadow: inset 4px 0 0 var(--level-ui-red);
+}
+
+.level-source-drawer__item summary {
+  min-height: 80px;
+}
+
+.level-source-drawer__close {
+  min-width: var(--level-ui-touch);
+  min-height: var(--level-ui-touch);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+/* 反馈、复盘、表达：统一为“深色现场 + 浅色档案”的两层语言。 */
+[data-level-feedback] {
+  min-height: 48px;
+  padding: 11px 15px;
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.level-completion-recap,
+.level-expression-panel {
+  color: var(--level-ui-ink);
+  background-color: var(--level-ui-paper-light);
+  background-image: var(--level-ui-paper-texture);
+  background-size: 4px 4px, auto;
+  border-color: var(--level-ui-border-dark);
+  border-radius: var(--level-ui-radius-lg);
+  box-shadow: var(--level-ui-shadow-card);
+}
+
+.level-completion-recap {
+  border-top: 5px solid var(--level-ui-red);
+}
+
+.level-completion-recap__eyebrow,
+.level-completion-recap__history strong,
+.level-expression-panel__eyebrow,
+.level-expression-panel__label {
+  color: var(--level-ui-red);
+}
+
+.level-expression-panel__submit,
+.level-artwork-panel__controls button {
+  min-height: var(--level-ui-touch);
+  border: 1px solid rgba(239, 209, 138, 0.58);
+  border-radius: var(--level-ui-radius-sm);
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  box-shadow: 0 8px 20px rgba(89, 24, 19, 0.22);
+}
+
+.level-expression-panel textarea,
+.level-artwork-panel__controls input {
+  min-height: var(--level-ui-touch);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+/* ---------- 遵义转折：统一视觉样板 ---------- */
+
+.view-zunyi {
+  --level-accent: var(--level-ui-red);
+  --level-highlight: var(--level-ui-gold);
+  --level-paper: var(--level-ui-paper);
+  color: #f5ead1;
+  background: var(--level-ui-night);
+  font-family: var(--font-sans);
+}
+
+.view-zunyi .zunyi-room {
+  background-color: var(--level-ui-night);
+}
+
+.view-zunyi .zunyi-intro-scene__bg,
+.view-zunyi .zunyi-rewrite-canvas__bg {
+  filter: sepia(0.16) saturate(0.78) contrast(1.08) brightness(0.72);
+}
+
+.view-zunyi .zunyi-intro-scene__shade,
+.view-zunyi .zunyi-rewrite-canvas__shade {
+  background:
+    linear-gradient(90deg, rgba(8, 5, 3, 0.9) 0%, rgba(8, 5, 3, 0.58) 42%, rgba(8, 5, 3, 0.22) 70%, rgba(8, 5, 3, 0.68) 100%),
+    radial-gradient(ellipse at center, transparent 34%, rgba(6, 4, 3, 0.62) 100%);
+}
+
+.view-zunyi .history-intro--zunyi {
+  width: min(690px, calc(100vw - 64px));
+  padding: clamp(28px, 4vw, 48px);
+  background:
+    linear-gradient(135deg, rgba(152, 47, 38, 0.16), transparent 42%),
+    rgba(17, 12, 9, 0.82);
+  border: 1px solid rgba(230, 196, 120, 0.34);
+  border-left: 5px solid var(--level-ui-red);
+  border-radius: 0 var(--level-ui-radius-lg) var(--level-ui-radius-lg) 0;
+  box-shadow: var(--level-ui-shadow-modal);
+  backdrop-filter: blur(9px);
+}
+
+.view-zunyi .history-intro__eyebrow,
+.view-zunyi .zunyi-rewrite-canvas__note > p,
+.view-zunyi .zunyi-stage__step {
+  color: var(--level-ui-gold-light);
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.view-zunyi .history-intro__title {
+  color: #fff3d7;
+  font-size: clamp(2.35rem, 5vw, 4.6rem);
+  letter-spacing: 0.05em;
+  text-shadow: 0 5px 26px rgba(0, 0, 0, 0.54);
+}
+
+.view-zunyi .history-intro__text {
+  color: rgba(247, 233, 204, 0.86);
+  font-size: clamp(0.98rem, 1.45vw, 1.08rem);
+  line-height: 1.85;
+}
+
+.view-zunyi :is(
+  #history-intro-start,
+  .zunyi-video-bubble,
+  .zunyi-role-prompt__card button,
+  .zunyi-rewrite-canvas__note button,
+  .zunyi-next,
+  .zunyi-source-card__body button,
+  .zunyi-record-game > button
+) {
+  min-height: var(--level-ui-touch);
+  padding: 10px 22px;
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border: 1px solid rgba(239, 209, 138, 0.62);
+  border-radius: var(--level-ui-radius-sm);
+  box-shadow: 0 9px 22px rgba(0, 0, 0, 0.28);
+  font-weight: 800;
+}
+
+.view-zunyi :is(
+  #history-intro-start,
+  .zunyi-video-bubble,
+  .zunyi-role-prompt__card button,
+  .zunyi-rewrite-canvas__note button,
+  .zunyi-next,
+  .zunyi-source-card__body button,
+  .zunyi-record-game > button
+):hover,
+.view-zunyi :is(
+  #history-intro-start,
+  .zunyi-video-bubble,
+  .zunyi-role-prompt__card button,
+  .zunyi-rewrite-canvas__note button,
+  .zunyi-next,
+  .zunyi-source-card__body button,
+  .zunyi-record-game > button
+):focus-visible {
+  color: #fff9ec;
+  background: linear-gradient(180deg, #b54336, #7d241d);
+  border-color: var(--level-ui-gold-light);
+  outline: 3px solid rgba(239, 209, 138, 0.26);
+  outline-offset: 3px;
+}
+
+.view-zunyi .zunyi-video-bubble {
+  color: #f8e6b2;
+  background: rgba(25, 18, 13, 0.78);
+  border-color: rgba(230, 196, 120, 0.48);
+  box-shadow: none;
+}
+
+.view-zunyi .zunyi-video-bubble:hover,
+.view-zunyi .zunyi-video-bubble:focus-visible {
+  color: #fff3d2;
+  background: rgba(67, 42, 27, 0.9);
+}
+
+.view-zunyi .zunyi-role-prompt {
+  background: rgba(7, 5, 4, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.view-zunyi .zunyi-role-prompt__card {
+  width: min(500px, calc(100vw - 40px));
+  padding: clamp(28px, 4vw, 40px);
+  text-align: left;
+  background:
+    linear-gradient(145deg, rgba(152, 47, 38, 0.14), transparent 42%),
+    linear-gradient(180deg, rgba(52, 35, 25, 0.98), rgba(18, 13, 10, 0.99));
+  border: 1px solid rgba(230, 196, 120, 0.42);
+  border-top: 4px solid var(--level-ui-gold);
+  border-radius: var(--level-ui-radius-md);
+  box-shadow: var(--level-ui-shadow-modal);
+}
+
+.view-zunyi .zunyi-role-prompt__card h3 {
+  color: #fff1d2;
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+}
+
+.view-zunyi .zunyi-role-prompt__card button {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.view-zunyi .zunyi-rewrite-canvas__note {
+  width: min(620px, calc(100vw - 48px));
+  padding: clamp(22px, 3vw, 34px);
+  background:
+    linear-gradient(145deg, rgba(152, 47, 38, 0.1), transparent 44%),
+    rgba(25, 17, 12, 0.9);
+  border: 1px solid rgba(230, 196, 120, 0.38);
+  border-top: 4px solid var(--level-ui-gold);
+  border-radius: var(--level-ui-radius-md);
+  box-shadow: var(--level-ui-shadow-modal);
+  backdrop-filter: blur(8px);
+}
+
+.view-zunyi .zunyi-record-game__paper,
+.view-zunyi .zunyi-source-card,
+.view-zunyi .zunyi-story__panel,
+.view-zunyi .zunyi-note {
+  color: var(--level-ui-ink);
+  background-color: var(--level-ui-paper-light);
+  background-image: var(--level-ui-paper-texture);
+  background-size: 4px 4px, auto;
+  border-color: var(--level-ui-border-dark);
+  border-radius: var(--level-ui-radius-md);
+  box-shadow: var(--level-ui-shadow-card);
+}
+
+.view-zunyi .zunyi-record-game__choices button,
+.view-zunyi .zunyi-choice button,
+.view-zunyi .zunyi-order__cards button {
+  min-height: var(--level-ui-touch);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.view-zunyi [data-level-feedback],
+.view-zunyi .zunyi-feedback,
+.view-zunyi .zunyi-record-game__feedback {
+  border-radius: var(--level-ui-radius-sm);
+}
+
+/* 16:9 展馆大屏：把核心任务保持在一屏内，并留下顶栏安全区。 */
+@media (min-width: 1180px) and (min-aspect-ratio: 16 / 10) {
+  .view-zunyi .zunyi-room:not(.zunyi-room--intro):not(.zunyi-room--rewrite) {
+    min-height: 100svh;
+    padding: 92px 28px 24px;
+  }
+
+  .view-zunyi .zunyi-table {
+    grid-template-columns: minmax(0, 1fr) minmax(310px, 360px);
+    width: min(1420px, calc(100vw - 56px));
+    margin: 0 auto;
+  }
+
+  .view-zunyi .zunyi-stage,
+  .view-zunyi .zunyi-note {
+    min-height: min(720px, calc(100svh - 122px));
+  }
+
+  .view-zunyi .zunyi-rewrite-canvas__note {
+    bottom: 5.5vh;
+    max-height: calc(100svh - 150px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .level-runtime-chrome {
+    right: max(116px, calc(env(safe-area-inset-right) + 104px));
+  }
+
+  .view-zunyi .history-intro--zunyi {
+    width: calc(100vw - 28px);
+    padding: 26px 22px;
+    border-left-width: 4px;
+  }
+
+  .view-zunyi .history-intro__title {
+    font-size: clamp(2rem, 11vw, 3.1rem);
+  }
+
+  .view-zunyi .zunyi-rewrite-canvas__note {
+    width: calc(100vw - 28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-zunyi *,
+  .level-runtime-chrome *,
+  .level-source-drawer * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .level-identity-prompt * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -2,10 +2,9 @@ export function renderKeyCommand(key, label, tone = "", dataAttribute = "") {
   const toneClass = tone ? ` historical-key-command--${tone}` : "";
   const attr = dataAttribute ? ` ${dataAttribute}` : "";
   return `
-    <div class="historical-key-command${toneClass}"${attr}>
-      <kbd>${key}</kbd>
+    <button type="button" class="historical-key-command${toneClass}" data-key-command="${key}"${attr}>
       <span>${label}</span>
-    </div>
+    </button>
   `;
 }
 
