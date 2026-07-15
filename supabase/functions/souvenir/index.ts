@@ -5,12 +5,16 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")?.replace(/\/$/, "");
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const PUBLIC_APP_URL = (Deno.env.get("PUBLIC_APP_URL") ?? "https://niuchen476-svg.github.io/huozi-project/").replace(/\/$/, "");
 const BUCKET = "souvenirs";
+const IMAGE_PREFIX = "images";
+const METADATA_PREFIX = "metadata";
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const MAX_SAVES_PER_WINDOW = 3;
-const saveLog = new Map<string, number[]>();
 const TOKEN_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SAFE_ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/;
+const saveLog = new Map<string, number[]>();
+let bucketReady: Promise<void> | null = null;
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -63,6 +67,41 @@ async function adminFetch(path: string, init: RequestInit = {}) {
   });
 }
 
+async function ensureBucket() {
+  if (!bucketReady) {
+    bucketReady = (async () => {
+      const existing = await adminFetch(`/storage/v1/bucket/${BUCKET}`);
+      if (existing.ok) return;
+      // Storage API 对“不存在的 bucket”在不同版本中可能返回 400 或 404；
+      // 直接尝试幂等创建，再以 409 作为“已经存在”的成功结果。
+      if (existing.status === 401 || existing.status === 403) {
+        throw new Error(`作品存储服务认证失败（${existing.status}）`);
+      }
+      const created = await adminFetch("/storage/v1/bucket", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: BUCKET,
+          name: BUCKET,
+          public: false,
+          file_size_limit: MAX_IMAGE_BYTES,
+          allowed_mime_types: ["image/jpeg", "image/png", "image/webp", "application/json"],
+        }),
+      });
+      if (!created.ok && created.status !== 409) {
+        const detail = (await created.text()).slice(0, 180);
+        throw new Error(`作品存储桶创建失败（${created.status}）${detail ? `：${detail}` : ""}`);
+      }
+    })();
+  }
+  try {
+    await bucketReady;
+  } catch (error) {
+    bucketReady = null;
+    throw error;
+  }
+}
+
 function reserveSave(ip: string) {
   const now = Date.now();
   const recent = (saveLog.get(ip) || []).filter((time) => now - time < RATE_WINDOW_MS);
@@ -73,23 +112,55 @@ function reserveSave(ip: string) {
   saveLog.set(ip, recent);
 }
 
-async function cleanupExpired() {
-  const query = new URLSearchParams({
-    expires_at: `lt.${new Date().toISOString()}`,
-    select: "token,image_path",
-    limit: "20",
+async function uploadObject(path: string, body: BodyInit, contentType: string) {
+  const response = await adminFetch(`/storage/v1/object/${BUCKET}/${path}`, {
+    method: "POST",
+    headers: { "content-type": contentType, "x-upsert": "false" },
+    body,
   });
-  const response = await adminFetch(`/rest/v1/souvenir_works?${query}`);
+  if (!response.ok) throw new Error(`作品文件保存失败（${response.status}）`);
+}
+
+async function deleteObject(path: string) {
+  await adminFetch(`/storage/v1/object/${BUCKET}/${path}`, { method: "DELETE" }).catch(() => {});
+}
+
+async function readMetadata(token: string) {
+  const path = `${METADATA_PREFIX}/${token}.json`;
+  const response = await adminFetch(`/storage/v1/object/authenticated/${BUCKET}/${path}`);
+  if (response.status === 404) throw Object.assign(new Error("没有找到这份作品"), { status: 404 });
+  if (!response.ok) throw Object.assign(new Error("作品信息读取失败"), { status: 502 });
+  return response.json();
+}
+
+async function cleanupExpired() {
+  const response = await adminFetch(`/storage/v1/object/list/${BUCKET}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      prefix: METADATA_PREFIX,
+      limit: 20,
+      sortBy: { column: "created_at", order: "asc" },
+    }),
+  });
   if (!response.ok) return;
-  const records = await response.json();
-  if (!Array.isArray(records) || !records.length) return;
-  for (const record of records) {
-    if (typeof record?.image_path === "string") {
-      await adminFetch(`/storage/v1/object/${BUCKET}/${record.image_path}`, { method: "DELETE" }).catch(() => {});
+  const entries = await response.json();
+  if (!Array.isArray(entries)) return;
+  for (const entry of entries) {
+    const filename = typeof entry?.name === "string" ? entry.name : "";
+    const match = filename.match(/^([0-9a-f-]{36})\.json$/i);
+    if (!match || !TOKEN_PATTERN.test(match[1])) continue;
+    try {
+      const metadata = await readMetadata(match[1]);
+      if (new Date(metadata.expiresAt).getTime() > Date.now()) continue;
+      await Promise.all([
+        deleteObject(`${METADATA_PREFIX}/${filename}`),
+        typeof metadata.imagePath === "string" ? deleteObject(metadata.imagePath) : Promise.resolve(),
+      ]);
+    } catch {
+      // 单份历史作品损坏不阻断本次保存。
     }
   }
-  const tokens = records.map((record) => record?.token).filter(Boolean).join(",");
-  if (tokens) await adminFetch(`/rest/v1/souvenir_works?token=in.(${tokens})`, { method: "DELETE" }).catch(() => {});
 }
 
 async function createSouvenir(body: Record<string, unknown>) {
@@ -100,59 +171,50 @@ async function createSouvenir(body: Record<string, unknown>) {
   const token = crypto.randomUUID();
   const createdAt = new Date();
   const expiresAt = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000);
-  const imagePath = `${createdAt.toISOString().slice(0, 10)}/${token}.${image.extension}`;
-
-  const upload = await adminFetch(`/storage/v1/object/${BUCKET}/${imagePath}`, {
-    method: "POST",
-    headers: { "content-type": image.contentType, "x-upsert": "false" },
-    body: image.bytes,
-  });
-  if (!upload.ok) throw Object.assign(new Error("作品图片保存失败"), { status: 502 });
-
-  const record = {
+  const imagePath = `${IMAGE_PREFIX}/${token}.${image.extension}`;
+  const metadataPath = `${METADATA_PREFIX}/${token}.json`;
+  const metadata = {
     token,
-    image_path: imagePath,
-    player_name: playerName,
-    theme_id: themeId,
-    fragment_ids: cleanIds(body.fragmentIds, 3),
-    source_ids: cleanIds(body.sourceIds, 3),
-    favorite_fragment_id: cleanText(body.favoriteFragmentId, 80) || null,
-    expression_title: cleanText(body.expressionTitle, 40),
-    expression_text: cleanText(body.expressionText, 240),
-    generated_by_ai: body.generatedByAi === true,
-    expires_at: expiresAt.toISOString(),
+    imagePath,
+    playerName,
+    themeId,
+    fragmentIds: cleanIds(body.fragmentIds, 3),
+    sourceIds: cleanIds(body.sourceIds, 3),
+    favoriteFragmentId: cleanText(body.favoriteFragmentId, 80) || null,
+    expressionTitle: cleanText(body.expressionTitle, 40),
+    expressionText: cleanText(body.expressionText, 240),
+    generatedByAi: body.generatedByAi === true,
+    createdAt: createdAt.toISOString(),
+    expiresAt: expiresAt.toISOString(),
   };
-  const insert = await adminFetch("/rest/v1/souvenir_works", {
-    method: "POST",
-    headers: { "content-type": "application/json", prefer: "return=minimal" },
-    body: JSON.stringify(record),
-  });
-  if (!insert.ok) {
-    await adminFetch(`/storage/v1/object/${BUCKET}/${imagePath}`, { method: "DELETE" }).catch(() => {});
-    throw Object.assign(new Error("作品信息保存失败"), { status: 502 });
+
+  await ensureBucket();
+  await uploadObject(imagePath, image.bytes, image.contentType);
+  try {
+    await uploadObject(metadataPath, JSON.stringify(metadata), "application/json");
+  } catch (error) {
+    await deleteObject(imagePath);
+    throw error;
   }
   return {
     token,
     shareUrl: `${PUBLIC_APP_URL}/#/souvenir/${token}`,
-    expiresAt: expiresAt.toISOString(),
+    expiresAt: metadata.expiresAt,
   };
 }
 
 async function readSouvenir(token: string) {
   if (!TOKEN_PATTERN.test(token)) throw Object.assign(new Error("作品编号无效"), { status: 400 });
-  const query = new URLSearchParams({
-    token: `eq.${token}`,
-    select: "token,image_path,player_name,theme_id,fragment_ids,source_ids,favorite_fragment_id,expression_title,expression_text,generated_by_ai,created_at,expires_at",
-    limit: "1",
-  });
-  const response = await adminFetch(`/rest/v1/souvenir_works?${query}`);
-  if (!response.ok) throw Object.assign(new Error("作品读取失败"), { status: 502 });
-  const [record] = await response.json();
-  if (!record) throw Object.assign(new Error("没有找到这份作品"), { status: 404 });
-  if (new Date(record.expires_at).getTime() <= Date.now()) {
+  await ensureBucket();
+  const metadata = await readMetadata(token);
+  if (new Date(metadata.expiresAt).getTime() <= Date.now()) {
+    await Promise.all([
+      deleteObject(`${METADATA_PREFIX}/${token}.json`),
+      typeof metadata.imagePath === "string" ? deleteObject(metadata.imagePath) : Promise.resolve(),
+    ]);
     throw Object.assign(new Error("这份作品已经超过保存期限"), { status: 410 });
   }
-  const sign = await adminFetch(`/storage/v1/object/sign/${BUCKET}/${record.image_path}`, {
+  const sign = await adminFetch(`/storage/v1/object/sign/${BUCKET}/${metadata.imagePath}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ expiresIn: 600 }),
@@ -163,40 +225,29 @@ async function readSouvenir(token: string) {
   const imageUrl = /^https?:/i.test(signedPath)
     ? signedPath
     : `${SUPABASE_URL}/storage/v1${signedPath}`;
-  return {
-    token: record.token,
-    imageUrl,
-    playerName: record.player_name,
-    themeId: record.theme_id,
-    fragmentIds: record.fragment_ids,
-    sourceIds: record.source_ids,
-    favoriteFragmentId: record.favorite_fragment_id,
-    expressionTitle: record.expression_title,
-    expressionText: record.expression_text,
-    generatedByAi: record.generated_by_ai,
-    createdAt: record.created_at,
-    expiresAt: record.expires_at,
-  };
+  return { ...metadata, imageUrl, imagePath: undefined };
 }
 
 export default {
   fetch: withSupabase({ auth: ["publishable", "secret"] }, async (req) => {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+    const requestId = `souvenir-${crypto.randomUUID()}`;
     try {
       if (req.method === "POST") {
         const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
         reserveSave(ip);
+        await ensureBucket();
         await cleanupExpired().catch(() => {});
-        return json(await createSouvenir(await req.json()));
+        return json({ ...(await createSouvenir(await req.json())), requestId });
       }
       if (req.method === "GET") {
         const token = new URL(req.url).searchParams.get("token") || "";
-        return json(await readSouvenir(token));
+        return json({ ...(await readSouvenir(token)), requestId });
       }
-      return json({ error: "仅支持 GET 和 POST" }, 405);
+      return json({ error: "仅支持 GET 和 POST", requestId }, 405);
     } catch (error) {
       const value = error as Error & { status?: number };
-      return json({ error: value.message || "作品服务暂时不可用" }, value.status || 500);
+      return json({ error: value.message || "作品服务暂时不可用", requestId }, value.status || 500);
     }
   }),
 };

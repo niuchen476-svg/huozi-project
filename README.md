@@ -145,12 +145,10 @@ npm run deploy-artwork
 
 会宁数字展台会把最终画作保存 30 天，并生成可扫码带走的分享页。分享页保留玩家选择的主题、史料、碎片、表达和署名；玩家还可以选择最喜欢的一块碎片，打印 A6 平面纪念卡。二维码服务失败时，原图保存和本地打印仍可继续。
 
-首次上线需要依次执行数据库迁移和 Edge Function 部署：
+首次上线只需要部署 Edge Function：
 
 ```bash
-supabase link --project-ref pfkamgzktfwfotirlocd
-supabase db push --linked
 npm run deploy-souvenir
 ```
 
-迁移会创建私有 `souvenirs` Storage bucket 和启用 RLS 的 `souvenir_works` 表；浏览器不接触 service role key。生产函数还限制同一来源十分钟最多保存三份作品，并会在后续保存时清理过期内容。
+函数首次保存时会自动创建私有 `souvenirs` Storage bucket，图片和元数据都只通过 Edge Function 访问；浏览器不接触 service role key。生产函数还限制同一来源十分钟最多保存三份作品，并会在后续保存时清理过期内容。
