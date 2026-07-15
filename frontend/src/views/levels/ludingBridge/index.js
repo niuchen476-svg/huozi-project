@@ -89,15 +89,6 @@ export function renderBridgeAction(root, level) {
             </div>
           </div>
 
-          <div class="bridge-role-prompt" id="bridge-role-prompt" role="dialog" aria-modal="true" aria-label="身份提示">
-            <div class="bridge-role-prompt__card">
-              <p>身份确认</p>
-              <h3>今天，你是这场战役的突击队员。</h3>
-              <span>听清任务，报名上桥，在枪火和铁索之间夺下泸定桥。</span>
-              <button type="button" id="bridge-role-prompt-close">进入战场</button>
-            </div>
-          </div>
-
           <div class="squad-select" id="squad-select" hidden>
             <div class="squad-select__bg" style="background-image: url('${SQUAD_BG}')"></div>
             <div class="squad-select__scrim"></div>
@@ -120,10 +111,6 @@ export function renderBridgeAction(root, level) {
         </div>
       </div>
     `;
-
-    document.querySelector("#bridge-role-prompt-close").addEventListener("click", () => {
-      document.querySelector("#bridge-role-prompt")?.remove();
-    });
 
     const videoModal = document.querySelector("#bridge-video-modal");
     const videoPlayer = document.querySelector("#bridge-video-player");

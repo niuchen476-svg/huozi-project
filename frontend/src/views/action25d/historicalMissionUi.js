@@ -1,10 +1,8 @@
 export function renderKeyCommand(key, label, tone = "", dataAttribute = "") {
   const toneClass = tone ? ` historical-key-command--${tone}` : "";
   const attr = dataAttribute ? ` ${dataAttribute}` : "";
-  const visibleHint = /^\d+$/.test(key) ? key : "点击";
   return `
     <button type="button" class="historical-key-command${toneClass}" data-key-command="${key}"${attr}>
-      <kbd aria-hidden="true">${visibleHint}</kbd>
       <span>${label}</span>
     </button>
   `;

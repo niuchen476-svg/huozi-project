@@ -34,6 +34,132 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Level Host 统一身份提示：先确认角色，再启动关卡计时与交互。 */
+.level-identity-prompt {
+  position: fixed;
+  z-index: 260;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 3vw, 32px);
+  background: rgba(7, 5, 4, 0.74);
+  backdrop-filter: blur(9px);
+  font-family: var(--font-sans);
+}
+
+.level-identity-prompt__card {
+  width: min(500px, calc(100vw - 40px));
+  padding: clamp(28px, 4vw, 40px);
+  color: #eee3cb;
+  text-align: left;
+  background:
+    linear-gradient(145deg, rgba(152, 47, 38, 0.14), transparent 42%),
+    linear-gradient(180deg, rgba(52, 35, 25, 0.98), rgba(18, 13, 10, 0.99));
+  border: 1px solid rgba(230, 196, 120, 0.42);
+  border-top: 4px solid var(--level-ui-gold);
+  border-radius: var(--level-ui-radius-md);
+  box-shadow: var(--level-ui-shadow-modal);
+}
+
+.level-identity-prompt__card > p {
+  margin: 0 0 12px;
+  color: var(--level-ui-gold-light);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.level-identity-prompt__card > h2 {
+  margin: 0;
+  color: #fff1d2;
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  line-height: 1.5;
+}
+
+.level-identity-prompt__card > span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(238, 227, 203, 0.82);
+  font-size: 0.96rem;
+  line-height: 1.8;
+}
+
+.level-identity-prompt__card button {
+  width: 100%;
+  min-height: var(--level-ui-touch);
+  margin-top: 24px;
+  padding: 10px 22px;
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border: 1px solid rgba(239, 209, 138, 0.62);
+  border-radius: var(--level-ui-radius-sm);
+  box-shadow: 0 9px 22px rgba(0, 0, 0, 0.28);
+  font: 800 1rem/1.4 var(--font-sans);
+  cursor: pointer;
+}
+
+.level-identity-prompt__card button:hover,
+.level-identity-prompt__card button:focus-visible {
+  background: linear-gradient(180deg, #b54336, #7d241d);
+  border-color: var(--level-ui-gold-light);
+  outline: 3px solid rgba(239, 209, 138, 0.26);
+  outline-offset: 3px;
+}
+
+/* 瑞金、湘江：改成同一套红色主操作，二级操作仍保持清晰层级。 */
+.historical-mission {
+  --accent: var(--level-ui-red);
+  --accent-strong: var(--level-ui-red);
+  font-family: var(--font-serif);
+}
+
+.historical-mission .historical-key-command,
+.historical-mission button {
+  min-height: var(--level-ui-touch);
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border-color: rgba(239, 209, 138, 0.58);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.historical-mission .historical-key-command:hover:not(:disabled),
+.historical-mission button:hover:not(:disabled) {
+  color: #fff9ec;
+  background: linear-gradient(180deg, #b54336, #7d241d);
+  border-color: var(--level-ui-gold-light);
+}
+
+.historical-mission :is(
+  .historical-key-command--secondary,
+  .historical-mission__controls .historical-key-command + .historical-key-command,
+  .historical-mission__intro-actions .historical-key-command + .historical-key-command
+) {
+  color: #f8e6b2;
+  background: rgba(25, 18, 13, 0.84);
+  border-color: rgba(230, 196, 120, 0.48);
+}
+
+/* 原生关卡统一使用样板的标题字体、纸张半径与红色操作。 */
+.view-bridge-action,
+.huining-experience {
+  font-family: var(--font-sans);
+}
+
+.view-bridge-action :is(#history-intro-start, .bridge-instruction__card button, .bridge-result__card button),
+.huining-experience .huining-primary-button {
+  min-height: var(--level-ui-touch);
+  color: #fff5dd;
+  background: linear-gradient(180deg, var(--level-ui-red), var(--level-ui-red-deep));
+  border: 1px solid rgba(239, 209, 138, 0.58);
+  border-radius: var(--level-ui-radius-sm);
+}
+
+.view-bridge-action .history-intro__title,
+.huining-experience :is(h1, h2, h3) {
+  font-family: var(--font-serif);
+}
+
 /* 顶栏：同一展项的身份、进度和全局操作。 */
 .level-runtime-chrome {
   top: max(14px, env(safe-area-inset-top));
@@ -413,6 +539,11 @@
   .view-zunyi *,
   .level-runtime-chrome *,
   .level-source-drawer * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .level-identity-prompt * {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }

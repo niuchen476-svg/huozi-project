@@ -545,6 +545,32 @@
   @media (max-width: 640px) {
     .pos-layer .pos-opt { max-width: 130px; font-size: 12.5px; padding: 8px 10px; white-space: normal; }
   }
+
+  /* 与 Level Host 的遵义样板保持同一套展馆视觉语言。 */
+  :root {
+    --level-red: #982f26;
+    --level-red-deep: #681b17;
+    --level-gold: #c6a45b;
+    --level-gold-light: #efd18a;
+    --level-paper: #f2e7cc;
+    --level-serif: "Noto Serif SC", "Songti SC", serif;
+    --level-sans: "Noto Sans SC", "PingFang SC", sans-serif;
+  }
+  body { font-family: var(--level-sans); }
+  :is(.title, .chapter, .card h2, .quiz-topleft h2) { font-family: var(--level-serif); }
+  .title .red { color: var(--level-red); }
+  :is(.btn, .tap-btn, .pos-confirm) {
+    min-height: 48px;
+    color: #fff5dd;
+    background: linear-gradient(180deg, var(--level-red), var(--level-red-deep));
+    border: 1px solid rgba(239, 209, 138, 0.58);
+    border-radius: 7px;
+    box-shadow: 0 9px 22px rgba(0, 0, 0, 0.28);
+  }
+  :is(.card, .quiz-topleft, .opt, .feedback, .pos-feedback) { border-radius: 12px; }
+  :is(.opt, .pos-layer .pos-opt) { border-color: rgba(198, 164, 91, 0.42); }
+  .progress .dot.cur { background: var(--level-red); }
+  .progress .dot.done { background: var(--level-gold); }
 </style>
 </head>
 <body>

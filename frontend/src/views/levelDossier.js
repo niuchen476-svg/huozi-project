@@ -104,7 +104,6 @@ function renderSupplyChallenge(challenge) {
         .map(
           (option, index) => `
           <button type="button" class="mission-choice" data-choice="${option.id}">
-            <kbd class="mission-choice__key">${index + 1}</kbd>
             <span class="mission-choice__label">${option.label}</span>
             <span class="mission-choice__detail">${option.detail}</span>
           </button>
@@ -114,7 +113,7 @@ function renderSupplyChallenge(challenge) {
     </div>
     <div class="mission-challenge__bar">
       <span data-challenge-status>已选择 0/${challenge.required.length}</span>
-      <span class="mission-challenge__keys">点击卡片选择 · 点击按钮确认（支持数字键与 Enter）</span>
+      <span class="mission-challenge__keys">选择三张卡片，再确认取舍</span>
       <button type="button" data-submit-challenge disabled>确认取舍</button>
     </div>
   `;
@@ -132,7 +131,6 @@ function renderSequenceChallenge(challenge) {
         .map(
           (option, index) => `
           <button type="button" class="mission-choice" data-sequence-choice="${option.id}">
-            <kbd class="mission-choice__key">${index + 1}</kbd>
             <span class="mission-choice__label">${option.label}</span>
             <span class="mission-choice__detail">${option.detail}</span>
           </button>
@@ -142,7 +140,7 @@ function renderSequenceChallenge(challenge) {
     </div>
     <div class="mission-challenge__bar">
       <span data-challenge-status>已排序 0/${challenge.required.length}</span>
-      <span class="mission-challenge__keys">点击卡片排序 · 点击按钮确认（支持键盘快捷键）</span>
+      <span class="mission-challenge__keys">依次选择卡片，再确认行动</span>
       <div class="mission-challenge__actions">
         <button type="button" data-clear-sequence>清空顺序</button>
         <button type="button" data-submit-challenge disabled>确认行动</button>
