@@ -441,3 +441,9 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/artwork/deno.json"
 entrypoint = "./functions/artwork/index.ts"
+
+[functions.souvenir]
+enabled = true
+verify_jwt = false
+import_map = "./functions/souvenir/deno.json"
+entrypoint = "./functions/souvenir/index.ts"

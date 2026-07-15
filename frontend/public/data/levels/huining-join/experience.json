@@ -124,7 +124,7 @@
     "expression": {
       "enabled": true,
       "estimatedSeconds": 25,
-      "prompt": "从马蹄裹布、会师时间线、你选择的历史碎片和史料出发，为自己的数字展台留下一段讲解。",
+      "prompt": "回望七关史料、一路获得的碎片和自己的选择，你最想把怎样的长征记忆带走？",
       "inputMode": "choice-plus-short-text",
       "maxCharacters": 80,
       "sourceSelectionLimit": 3,

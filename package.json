@@ -14,10 +14,12 @@
     "test:expression": "node --test backend/src/services/expression.test.js frontend/src/views/levelRuntime/expressionPanel.test.js",
     "test:artwork": "node --test backend/src/services/artwork.test.js",
     "test:artwork-panel": "node --test frontend/src/views/levelRuntime/artworkPanel.test.js",
+    "test:fragment-viewer": "node --test frontend/src/views/fragmentModelViewer.test.js",
     "test:huining": "node --test frontend/src/views/levels/huiningJoin/index.test.js",
     "deploy-reflect": "supabase functions deploy reflect --project-ref pfkamgzktfwfotirlocd",
     "deploy-expression": "supabase functions deploy expression --project-ref pfkamgzktfwfotirlocd",
     "deploy-speech": "supabase functions deploy speech --project-ref pfkamgzktfwfotirlocd",
-    "deploy-artwork": "supabase functions deploy artwork --project-ref pfkamgzktfwfotirlocd"
+    "deploy-artwork": "supabase functions deploy artwork --project-ref pfkamgzktfwfotirlocd",
+    "deploy-souvenir": "supabase functions deploy souvenir --project-ref pfkamgzktfwfotirlocd"
   }
 }

@@ -70,6 +70,9 @@ export function createClientExpressionFallback(experience, payload) {
     sourceIds: payload.sourceIds || [],
     label: config.outputLabel || "AI根据玩家选择生成",
     usedFallback: true,
+    mode: "fallback",
+    fallbackReason: "network",
+    requestId: null,
   };
 }
 
@@ -78,14 +81,16 @@ export function createLevelExpressionPanel(options = {}) {
 }
 
 class LevelExpressionPanel {
-  constructor({ experience, choices = [], onSubmit, onSpeak, onArtwork, onComplete } = {}) {
+  constructor({ experience, choices = [], sources = [], initialSourceIds = [], artworkContext = null, onSubmit, onSpeak, onArtwork, onPersistArtwork, onComplete } = {}) {
     this.experience = experience || {};
     this.config = this.experience.phases?.expression || {};
-    this.sources = getExpressionSources(this.experience);
+    this.sources = Array.isArray(sources) && sources.length ? sources : getExpressionSources(this.experience);
+    this.initialSourceIds = new Set(Array.isArray(initialSourceIds) ? initialSourceIds : []);
     this.choices = getExpressionChoices(this.experience, choices);
     this.onSubmit = typeof onSubmit === "function" ? onSubmit : null;
     this.onSpeak = typeof onSpeak === "function" ? onSpeak : null;
     this.onArtwork = typeof onArtwork === "function" ? onArtwork : null;
+    this.onPersistArtwork = typeof onPersistArtwork === "function" ? onPersistArtwork : null;
     this.onComplete = typeof onComplete === "function" ? onComplete : () => {};
     this.audio = null;
     this.audioUrls = [];
@@ -95,7 +100,12 @@ class LevelExpressionPanel {
     this.controller = new AbortController();
     this.element = this.build();
     this.artworkPanel = this.config.artwork?.enabled && this.onArtwork
-      ? createLevelArtworkPanel({ config: this.config.artwork, onGenerate: this.onArtwork })
+      ? createLevelArtworkPanel({
+          config: this.config.artwork,
+          context: artworkContext,
+          onGenerate: this.onArtwork,
+          onPersist: this.onPersistArtwork,
+        })
       : null;
     this.artworkPanel?.mount(this.element);
   }
@@ -180,7 +190,9 @@ class LevelExpressionPanel {
     for (const source of this.sources) {
       const label = document.createElement("label");
       label.className = "level-expression-panel__chip";
-      label.innerHTML = `<input type="checkbox" name="sourceId" value="${this.escape(source.id)}"><span>${this.escape(source.title)}</span>`;
+      const checked = this.initialSourceIds.has(source.id) ? " checked" : "";
+      const levelPrefix = source.levelTitle ? `${source.levelTitle} · ` : "";
+      label.innerHTML = `<input type="checkbox" name="sourceId" value="${this.escape(source.id)}"${checked}><span>${this.escape(`${levelPrefix}${source.title}`)}</span>`;
       container.appendChild(label);
     }
   }
@@ -247,7 +259,12 @@ class LevelExpressionPanel {
     this.result.querySelector(".level-expression-panel__label").textContent = value.label || "AI根据玩家选择生成";
     this.result.querySelector("h3").textContent = value.title || "我的表达";
     this.result.querySelector("p").textContent = value.text || "";
-    this.result.querySelector(".level-expression-panel__fallback").hidden = value.usedFallback !== true;
+    const fallback = this.result.querySelector(".level-expression-panel__fallback");
+    fallback.hidden = value.usedFallback !== true;
+    if (value.usedFallback === true) {
+      fallback.textContent = fallbackMessage(value.fallbackReason);
+      if (value.requestId) fallback.title = `请求编号：${value.requestId}`;
+    }
     this.speechButton.hidden = !this.onSpeak || !this.spokenText;
     this.setSpeechButtonState("ready");
     this.result.hidden = false;
@@ -390,4 +407,19 @@ class LevelExpressionPanel {
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
   }
+}
+
+function fallbackMessage(reason) {
+  const messages = {
+    quota: "在线生成额度暂时不可用，当前使用离线模板。",
+    auth: "在线服务认证暂时不可用，当前使用离线模板。",
+    timeout: "在线生成等待超时，当前使用离线模板。",
+    config: "在线生成尚未配置完成，当前使用离线模板。",
+    response: "在线结果暂时无法解析，当前使用离线模板。",
+    validation: "所选材料暂未同步到在线服务，当前使用离线模板。",
+    network: "当前网络无法连接在线服务，已使用离线模板。",
+    upstream: "在线服务暂时不可用，当前使用离线模板。",
+    disabled: "本关当前使用离线模板。",
+  };
+  return messages[reason] || messages.upstream;
 }

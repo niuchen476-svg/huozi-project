@@ -901,6 +901,14 @@
   font-size: 0.88rem;
 }
 
+.archive-fragment-reward__status {
+  min-height: 1.5em;
+  margin: 14px 0 -6px;
+  color: var(--color-red-deep);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .archive-fragment-reward__panel button {
   margin-top: 20px;
   min-height: 44px;
@@ -915,6 +923,11 @@
 
 .archive-fragment-reward__panel button:hover {
   background: var(--color-red-deep);
+}
+
+.archive-fragment-reward__panel button:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 @media (max-width: 560px) {

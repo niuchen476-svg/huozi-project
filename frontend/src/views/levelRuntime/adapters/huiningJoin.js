@@ -1,5 +1,5 @@
-import { fetchExhibition } from "../../../api.js";
-import { renderHuiningJoinExperience } from "../../levels/huiningJoin/index.js";
+import { fetchExhibition, fetchLevelExperience, fetchLevelsIndex } from "../../../api.js";
+import { buildHuiningSourceCatalog, renderHuiningJoinExperience } from "../../levels/huiningJoin/index.js";
 import { completeLevel, cancelLevel } from "../protocol.js";
 import { preloadImage } from "../assetPreload.js";
 
@@ -12,12 +12,18 @@ export default {
     ]);
   },
   async play(context) {
-    const exhibition = await fetchExhibition();
-    const outcome = await renderHuiningJoinExperience({ ...context, exhibition });
+    const [exhibition, levels] = await Promise.all([fetchExhibition(), fetchLevelsIndex()]);
+    const experiences = await Promise.all(levels.map((level) => fetchLevelExperience(level.id).catch(() => null)));
+    const sourceCatalog = buildHuiningSourceCatalog(levels, experiences);
+    const outcome = await renderHuiningJoinExperience({ ...context, exhibition, sourceCatalog });
     if (!outcome) return cancelLevel();
     return completeLevel({
       actionCompleted: true,
-      data: { expressionChoices: outcome.expressionChoices },
+      data: {
+        expressionChoices: outcome.expressionChoices,
+        expressionSources: sourceCatalog,
+        initialSourceIds: outcome.sourceIds,
+      },
     });
   },
   pause({ root }) {

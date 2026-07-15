@@ -2,6 +2,7 @@ import { renderHomeView } from "./views/home.js";
 import { preloadMapAssets, renderMapView } from "./views/map.js";
 import { disposeLevelView, renderLevelView } from "./views/level.js";
 import { resumeBgmAfterMedia, setupBgm } from "./bgm.js";
+import { renderSouvenirView } from "./views/souvenir.js";
 
 const app = document.querySelector("#app");
 
@@ -10,15 +11,18 @@ function route() {
   resumeBgmAfterMedia();
   const hash = window.location.hash.slice(1) || "/";
   const levelMatch = hash.match(/^\/level\/(.+)$/);
+  const souvenirMatch = hash.match(/^\/souvenir\/([0-9a-f-]+)$/i);
 
   app.classList.remove("app--action-scene");
-  app.classList.toggle("app--fullbleed", hash === "/map" || hash === "/");
+  app.classList.toggle("app--fullbleed", hash === "/map" || hash === "/" || Boolean(souvenirMatch));
 
   if (hash === "/map" || hash === "/") {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }
 
-  if (levelMatch) {
+  if (souvenirMatch) {
+    renderSouvenirView(app, souvenirMatch[1]);
+  } else if (levelMatch) {
     renderLevelView(app, levelMatch[1]);
   } else if (hash === "/map") {
     renderMapView(app);

@@ -1,6 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
-import { EXPERIENCES } from "./data/experience-data.ts";
+import { EXPERIENCES } from "../_shared/experience-data.ts";
 
 const MIMO_API_BASE = Deno.env.get("MIMO_API_BASE");
 const MIMO_API_KEY = Deno.env.get("MIMO_API_KEY");
@@ -36,7 +36,7 @@ const OUTPUT_INSTRUCTIONS: Record<string, string> = {
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
 const SYSTEM_PROMPT = `你是博物馆互动展项的表达助手。你只根据系统提供的关卡配置、已审核史料摘要和玩家选择，帮助玩家整理一段第一人称短表达。
@@ -83,7 +83,18 @@ function normalizeInput(body: Record<string, unknown>, config: any) {
   return input;
 }
 
-function fallback(config: any, input: any, sources: any[]) {
+function classifyFailure(error: any) {
+  const message = String(error?.message || "").toLowerCase();
+  const status = Number(error?.providerStatus || error?.status || 0);
+  if (status === 429 || /额度|限额|quota|rate limit/.test(message)) return "quota";
+  if (status === 401 || status === 403 || /认证|api[_ -]?key|unauthorized|forbidden/.test(message)) return "auth";
+  if (/超时|timeout|abort/.test(message)) return "timeout";
+  if (/尚未配置|缺少/.test(message)) return "config";
+  if (/返回内容|不是合法|不完整/.test(message)) return "response";
+  return "upstream";
+}
+
+function fallback(config: any, input: any, sources: any[], metadata: any = {}) {
   const template = config.fallbackTemplates?.find((item: any) => item?.title && item?.text);
   const title = template?.title || OUTPUT_TITLES[config.outputType] || "我的长征表达";
   let text = template?.text || input.userText;
@@ -95,6 +106,9 @@ function fallback(config: any, input: any, sources: any[]) {
     sourceIds: input.sourceIds,
     label: config.outputLabel || OUTPUT_LABEL,
     usedFallback: true,
+    mode: "fallback",
+    fallbackReason: metadata.fallbackReason || "disabled",
+    requestId: metadata.requestId || null,
   };
 }
 
@@ -145,7 +159,9 @@ async function callMimo(prompt: string) {
       }),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`MiMo API error ${response.status}`);
+    if (!response.ok) {
+      throw Object.assign(new Error(`MiMo API error ${response.status}`), { providerStatus: response.status });
+    }
     const data = await response.json();
     const raw = data.choices?.[0]?.message?.content;
     if (!raw) throw new Error("MiMo 返回内容为空");
@@ -159,6 +175,7 @@ async function callMimo(prompt: string) {
 }
 
 async function generate(levelId: string, body: Record<string, unknown>) {
+  const requestId = `expression-${crypto.randomUUID()}`;
   const experience = EXPERIENCES[levelId];
   if (!experience) return { error: "关卡不存在", status: 404 };
   const config = experience.phases?.expression;
@@ -170,8 +187,12 @@ async function generate(levelId: string, body: Record<string, unknown>) {
   } catch (err) {
     return { error: (err as Error).message, status: 400 };
   }
+  const sourcePool = levelId === "huining-join"
+    ? Object.entries(EXPERIENCES).flatMap(([sourceLevelId, item]: [string, any]) =>
+        (item.phases?.sources?.items || []).map((source: any) => ({ ...source, levelId: sourceLevelId })))
+    : experience.phases?.sources?.items || [];
   const allowed = new Map(
-    (experience.phases?.sources?.items || [])
+    sourcePool
       .filter((source: any) => source.availableForAiExpression === true)
       .map((source: any) => [source.id, source])
   );
@@ -179,7 +200,7 @@ async function generate(levelId: string, body: Record<string, unknown>) {
     return { error: "所选史料未开放用于 AI 表达", status: 400 };
   }
   const sources = input.sourceIds.map((id) => allowed.get(id));
-  const safeFallback = fallback(config, input, sources);
+  const safeFallback = fallback(config, input, sources, { requestId });
   if (!config.ai?.enabled) return safeFallback;
 
   try {
@@ -187,16 +208,40 @@ async function generate(levelId: string, body: Record<string, unknown>) {
     const title = cleanText(value.title, 30);
     const text = cleanText(value.text, config.ai.maxOutputCharacters);
     if (!title || !text) throw new Error("MiMo 返回内容不完整");
-    return { title, text, sourceIds: input.sourceIds, label: config.outputLabel || OUTPUT_LABEL, usedFallback: false };
+    return {
+      title,
+      text,
+      sourceIds: input.sourceIds,
+      label: config.outputLabel || OUTPUT_LABEL,
+      usedFallback: false,
+      mode: "online",
+      fallbackReason: null,
+      requestId,
+    };
   } catch (err) {
-    console.warn(`[expression] ${levelId} 使用固定模板：${(err as Error).message}`);
-    return safeFallback;
+    const fallbackReason = classifyFailure(err);
+    console.warn("[expression] 在线生成失败", JSON.stringify({
+      levelId,
+      requestId,
+      fallbackReason,
+      providerStatus: (err as any)?.providerStatus ?? null,
+      message: (err as Error).message,
+    }));
+    return { ...safeFallback, fallbackReason };
   }
 }
 
 export default {
   fetch: withSupabase({ auth: ["publishable", "secret"] }, async (req) => {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+    if (req.method === "GET") {
+      return json({
+        status: "ok",
+        service: "expression",
+        configured: Boolean(MIMO_API_BASE && MIMO_API_KEY),
+        model: MIMO_MODEL,
+      });
+    }
     if (req.method !== "POST") return json({ error: "仅支持 POST" }, 405);
 
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";

@@ -38,6 +38,8 @@ class LevelSourceDrawer {
     this.title = title;
     this.maxItems = maxItems;
     this.sources = normalizeSourceDrawerItems(sources, maxItems);
+    this.imageSources = this.sources.filter((source) => safeSourceImage(source.image || source.thumbnail));
+    this.viewerIndex = -1;
     this.onOpenChange = typeof onOpenChange === "function" ? onOpenChange : () => {};
     this.isOpen = false;
     this.lastFocusedElement = null;
@@ -58,6 +60,7 @@ class LevelSourceDrawer {
   updateSources(sources, maxItems = this.maxItems) {
     this.maxItems = maxItems;
     this.sources = normalizeSourceDrawerItems(sources, maxItems);
+    this.imageSources = this.sources.filter((source) => safeSourceImage(source.image || source.thumbnail));
     this.launcherCount.textContent = String(this.sources.length);
     this.launcher.setAttribute("aria-label", `${this.title}，共 ${this.sources.length} 份`);
     this.count.textContent = `${this.sources.length} 份`;
@@ -83,6 +86,7 @@ class LevelSourceDrawer {
   close({ restoreFocus = true } = {}) {
     if (!this.isOpen) return;
     this.isOpen = false;
+    this.closeImageViewer();
     this.element.classList.remove("level-source-drawer--open");
     this.launcher.setAttribute("aria-expanded", "false");
     this.panel.setAttribute("aria-hidden", "true");
@@ -164,7 +168,8 @@ class LevelSourceDrawer {
     this.list.className = "level-source-drawer__list";
     this.scroller.appendChild(this.list);
     this.panel.append(header, this.scroller);
-    root.append(this.launcher, this.backdrop, this.panel);
+    this.viewer = this.buildImageViewer();
+    root.append(this.launcher, this.backdrop, this.panel, this.viewer);
 
     const signal = this.controller.signal;
     this.launcher.addEventListener("click", () => this.open(), { signal });
@@ -172,6 +177,40 @@ class LevelSourceDrawer {
     this.closeButton.addEventListener("click", () => this.close(), { signal });
     this.renderList();
     return root;
+  }
+
+  buildImageViewer() {
+    const viewer = document.createElement("section");
+    viewer.className = "level-source-drawer__viewer";
+    viewer.hidden = true;
+    viewer.setAttribute("role", "dialog");
+    viewer.setAttribute("aria-modal", "true");
+    viewer.setAttribute("aria-label", "史料图片放大查看");
+    viewer.innerHTML = `
+      <div class="level-source-drawer__viewer-stage">
+        <button type="button" class="level-source-drawer__viewer-close" aria-label="关闭大图">×</button>
+        <button type="button" class="level-source-drawer__viewer-nav level-source-drawer__viewer-nav--prev" aria-label="上一张">‹</button>
+        <figure>
+          <img alt="" />
+          <figcaption></figcaption>
+        </figure>
+        <button type="button" class="level-source-drawer__viewer-nav level-source-drawer__viewer-nav--next" aria-label="下一张">›</button>
+        <span class="level-source-drawer__viewer-count" aria-live="polite"></span>
+      </div>`;
+    this.viewerImage = viewer.querySelector("img");
+    this.viewerCaption = viewer.querySelector("figcaption");
+    this.viewerCount = viewer.querySelector(".level-source-drawer__viewer-count");
+    this.viewerClose = viewer.querySelector(".level-source-drawer__viewer-close");
+    this.viewerPrevious = viewer.querySelector(".level-source-drawer__viewer-nav--prev");
+    this.viewerNext = viewer.querySelector(".level-source-drawer__viewer-nav--next");
+    const signal = this.controller.signal;
+    this.viewerClose.addEventListener("click", () => this.closeImageViewer(), { signal });
+    this.viewerPrevious.addEventListener("click", () => this.stepImageViewer(-1), { signal });
+    this.viewerNext.addEventListener("click", () => this.stepImageViewer(1), { signal });
+    viewer.addEventListener("click", (event) => {
+      if (event.target === viewer) this.closeImageViewer();
+    }, { signal });
+    return viewer;
   }
 
   renderList() {
@@ -232,7 +271,13 @@ class LevelSourceDrawer {
         caption.textContent = source.imageCaption;
         figure.appendChild(caption);
       }
-      content.appendChild(figure);
+      const imageButton = document.createElement("button");
+      imageButton.type = "button";
+      imageButton.className = "level-source-drawer__image-button";
+      imageButton.setAttribute("aria-label", `放大查看：${source.title || "史料图片"}`);
+      imageButton.appendChild(figure);
+      imageButton.addEventListener("click", () => this.openImageViewer(source), { signal: this.controller.signal });
+      content.appendChild(imageButton);
     }
     this.appendParagraph(content, source.summary, "摘要");
     this.appendQuote(content, source.originalExcerpt);
@@ -267,10 +312,53 @@ class LevelSourceDrawer {
     container.appendChild(quote);
   }
 
+  openImageViewer(source) {
+    const index = this.imageSources.findIndex((item) => item.id === source.id);
+    this.viewerIndex = index >= 0 ? index : 0;
+    this.renderImageViewer();
+    this.viewer.hidden = false;
+    this.viewer.classList.add("level-source-drawer__viewer--open");
+    this.viewerClose.focus({ preventScroll: true });
+  }
+
+  closeImageViewer() {
+    if (!this.viewer || this.viewer.hidden) return;
+    this.viewer.classList.remove("level-source-drawer__viewer--open");
+    this.viewer.hidden = true;
+    this.viewerIndex = -1;
+  }
+
+  stepImageViewer(offset) {
+    if (!this.imageSources.length) return;
+    this.viewerIndex = (this.viewerIndex + offset + this.imageSources.length) % this.imageSources.length;
+    this.renderImageViewer();
+  }
+
+  renderImageViewer() {
+    const source = this.imageSources[this.viewerIndex];
+    if (!source) return;
+    this.viewerImage.src = safeSourceImage(source.image || source.thumbnail) || "";
+    this.viewerImage.alt = source.imageAlt || source.title || "史料图片";
+    this.viewerCaption.textContent = source.imageCaption || source.title || "";
+    this.viewerCount.textContent = `${this.viewerIndex + 1} / ${this.imageSources.length}`;
+    const multiple = this.imageSources.length > 1;
+    this.viewerPrevious.hidden = !multiple;
+    this.viewerNext.hidden = !multiple;
+  }
+
   handleDocumentKeydown(event) {
     if (event.key === "Escape") {
       event.preventDefault();
+      if (this.viewer && !this.viewer.hidden) {
+        this.closeImageViewer();
+        return;
+      }
       this.close();
+      return;
+    }
+    if (this.viewer && !this.viewer.hidden && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+      event.preventDefault();
+      this.stepImageViewer(event.key === "ArrowLeft" ? -1 : 1);
       return;
     }
     if (event.key !== "Tab") return;

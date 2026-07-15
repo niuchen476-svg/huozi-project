@@ -10,6 +10,7 @@ const sourceDir = path.join(rootDir, "backend/src/data");
 const frontendDataDir = path.join(rootDir, "frontend/public/data");
 const supabaseDataFile = path.join(rootDir, "supabase/functions/reflect/data/levels-data.ts");
 const expressionDataFile = path.join(rootDir, "supabase/functions/expression/data/experience-data.ts");
+const sharedExperienceDataFile = path.join(rootDir, "supabase/functions/_shared/experience-data.ts");
 
 rmSync(frontendDataDir, { recursive: true, force: true });
 mkdirSync(frontendDataDir, { recursive: true });
@@ -38,6 +39,8 @@ const experienceTsSource =
   ";\n";
 mkdirSync(path.dirname(expressionDataFile), { recursive: true });
 writeFileSync(expressionDataFile, experienceTsSource, "utf-8");
+mkdirSync(path.dirname(sharedExperienceDataFile), { recursive: true });
+writeFileSync(sharedExperienceDataFile, experienceTsSource, "utf-8");
 
 console.log(`已同步 ${levelIds.length} 个关卡到 frontend/public/data、reflect 和 expression Edge Function`);
 console.log("如果关卡内容改动会影响 AI 点评（scenario/significance），别忘了重新部署 Edge Function：");

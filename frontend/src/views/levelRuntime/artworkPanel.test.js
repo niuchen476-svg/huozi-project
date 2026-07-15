@@ -10,12 +10,15 @@ test("玩家署名会去除多余空白并限制长度", () => {
 test("画作请求只携带玩家表达、MiMo结果和署名", () => {
   assert.deepEqual(createArtworkRequest({
     expression: { title: "从抵达到会合", text: "不同队伍最终汇聚。" },
-    expressionPayload: { userText: "我想记住团结。", ignored: "no" },
+    expressionPayload: { userText: "我想记住团结。", sourceIds: ["source-a", "source-b"], ignored: "no" },
     playerName: " 小明 ",
+    favoriteFragmentId: "iron-chain-fragment",
   }), {
     playerName: "小明",
     playerText: "我想记住团结。",
     expressionTitle: "从抵达到会合",
     expressionText: "不同队伍最终汇聚。",
+    sourceIds: ["source-a", "source-b"],
+    favoriteFragmentId: "iron-chain-fragment",
   });
 });

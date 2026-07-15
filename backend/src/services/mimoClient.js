@@ -55,7 +55,10 @@ export async function callMimo({
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`MiMo API error ${res.status}: ${text}`);
+    throw Object.assign(new Error(`MiMo API error ${res.status}: ${text}`), {
+      statusCode: res.status === 429 ? 429 : 502,
+      providerStatus: res.status,
+    });
   }
 
   const data = await res.json();
@@ -107,7 +110,10 @@ export async function callMimoTts({
 
   if (!res.ok) {
     const responseText = await res.text();
-    throw new Error(`MiMo TTS API error ${res.status}: ${responseText}`);
+    throw Object.assign(new Error(`MiMo TTS API error ${res.status}: ${responseText}`), {
+      statusCode: res.status === 429 ? 429 : 502,
+      providerStatus: res.status,
+    });
   }
 
   const data = await res.json();

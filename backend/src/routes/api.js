@@ -9,6 +9,7 @@ import { generateReflection } from "../services/reflect.js";
 import { generateLevelExpression } from "../services/expression.js";
 import { generateLevelSpeech } from "../services/speech.js";
 import { generateLevelArtwork } from "../services/artwork.js";
+import { classifyAiFailure, createAiRequestId, getLocalAiStatus } from "../services/aiDiagnostics.js";
 
 const router = Router();
 
@@ -36,6 +37,10 @@ function aiRateLimit(req, res, next) {
 
 router.get("/health", (req, res) => {
   res.json({ status: "ok" });
+});
+
+router.get("/ai/status", (req, res) => {
+  res.json({ status: "ok", ...getLocalAiStatus() });
 });
 
 router.get("/levels", async (req, res) => {
@@ -116,7 +121,12 @@ router.post("/levels/:id/artwork", async (req, res) => {
     const result = await generateLevelArtwork(req.body);
     res.json(result);
   } catch (err) {
-    res.status(err.statusCode || 502).json({ error: err.message || "画作生成失败" });
+    const requestId = err.requestId || createAiRequestId("artwork");
+    res.status(err.statusCode || 502).json({
+      error: err.message || "画作生成失败",
+      code: err.failureReason || classifyAiFailure(err),
+      requestId,
+    });
   }
 });
 
