@@ -19,8 +19,9 @@ await build({
   },
 });
 
-// Asset paths stored as JavaScript data are not rewritten by Vite. Fix those
-// literals in the production bundle so GitHub Pages can serve them below /huozi-project/.
+// Asset paths stored as JavaScript or copied public JSON are not rewritten by
+// Vite. Fix those literals in the production bundle so GitHub Pages can serve
+// them below /huozi-project/.
 if (normalizedBase !== "/") {
   async function rewriteAssetPaths(dir) {
     const entries = await readdir(dir, { withFileTypes: true });
@@ -30,7 +31,7 @@ if (normalizedBase !== "/") {
         await rewriteAssetPaths(fullPath);
         continue;
       }
-      if (!entry.isFile() || ![".css", ".js", ".mjs"].includes(path.extname(entry.name))) {
+      if (!entry.isFile() || ![".css", ".js", ".mjs", ".json"].includes(path.extname(entry.name))) {
         continue;
       }
 
