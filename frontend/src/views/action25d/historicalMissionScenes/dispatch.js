@@ -28,8 +28,8 @@ export function createDispatchController(scene, context) {
     </ol>
     <div class="historical-mission__controls historical-mission__controls--lanes">
       ${renderKeyCommand("Space", "开始组织渡江", "", "data-dispatch-command")}
-      ${renderKeyCommand("←", "上游通道")}
-      ${renderKeyCommand("→", "下游通道")}
+      ${renderKeyCommand("←", "上游通道", "", 'data-lane-command="left"')}
+      ${renderKeyCommand("→", "下游通道", "", 'data-lane-command="right"')}
     </div>
   `;
   nodes.hotspots.innerHTML = `
@@ -41,6 +41,7 @@ export function createDispatchController(scene, context) {
   const queue = nodes.task.querySelector("[data-queue]");
   const start = nodes.task.querySelector("[data-dispatch-command]");
   const startLabel = start.querySelector("span");
+  const laneCommands = [...nodes.task.querySelectorAll("[data-lane-command]")];
 
   function startDispatch() {
     if (started || ended) return;
@@ -123,6 +124,10 @@ export function createDispatchController(scene, context) {
   }
 
   window.addEventListener("keydown", onKeyDown);
+  start.addEventListener("click", startDispatch);
+  laneCommands.forEach((command) => {
+    command.addEventListener("click", () => chooseLane(command.dataset.laneCommand));
+  });
   setStatus("等待开始渡江");
 
   return {
@@ -132,6 +137,7 @@ export function createDispatchController(scene, context) {
       clearTimeout(nextTimer);
       clearRound();
       window.removeEventListener("keydown", onKeyDown);
+      start.removeEventListener("click", startDispatch);
     },
   };
 }

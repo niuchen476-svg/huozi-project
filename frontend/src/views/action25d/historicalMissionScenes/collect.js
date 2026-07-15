@@ -13,7 +13,7 @@ export function createCollectController(scene, context) {
   nodes.task.innerHTML = `
     ${renderTaskHeader(scene, `已编入 0 / ${scene.items.length}`)}
     <div class="historical-mission__controls historical-mission__controls--keys">
-      ${scene.items.map((item, index) => renderKeyCommand(String(index + 1), item.label)).join("")}
+      ${scene.items.map((item, index) => renderKeyCommand(String(index + 1), item.label, "", `data-collect-command="${index}"`)).join("")}
     </div>
   `;
   nodes.hotspots.innerHTML = scene.items.map((item, index) => `
@@ -28,6 +28,7 @@ export function createCollectController(scene, context) {
   `).join("");
 
   const targets = [...nodes.hotspots.querySelectorAll("[data-collect-item]")];
+  const commands = [...nodes.task.querySelectorAll("[data-collect-command]")];
 
   function collectAt(index) {
     const target = targets[index];
@@ -53,6 +54,9 @@ export function createCollectController(scene, context) {
   }
 
   window.addEventListener("keydown", onKeyDown);
+  commands.forEach((command) => {
+    command.addEventListener("click", () => collectAt(Number(command.dataset.collectCommand)));
+  });
 
   return {
     cleanup() {

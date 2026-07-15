@@ -51,8 +51,8 @@ export function renderHistoricalMission25d(root, level, config) {
               <h1>${level.title}</h1>
               <p>${level.scenario}</p>
               <div class="historical-mission__intro-actions">
-                ${renderKeyCommand("Enter", config.introButton || "进入历史现场")}
-                ${renderKeyCommand("S", "直接查看档案", "secondary")}
+                ${renderKeyCommand("Enter", config.introButton || "进入历史现场", "", 'data-mission-action="start"')}
+                ${renderKeyCommand("S", "直接查看档案", "secondary", 'data-mission-action="skip"')}
               </div>
             </section>
           </section>
@@ -158,7 +158,7 @@ export function renderHistoricalMission25d(root, level, config) {
             <p>${scene.fact}</p>
           </div>
           ${renderSource(scene.source)}
-          ${renderKeyCommand("Enter", nextLabel)}
+          ${renderKeyCommand("Enter", nextLabel, "", 'data-mission-action="overlay"')}
         </div>
       `, () => {
         if (isLast) {
@@ -179,7 +179,7 @@ export function renderHistoricalMission25d(root, level, config) {
           <p>本幕需要重新组织</p>
           <h2>任务没有完成</h2>
           <div class="historical-mission__result-summary">${reason}</div>
-          ${renderKeyCommand("Enter", "重新执行本幕")}
+          ${renderKeyCommand("Enter", "重新执行本幕", "", 'data-mission-action="overlay"')}
         </div>
       `, renderScene);
     }
@@ -191,7 +191,7 @@ export function renderHistoricalMission25d(root, level, config) {
           <p>历史行动完成</p>
           <h2>${config.completionTitle}</h2>
           <div class="historical-mission__result-summary">${config.completionText}</div>
-          ${renderKeyCommand("Enter", "进入本关档案任务")}
+          ${renderKeyCommand("Enter", "进入本关档案任务", "", 'data-mission-action="overlay"')}
         </div>
       `, () => finish());
     }
@@ -233,11 +233,32 @@ export function renderHistoricalMission25d(root, level, config) {
       }
     }
 
+    function onMissionClick(event) {
+      const command = event.target.closest("[data-mission-action]");
+      if (!command || settled) return;
+      const actionName = command.dataset.missionAction;
+      if (actionName === "start") {
+        startMission();
+        return;
+      }
+      if (actionName === "skip") {
+        finish("skipped");
+        return;
+      }
+      if (actionName === "overlay" && overlayAction) {
+        const action = overlayAction;
+        overlayAction = null;
+        action();
+      }
+    }
+
     window.addEventListener("keydown", onGlobalKeyDown);
+    nodes.stage.addEventListener("click", onMissionClick);
 
     const originalFinish = finish;
     finish = (value) => {
       window.removeEventListener("keydown", onGlobalKeyDown);
+      nodes.stage.removeEventListener("click", onMissionClick);
       originalFinish(value);
     };
   });

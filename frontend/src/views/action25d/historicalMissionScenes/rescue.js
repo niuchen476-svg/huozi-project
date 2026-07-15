@@ -101,7 +101,13 @@ export function createRescueController(scene, context) {
     else startRescue();
   }
 
+  function onCommandClick() {
+    if (active) rescue();
+    else startRescue();
+  }
+
   window.addEventListener("keydown", onKeyDown);
+  start.addEventListener("click", onCommandClick);
   setStatus("等待开始救护");
 
   return {
@@ -110,6 +116,7 @@ export function createRescueController(scene, context) {
       clearTimeout(targetTimer);
       clearTimeout(nextTimer);
       window.removeEventListener("keydown", onKeyDown);
+      start.removeEventListener("click", onCommandClick);
     },
   };
 }

@@ -114,7 +114,7 @@ function renderSupplyChallenge(challenge) {
     </div>
     <div class="mission-challenge__bar">
       <span data-challenge-status>已选择 0/${challenge.required.length}</span>
-      <span class="mission-challenge__keys">数字键选择 · Enter 确认</span>
+      <span class="mission-challenge__keys">点击卡片选择 · 点击按钮确认（支持数字键与 Enter）</span>
       <button type="button" data-submit-challenge disabled>确认取舍</button>
     </div>
   `;
@@ -142,7 +142,7 @@ function renderSequenceChallenge(challenge) {
     </div>
     <div class="mission-challenge__bar">
       <span data-challenge-status>已排序 0/${challenge.required.length}</span>
-      <span class="mission-challenge__keys">数字键排序 · Backspace 清空 · Enter 确认</span>
+      <span class="mission-challenge__keys">点击卡片排序 · 点击按钮确认（支持键盘快捷键）</span>
       <div class="mission-challenge__actions">
         <button type="button" data-clear-sequence>清空顺序</button>
         <button type="button" data-submit-challenge disabled>确认行动</button>

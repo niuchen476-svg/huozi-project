@@ -33,7 +33,8 @@ export function createSignalController(scene, context) {
   `;
 
   const signal = nodes.task.querySelector("[data-signal]");
-  const action = nodes.task.querySelector("[data-signal-command] span");
+  const command = nodes.task.querySelector("[data-signal-command]");
+  const action = command.querySelector("span");
   const queue = nodes.task.querySelector("[data-queue]");
 
   function waitForSignal(delay = 1100) {
@@ -111,6 +112,7 @@ export function createSignalController(scene, context) {
   }
 
   window.addEventListener("keydown", onKeyDown);
+  command.addEventListener("click", receiveGroup);
   action.textContent = "开始监听渡口号令";
   setStatus("等待开始接应");
 
@@ -119,6 +121,7 @@ export function createSignalController(scene, context) {
       ended = true;
       clearTimeout(signalTimer);
       window.removeEventListener("keydown", onKeyDown);
+      command.removeEventListener("click", receiveGroup);
     },
   };
 }
