@@ -53,7 +53,11 @@
   ],
   "themes": [
     { "id": "unity", "name": "力量在会合中汇聚", "shortLabel": "团结会合" },
-    { "id": "arrival", "name": "每一次抵达都有代价", "shortLabel": "艰难抵达" },
+    { "id": "choice", "name": "在一次次选择中寻找方向", "shortLabel": "选择与转折" },
+    { "id": "sacrifice", "name": "记住牺牲，也看见坚持", "shortLabel": "牺牲与坚持" },
+    { "id": "people", "name": "人与人相互托举着前行", "shortLabel": "军民同行" },
+    { "id": "initiative", "name": "在变化中重新争取主动", "shortLabel": "灵活主动" },
+    { "id": "faith", "name": "在艰难中守住共同信念", "shortLabel": "理想信念" },
     { "id": "new-start", "name": "会师之后走向新的任务", "shortLabel": "新的起点" }
   ],
   "fragmentSlots": [
@@ -101,8 +105,7 @@
     }
   ],
   "expression": {
-    "selectLevelLimit": 3,
-    "selectSourcePerLevel": 1,
+    "maximumSelectedSources": 3,
     "maxInputCharacters": 80,
     "outputMaxCharacters": 160,
     "outputTypes": [

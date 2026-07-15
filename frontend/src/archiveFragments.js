@@ -1,6 +1,7 @@
 import { collectArchiveFragment, getArchiveFragments } from "./state.js";
 
 let fragmentViewerPromise = null;
+const fragmentPreloadPromises = new Map();
 
 export const ARCHIVE_FRAGMENTS = [
   {
@@ -129,7 +130,8 @@ export function showArchiveFragmentReward(root, levelId) {
             <small>${fragment.mapHint}</small>
           </div>
         </div>
-        <button type="button" data-collect-archive-fragment>收进档案袋</button>
+        <p class="archive-fragment-reward__status" data-fragment-reward-status role="status" aria-live="polite"></p>
+        <button type="button" data-collect-archive-fragment>${fragment.newlyCollected ? "收进档案袋并返回路线图" : "关闭"}</button>
       </div>
     `;
 
@@ -137,11 +139,23 @@ export function showArchiveFragmentReward(root, levelId) {
     requestAnimationFrame(() => overlay.classList.add("archive-fragment-reward--visible"));
 
     function collectReward() {
-      overlay.classList.remove("archive-fragment-reward--visible");
+      const button = overlay.querySelector("[data-collect-archive-fragment]");
+      const status = overlay.querySelector("[data-fragment-reward-status]");
+      if (button) button.disabled = true;
+      if (fragment.newlyCollected && status) {
+        status.textContent = "碎片已收进档案袋，正在返回路线图……";
+      }
+      const delay = fragment.newlyCollected ? 950 : 180;
+      if (fragment.newlyCollected) {
+        window.setTimeout(() => overlay.classList.remove("archive-fragment-reward--visible"), 720);
+      } else {
+        overlay.classList.remove("archive-fragment-reward--visible");
+      }
       window.setTimeout(() => {
         overlay.remove();
-        resolve(true);
-      }, 180);
+        // 只有第一次获得碎片才触发自动返回；重复查看由玩家自行决定去向。
+        resolve(fragment.newlyCollected);
+      }, delay);
     }
 
     function onRewardKeyDown(event) {
@@ -163,6 +177,7 @@ export function renderArchiveFragmentVisual(fragment, options = {}) {
   const stateClass = options.collected === false ? " archive-fragment-visual--locked" : "";
   if (options.interactive3d && fragment.model && fragment.image) {
     ensureFragmentModelViewer();
+    const fallbackSrc = resolveArchiveAsset(fragment.image);
     return `
       <div class="archive-fragment-visual archive-fragment-visual--image archive-fragment-visual--model archive-fragment-visual--${fragment.id}${stateClass}">
         <archive-fragment-model
@@ -170,14 +185,15 @@ export function renderArchiveFragmentVisual(fragment, options = {}) {
           model="${escapeAttribute(fragment.model)}"
           fallback="${escapeAttribute(fragment.image)}"
           aria-label="${escapeAttribute(`${fragment.name}三维模型`)}"
-        ><img src="${escapeAttribute(fragment.image)}" alt="" loading="lazy" decoding="async" /></archive-fragment-model>
+        ><img src="${escapeAttribute(fallbackSrc)}" alt="" loading="lazy" decoding="async" /></archive-fragment-model>
       </div>
     `;
   }
   if (fragment.image) {
+    const imageSrc = resolveArchiveAsset(fragment.image);
     return `
       <div class="archive-fragment-visual archive-fragment-visual--image archive-fragment-visual--${fragment.id}${stateClass}" aria-hidden="true">
-        <img src="${fragment.image}" alt="" loading="lazy" decoding="async" />
+        <img src="${escapeAttribute(imageSrc)}" alt="" loading="lazy" decoding="async" />
       </div>
     `;
   }
@@ -189,12 +205,41 @@ export function renderArchiveFragmentVisual(fragment, options = {}) {
   `;
 }
 
+export function preloadArchiveFragmentForLevel(levelId) {
+  if (typeof window === "undefined") return Promise.resolve(false);
+  const fragment = getArchiveFragmentForLevel(levelId);
+  if (!fragment?.model) return Promise.resolve(false);
+  if (fragmentPreloadPromises.has(fragment.model)) return fragmentPreloadPromises.get(fragment.model);
+
+  const task = Promise.allSettled([
+    ensureFragmentModelViewer(),
+    fetch(resolveArchiveAsset(fragment.model), { cache: "force-cache" }).then((response) => {
+      if (!response.ok) throw new Error(`碎片模型预加载失败：${response.status}`);
+      return response;
+    }),
+  ]).then((results) => results.every((result) => result.status === "fulfilled"));
+  fragmentPreloadPromises.set(fragment.model, task);
+  return task;
+}
+
 function ensureFragmentModelViewer() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") return Promise.resolve(null);
   fragmentViewerPromise ||= import("./views/fragmentModelViewer.js").catch((error) => {
     console.warn("[fragment-viewer] 三维查看器加载失败，继续使用平面备用图", error);
     return null;
   });
+  return fragmentViewerPromise;
+}
+
+function resolveArchiveAsset(value) {
+  if (/^(?:https?:|data:|blob:)/i.test(value)) return value;
+  if (typeof window === "undefined") return value;
+  const base = window.__BASE_PATH__ || import.meta.env?.BASE_URL || "/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const source = String(value).replace(/^\.\//, "");
+  if (normalizedBase === "/" && source.startsWith("/")) return source;
+  if (normalizedBase !== "/" && source.startsWith(normalizedBase)) return source;
+  return `${normalizedBase}${source.replace(/^\//, "")}`;
 }
 
 function escapeAttribute(value) {

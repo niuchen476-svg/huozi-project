@@ -30,3 +30,12 @@ export async function loadExhibition() {
   const raw = await readFile(path.join(dataDir, "exhibition.json"), "utf-8");
   return JSON.parse(raw);
 }
+
+export async function loadAllLevelExperiences() {
+  const levels = await loadLevelsIndex();
+  return Promise.all(levels.map(async (level) => ({
+    levelId: level.id,
+    levelTitle: level.title,
+    experience: await loadLevelExperience(level.id),
+  })));
+}

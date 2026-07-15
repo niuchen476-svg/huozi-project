@@ -2,14 +2,17 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
-const LOAD_TIMEOUT_MS = 6500;
+const LOAD_TIMEOUT_MS = 25000;
 
 export function resolveFragmentAsset(value) {
   if (typeof value !== "string" || !value.trim()) return "";
   const source = value.trim();
   if (/^(?:https?:|data:|blob:)/i.test(source)) return source;
   const base = window.__BASE_PATH__ || import.meta.env?.BASE_URL || "/";
-  return `${base.replace(/\/$/, "")}/${source.replace(/^\//, "")}`;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  if (normalizedBase === "/" && source.startsWith("/")) return source;
+  if (normalizedBase !== "/" && source.startsWith(normalizedBase)) return source;
+  return `${normalizedBase}${source.replace(/^\//, "")}`;
 }
 
 const FragmentElementBase = typeof HTMLElement === "undefined" ? class {} : HTMLElement;
@@ -27,6 +30,7 @@ class ArchiveFragmentModelElement extends FragmentElementBase {
     this.dragging = false;
     this.lastPointerX = 0;
     this.rotationOffset = 0;
+    this.loadAttempt = 0;
     this.controller = new AbortController();
   }
 
@@ -34,6 +38,7 @@ class ArchiveFragmentModelElement extends FragmentElementBase {
     if (this.dataset.initialized === "true") return;
     this.dataset.initialized = "true";
     this.setupFallback();
+    this.setupStatus();
     this.setupVisibility();
     this.load();
   }
@@ -63,6 +68,31 @@ class ArchiveFragmentModelElement extends FragmentElementBase {
     if (image && fallback) image.src = fallback;
   }
 
+  setupStatus() {
+    let status = this.querySelector(".archive-fragment-model__status");
+    if (!status) {
+      status = document.createElement("span");
+      status.className = "archive-fragment-model__status";
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      this.appendChild(status);
+    }
+    status.textContent = "正在加载三维碎片……";
+    this.statusElement = status;
+
+    let retry = this.querySelector(".archive-fragment-model__retry");
+    if (!retry) {
+      retry = document.createElement("button");
+      retry.className = "archive-fragment-model__retry";
+      retry.type = "button";
+      retry.textContent = "重新加载3D";
+      retry.hidden = true;
+      this.appendChild(retry);
+      retry.addEventListener("click", () => this.retry(), { signal: this.controller.signal });
+    }
+    this.retryButton = retry;
+  }
+
   setupVisibility() {
     if (!("IntersectionObserver" in window)) return;
     const observer = new IntersectionObserver(([entry]) => {
@@ -73,9 +103,18 @@ class ArchiveFragmentModelElement extends FragmentElementBase {
   }
 
   load() {
+    const attempt = ++this.loadAttempt;
     const source = resolveFragmentAsset(this.getAttribute("model"));
-    if (!source || !supportsWebGL()) {
-      this.useFallback();
+    this.classList.remove("is-loaded", "is-fallback");
+    this.classList.add("is-loading");
+    this.retryButton.hidden = true;
+    this.statusElement.textContent = "正在加载三维碎片……";
+    if (!source) {
+      this.useFallback("模型地址不可用", attempt);
+      return;
+    }
+    if (!supportsWebGL()) {
+      this.useFallback("当前设备不支持3D显示", attempt);
       return;
     }
 
@@ -101,22 +140,42 @@ class ArchiveFragmentModelElement extends FragmentElementBase {
 
       const loader = new GLTFLoader();
       loader.setMeshoptDecoder(MeshoptDecoder);
-      this.loadTimer = window.setTimeout(() => this.useFallback(), LOAD_TIMEOUT_MS);
-      loader.load(source, (gltf) => this.onLoaded(gltf.scene), undefined, () => this.useFallback());
-    } catch {
-      this.useFallback();
+      this.loadTimer = window.setTimeout(() => this.useFallback("三维模型加载超时", attempt), LOAD_TIMEOUT_MS);
+      loader.load(
+        source,
+        (gltf) => this.onLoaded(gltf.scene, attempt),
+        (event) => this.onProgress(event, attempt),
+        () => this.useFallback("三维模型加载失败", attempt)
+      );
+    } catch (error) {
+      console.warn("[fragment-viewer] 初始化失败", error);
+      this.useFallback("三维查看器初始化失败", attempt);
     }
   }
 
-  onLoaded(model) {
-    if (!this.isConnected || this.classList.contains("is-fallback")) return;
+  onProgress(event, attempt) {
+    if (attempt !== this.loadAttempt || !this.statusElement) return;
+    if (event?.total > 0) {
+      const percent = Math.min(99, Math.round((event.loaded / event.total) * 100));
+      this.statusElement.textContent = `正在加载三维碎片 ${percent}%`;
+    }
+  }
+
+  onLoaded(model, attempt) {
+    if (attempt !== this.loadAttempt || !this.isConnected || this.classList.contains("is-fallback")) {
+      disposeObject(model);
+      return;
+    }
     if (this.loadTimer) window.clearTimeout(this.loadTimer);
     this.model = model;
     this.scene.add(model);
     frameModel(model, this.camera);
     this.resize();
     this.bindPointerRotation();
+    this.classList.remove("is-loading", "is-fallback");
     this.classList.add("is-loaded");
+    this.statusElement.textContent = "三维碎片加载完成，可拖动旋转";
+    this.retryButton.hidden = true;
     this.render();
 
     if ("ResizeObserver" in window) {
@@ -163,14 +222,36 @@ class ArchiveFragmentModelElement extends FragmentElementBase {
     this.frameId = window.requestAnimationFrame(() => this.render());
   }
 
-  useFallback() {
+  retry() {
     if (this.loadTimer) window.clearTimeout(this.loadTimer);
-    this.classList.remove("is-loaded");
+    this.renderer?.domElement.remove();
+    this.renderer?.dispose();
+    this.renderer = null;
+    if (this.model) disposeObject(this.model);
+    this.model = null;
+    this.load();
+  }
+
+  useFallback(reason = "三维模型暂不可用", attempt = this.loadAttempt) {
+    if (attempt !== this.loadAttempt) return;
+    if (this.loadTimer) window.clearTimeout(this.loadTimer);
+    this.classList.remove("is-loaded", "is-loading");
     this.classList.add("is-fallback");
+    this.dataset.fallbackReason = reason;
+    if (this.statusElement) this.statusElement.textContent = `${reason}，已切换平面展示`;
+    if (this.retryButton) this.retryButton.hidden = false;
     this.renderer?.domElement.remove();
     this.renderer?.dispose();
     this.renderer = null;
   }
+}
+
+function disposeObject(object) {
+  object?.traverse?.((node) => {
+    node.geometry?.dispose?.();
+    if (Array.isArray(node.material)) node.material.forEach(disposeMaterial);
+    else disposeMaterial(node.material);
+  });
 }
 
 function frameModel(model, camera) {

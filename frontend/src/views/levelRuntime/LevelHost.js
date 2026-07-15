@@ -1,6 +1,6 @@
-import { fetchLevel, fetchLevelExperience, submitLevelArtwork, submitLevelExpression, submitLevelSpeech } from "../../api.js";
+import { fetchLevel, fetchLevelExperience, saveSouvenir, submitLevelArtwork, submitLevelExpression, submitLevelSpeech } from "../../api.js";
 import { getHuiningShowcase, markCompleted, resetLevelProgress } from "../../state.js";
-import { showArchiveFragmentReward } from "../../archiveFragments.js";
+import { ARCHIVE_FRAGMENTS, preloadArchiveFragmentForLevel, showArchiveFragmentReward } from "../../archiveFragments.js";
 import { getLevelAdapter } from "./registry.js";
 import { assertLevelResult, LEVEL_STATUS } from "./protocol.js";
 import { createLevelSourceDrawer } from "./sourceDrawer.js";
@@ -138,6 +138,8 @@ export class LevelHost {
     session.result = result;
 
     if (result.status === LEVEL_STATUS.COMPLETED) {
+      // 玩家整理表达时在后台预取本关模型，降低 GitHub Pages 冷加载超时概率。
+      preloadArchiveFragmentForLevel(session.levelId).catch(() => false);
       if (this.isExpressionEnabled(session)) {
         this.renderExpressionPhase(session, { reward: true, redirect: "if-reward" });
         return;
@@ -186,8 +188,9 @@ export class LevelHost {
       : false;
 
     if (!this.isActive(session)) return showedReward;
-    const shouldRedirect = options.redirect === "always"
-      || (options.redirect === "if-reward" && showedReward);
+    const shouldRedirect = showedReward && (
+      options.redirect === "always" || options.redirect === "if-reward"
+    );
     if (shouldRedirect) window.location.hash = "#/map";
     return showedReward;
   }
@@ -394,6 +397,17 @@ export class LevelHost {
     session.expressionPanel = createLevelExpressionPanel({
       experience: session.experience,
       choices,
+      sources: Array.isArray(session.result?.data?.expressionSources)
+        ? session.result.data.expressionSources
+        : [],
+      initialSourceIds: Array.isArray(session.result?.data?.initialSourceIds)
+        ? session.result.data.initialSourceIds
+        : [],
+      artworkContext: session.levelId === "huining-join" ? (() => {
+        const showcase = getHuiningShowcase() || {};
+        const selected = new Set(showcase.fragmentIds || []);
+        return { fragments: ARCHIVE_FRAGMENTS.filter((fragment) => selected.has(fragment.id)) };
+      })() : null,
       onSubmit: async (payload) => {
         try {
           return await submitLevelExpression(session.levelId, payload);
@@ -409,6 +423,16 @@ export class LevelHost {
           ...payload,
           themeId: showcase.themeId,
           fragmentIds: showcase.fragmentIds || [],
+        });
+      } : null,
+      onPersistArtwork: session.levelId === "huining-join" ? (payload) => {
+        const showcase = getHuiningShowcase() || {};
+        return saveSouvenir({
+          ...payload,
+          themeId: showcase.themeId,
+          fragmentIds: showcase.fragmentIds || [],
+          sourceIds: showcase.sourceIds || payload.sourceIds || [],
+          favoriteFragmentId: payload.favoriteFragmentId || showcase.favoriteFragmentId || "",
         });
       } : null,
       onComplete: async () => {

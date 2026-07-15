@@ -67,5 +67,8 @@ test("浏览器断网时可以从关卡配置生成同协议兜底结果", () =>
     sourceIds: ["source-1"],
     label: "AI根据玩家选择生成",
     usedFallback: true,
+    mode: "fallback",
+    fallbackReason: "network",
+    requestId: null,
   });
 });

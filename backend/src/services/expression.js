@@ -1,5 +1,6 @@
 import { callMimo } from "./mimoClient.js";
-import { loadLevelExperience } from "./levelsData.js";
+import { loadAllLevelExperiences, loadLevelExperience } from "./levelsData.js";
+import { classifyAiFailure, createAiRequestId } from "./aiDiagnostics.js";
 
 export const MAX_EXPRESSION_INPUT = 80;
 export const MAX_EXPRESSION_SOURCES = 3;
@@ -64,9 +65,17 @@ export function normalizeExpressionInput(body = {}, config = {}) {
   return { sourceIds, choiceIds, userText, outputType: config.outputType };
 }
 
-function getApprovedSources(experience, sourceIds) {
+async function getApprovedSources(levelId, experience, sourceIds) {
+  const sourcePool = levelId === "huining-join"
+    ? (await loadAllLevelExperiences()).flatMap(({ levelId: sourceLevelId, levelTitle, experience: item }) =>
+        (item.phases?.sources?.items || []).map((source) => ({
+          ...source,
+          levelId: sourceLevelId,
+          levelTitle,
+        })))
+    : experience.phases?.sources?.items || [];
   const allowed = new Map(
-    (experience.phases?.sources?.items || [])
+    sourcePool
       .filter((source) => source.availableForAiExpression === true)
       .map((source) => [source.id, source])
   );
@@ -86,7 +95,7 @@ export function buildExpressionPrompt(experience, input, approvedSources) {
     .map((id) => suggestionLabels.get(id) ? `${suggestionLabels.get(id)}（${id}）` : id)
     .join("、") || "无";
   const sourceContext = approvedSources.length
-    ? approvedSources.map((source) => `- [${source.id}] ${source.title}；来源：${source.sourceName}；摘要：${source.summary}`).join("\n")
+    ? approvedSources.map((source) => `- [${source.id}] ${source.levelTitle ? `${source.levelTitle} · ` : ""}${source.title}；来源：${source.sourceName}；摘要：${source.summary}`).join("\n")
     : "- 玩家未选择史料";
 
   return `【关卡】${experience.levelId}
@@ -113,7 +122,7 @@ function parseMimoResult(raw, maxCharacters) {
   return { title, text };
 }
 
-export function createExpressionFallback(config, input, approvedSources = []) {
+export function createExpressionFallback(config, input, approvedSources = [], metadata = {}) {
   const template = config.fallbackTemplates?.find((item) => item?.title && item?.text);
   const title = template?.title || OUTPUT_TITLES[config.outputType] || "我的长征表达";
   let text = template?.text || input.userText;
@@ -125,10 +134,14 @@ export function createExpressionFallback(config, input, approvedSources = []) {
     sourceIds: input.sourceIds,
     label: config.outputLabel || OUTPUT_LABEL,
     usedFallback: true,
+    mode: "fallback",
+    fallbackReason: metadata.fallbackReason || "disabled",
+    requestId: metadata.requestId || null,
   };
 }
 
 export async function generateLevelExpression(levelId, body, { callModel = callMimo } = {}) {
+  const requestId = createAiRequestId("expression");
   const experience = await loadLevelExperience(levelId);
   const config = experience.phases?.expression;
   if (!config?.enabled) {
@@ -136,8 +149,8 @@ export async function generateLevelExpression(levelId, body, { callModel = callM
   }
 
   const input = normalizeExpressionInput(body, config);
-  const approvedSources = getApprovedSources(experience, input.sourceIds);
-  const fallback = createExpressionFallback(config, input, approvedSources);
+  const approvedSources = await getApprovedSources(levelId, experience, input.sourceIds);
+  const fallback = createExpressionFallback(config, input, approvedSources, { requestId });
   if (!config.ai?.enabled) return fallback;
 
   try {
@@ -151,9 +164,24 @@ export async function generateLevelExpression(levelId, body, { callModel = callM
       }),
       config.ai.maxOutputCharacters
     );
-    return { ...result, sourceIds: input.sourceIds, label: config.outputLabel || OUTPUT_LABEL, usedFallback: false };
+    return {
+      ...result,
+      sourceIds: input.sourceIds,
+      label: config.outputLabel || OUTPUT_LABEL,
+      usedFallback: false,
+      mode: "online",
+      fallbackReason: null,
+      requestId,
+    };
   } catch (err) {
-    console.warn(`[expression] ${levelId} 使用固定模板：${err.message}`);
-    return fallback;
+    const fallbackReason = classifyAiFailure(err);
+    console.warn("[expression] 在线生成失败", {
+      levelId,
+      requestId,
+      fallbackReason,
+      providerStatus: err?.providerStatus || err?.statusCode || null,
+      message: err?.message,
+    });
+    return { ...fallback, fallbackReason };
   }
 }

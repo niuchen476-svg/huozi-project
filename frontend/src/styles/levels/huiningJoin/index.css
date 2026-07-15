@@ -342,6 +342,12 @@
   backdrop-filter: blur(10px);
 }
 
+.huining-showcase-copy {
+  max-height: calc(100dvh - 124px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
 .huining-mission-panel h1,
 .huining-showcase-copy h1 {
   font-size: 2.25rem;
@@ -1052,6 +1058,7 @@
 
 .huining-theme-picker {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 9px;
 }
 
@@ -1084,6 +1091,89 @@
 
 .huining-theme-picker strong {
   font-family: var(--font-serif);
+}
+
+.huining-source-picker {
+  margin-top: 18px;
+  overflow: hidden;
+  background: rgba(239, 222, 189, 0.05);
+  border: 1px solid rgba(223, 199, 152, 0.18);
+  border-radius: 5px;
+}
+
+.huining-source-picker summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 13px;
+  color: #f0dfc0;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.huining-source-picker summary strong {
+  color: var(--huining-gold);
+  font-size: 0.72rem;
+}
+
+.huining-source-picker__groups {
+  display: grid;
+  gap: 14px;
+  max-height: 270px;
+  padding: 4px 12px 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.huining-source-picker__groups section {
+  display: grid;
+  gap: 7px;
+}
+
+.huining-source-picker__groups h3 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 5px 0;
+  color: var(--huining-gold);
+  background: #1b1510;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.huining-source-picker__groups section > div {
+  display: grid;
+  gap: 6px;
+}
+
+.huining-source-picker__groups label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding: 8px 9px;
+  color: #cfc0a8;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(223, 199, 152, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.huining-source-picker__groups label:has(input:checked) {
+  color: #fff2d7;
+  background: rgba(158, 48, 40, 0.22);
+  border-color: rgba(224, 161, 87, 0.58);
+}
+
+.huining-source-picker__groups input {
+  margin-top: 2px;
+  accent-color: #a53b31;
 }
 
 .huining-showcase-status {
@@ -1432,6 +1522,10 @@
     padding: 26px 20px;
   }
 
+  .huining-showcase-copy {
+    max-height: none;
+  }
+
   .huining-map-table {
     min-height: 580px;
     border-width: 7px;
@@ -1505,6 +1599,10 @@
   .huining-mission-panel h1,
   .huining-showcase-copy h1 {
     font-size: 2rem;
+  }
+
+  .huining-theme-picker {
+    grid-template-columns: 1fr;
   }
 
   .huining-map-table {

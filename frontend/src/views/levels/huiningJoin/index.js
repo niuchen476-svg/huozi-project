@@ -34,7 +34,11 @@ const ROUTES = [
 
 const DEFAULT_THEMES = [
   { id: "unity", name: "力量在会合中汇聚", shortLabel: "团结会合" },
-  { id: "arrival", name: "每一次抵达都有代价", shortLabel: "艰难抵达" },
+  { id: "choice", name: "在一次次选择中寻找方向", shortLabel: "选择与转折" },
+  { id: "sacrifice", name: "记住牺牲，也看见坚持", shortLabel: "牺牲与坚持" },
+  { id: "people", name: "人与人相互托举着前行", shortLabel: "军民同行" },
+  { id: "initiative", name: "在变化中重新争取主动", shortLabel: "灵活主动" },
+  { id: "faith", name: "在艰难中守住共同信念", shortLabel: "理想信念" },
   { id: "new-start", name: "会师之后走向新的任务", shortLabel: "新的起点" },
 ];
 
@@ -72,9 +76,7 @@ export function isCorrectTimelineOrder(eventIds, events = DEFAULT_TIMELINE_EVENT
 export function buildHuiningExpressionChoices(theme, fragments = []) {
   if (!theme) return [];
   return [
-    { id: "hooves-wrapped", label: "完成马蹄裹布奔袭" },
-    { id: "routes-assembled", label: "完成三路会合" },
-    { id: "timeline-restored", label: "复原四个会师节点" },
+    { id: "whole-journey", label: "回望七关行程" },
     { id: `theme-${theme.id}`, label: theme.shortLabel },
     ...fragments.slice(0, 3).map((fragment) => ({
       id: fragment.id,
@@ -83,15 +85,29 @@ export function buildHuiningExpressionChoices(theme, fragments = []) {
   ];
 }
 
-export function renderHuiningJoinExperience({ root, level, exhibition, signal, runtime }) {
-  return new HuiningJoinExperience({ root, level, exhibition, signal, runtime }).start();
+export function buildHuiningSourceCatalog(levels = [], experiences = []) {
+  return levels.flatMap((level, index) => {
+    const sources = experiences[index]?.phases?.sources?.items || [];
+    return sources
+      .filter((source) => source.availableForAiExpression === true)
+      .map((source) => ({
+        ...source,
+        levelId: level.id,
+        levelTitle: level.title,
+      }));
+  });
+}
+
+export function renderHuiningJoinExperience({ root, level, exhibition, sourceCatalog, signal, runtime }) {
+  return new HuiningJoinExperience({ root, level, exhibition, sourceCatalog, signal, runtime }).start();
 }
 
 class HuiningJoinExperience {
-  constructor({ root, level, exhibition, signal, runtime }) {
+  constructor({ root, level, exhibition, sourceCatalog, signal, runtime }) {
     this.root = root;
     this.level = level;
     this.exhibition = exhibition || {};
+    this.sourceCatalog = Array.isArray(sourceCatalog) ? sourceCatalog : [];
     this.signal = signal;
     this.runtime = runtime;
     this.phase = "intro";
@@ -106,6 +122,7 @@ class HuiningJoinExperience {
     this.timelineAssisted = false;
     this.fragments = getArchiveFragmentItems();
     this.selectedFragments = new Set();
+    this.selectedSources = new Set();
     this.selectedTheme = null;
     this.finished = false;
     this.audioContext = null;
@@ -495,12 +512,13 @@ class HuiningJoinExperience {
   renderShowcase() {
     const collected = this.fragments.filter((fragment) => fragment.collected);
     const themes = this.exhibition.themes || DEFAULT_THEMES;
+    const sourceGroups = groupSourcesByLevel(this.sourceCatalog);
     this.renderShell(`
       <section class="huining-showcase-layout" aria-labelledby="huining-showcase-title">
         <div class="huining-showcase-copy">
           <p class="huining-kicker">任务 02 · 组成个人展台</p>
           <h1 id="huining-showcase-title">把一路经历放在一起</h1>
-          <p>最多选择三块已经获得的碎片，再决定你最想讲述的主题。没有碎片也可以从会师史料开始。</p>
+          <p>从七关中选择一至三份史料，再选择主题和最多三块碎片。你的选择会共同成为最终讲解和画作的依据。</p>
           <div class="huining-theme-picker" role="group" aria-label="选择展览主题">
             ${themes.map((theme) => `
               <button type="button" data-theme-id="${theme.id}">
@@ -508,6 +526,27 @@ class HuiningJoinExperience {
               </button>
             `).join("")}
           </div>
+          <details class="huining-source-picker" open>
+            <summary>
+              <span>七关史料</span>
+              <strong data-showcase-source-count>已选 0 / 3</strong>
+            </summary>
+            <div class="huining-source-picker__groups">
+              ${sourceGroups.map((group) => `
+                <section>
+                  <h3>${escapeHtml(group.levelTitle)}</h3>
+                  <div>
+                    ${group.sources.map((source) => `
+                      <label>
+                        <input type="checkbox" data-showcase-source-id="${escapeHtml(source.id)}" />
+                        <span>${escapeHtml(source.title)}</span>
+                      </label>
+                    `).join("")}
+                  </div>
+                </section>
+              `).join("")}
+            </div>
+          </details>
           <div class="huining-showcase-status" role="status" aria-live="polite" data-level-feedback data-feedback-tone="neutral" data-showcase-message>
             ${collected.length ? `你已经带来 ${collected.length} 块历史碎片。` : "你还没有获得前六关碎片，本次将使用会师史料搭建基础展台。"}
           </div>
@@ -548,6 +587,21 @@ class HuiningJoinExperience {
         this.playTone(392, 0.06);
       });
     });
+    this.root.querySelectorAll("[data-showcase-source-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const id = input.dataset.showcaseSourceId;
+        if (input.checked && this.selectedSources.size >= (this.exhibition.expression?.maximumSelectedSources || 3)) {
+          input.checked = false;
+          this.setShowcaseMessage("最终展台最多选择三份史料。可以取消一份后重新选择。", true);
+          this.playTone(196, 0.08);
+          return;
+        }
+        if (input.checked) this.selectedSources.add(id);
+        else this.selectedSources.delete(id);
+        this.updateShowcase();
+        this.playTone(350 + this.selectedSources.size * 35, 0.05);
+      });
+    });
     this.root.querySelectorAll("[data-fragment-id]:not([disabled])").forEach((button) => {
       button.addEventListener("click", () => {
         const id = button.dataset.fragmentId;
@@ -584,9 +638,14 @@ class HuiningJoinExperience {
     }
     const theme = (this.exhibition.themes || DEFAULT_THEMES).find((item) => item.id === this.selectedTheme);
     const fragmentText = selected.length ? `已选择 ${selected.length} 块碎片` : "使用会师基础展台";
-    this.setShowcaseMessage(theme ? `${fragmentText} · 主题：${theme.shortLabel}` : `${fragmentText} · 请选择展览主题`);
+    const sourceText = `已选择 ${this.selectedSources.size} 份史料`;
+    this.setShowcaseMessage(theme
+      ? `${sourceText} · ${fragmentText} · 主题：${theme.shortLabel}`
+      : `${sourceText} · ${fragmentText} · 请选择展览主题`);
+    const sourceCount = this.root.querySelector("[data-showcase-source-count]");
+    if (sourceCount) sourceCount.textContent = `已选 ${this.selectedSources.size} / 3`;
     const finish = this.root.querySelector("[data-showcase-finish]");
-    if (finish) finish.disabled = !this.selectedTheme;
+    if (finish) finish.disabled = !this.selectedTheme || this.selectedSources.size < 1;
   }
 
   setShowcaseMessage(message, isError = false) {
@@ -603,10 +662,12 @@ class HuiningJoinExperience {
     saveHuiningShowcase({
       themeId: theme.id,
       fragmentIds: selected.map((fragment) => fragment.id),
+      sourceIds: [...this.selectedSources],
     });
     this.playTone(659.25, 0.14);
     this.resolve({
       expressionChoices: buildHuiningExpressionChoices(theme, selected),
+      sourceIds: [...this.selectedSources],
     });
   }
 
@@ -638,4 +699,24 @@ function shuffleItems(items) {
     [copy[index], copy[target]] = [copy[target], copy[index]];
   }
   return copy;
+}
+
+function groupSourcesByLevel(sources) {
+  const groups = new Map();
+  for (const source of sources) {
+    if (!groups.has(source.levelId)) {
+      groups.set(source.levelId, { levelId: source.levelId, levelTitle: source.levelTitle, sources: [] });
+    }
+    groups.get(source.levelId).sources.push(source);
+  }
+  return [...groups.values()];
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

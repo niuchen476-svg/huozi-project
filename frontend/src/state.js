@@ -63,6 +63,10 @@ export function saveHuiningShowcase(showcase) {
     fragmentIds: Array.isArray(showcase?.fragmentIds)
       ? showcase.fragmentIds.slice(0, 3).map(String)
       : [],
+    sourceIds: Array.isArray(showcase?.sourceIds)
+      ? showcase.sourceIds.slice(0, 3).map(String)
+      : [],
+    favoriteFragmentId: String(showcase?.favoriteFragmentId || ""),
     completedAt: new Date().toISOString(),
   };
   localStorage.setItem(HUINING_SHOWCASE_KEY, JSON.stringify(safeShowcase));

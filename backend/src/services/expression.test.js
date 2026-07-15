@@ -90,6 +90,9 @@ test("MiMo 不可用时仍返回统一结构", () => {
     sourceIds: [],
     label: "AI根据玩家选择生成",
     usedFallback: true,
+    mode: "fallback",
+    fallbackReason: "disabled",
+    requestId: null,
   });
 });
 
@@ -112,6 +115,23 @@ test("在线表达为推理模型预留足够的输出额度和响应时间", as
   assert.equal(MIMO_EXPRESSION_MAX_TOKENS, 4096);
   assert.equal(MIMO_EXPRESSION_TIMEOUT_MS, 60000);
   assert.equal(result.usedFallback, false);
+});
+
+test("会宁综合表达允许选择前六关的已审核史料", async () => {
+  const result = await generateLevelExpression("huining-join", {
+    sourceIds: ["source-ruijin-action-schedule", "source-sidu-route-first"],
+    choiceIds: ["whole-journey"],
+    userText: "我想把一路的选择放在一起理解。",
+    outputType: "exhibition-guide",
+  }, {
+    callModel: async ({ prompt }) => {
+      assert.match(prompt, /瑞金出发/);
+      assert.match(prompt, /一渡赤水河路线图/);
+      return '{"title":"一路的选择","text":"我从不同关卡的史料中，看见每一次选择怎样汇成共同方向。"}';
+    },
+  });
+  assert.equal(result.usedFallback, false);
+  assert.deepEqual(result.sourceIds, ["source-ruijin-action-schedule", "source-sidu-route-first"]);
 });
 
 test("MiMo 表达使用关闭深度思考的 Chat Completions 协议", async () => {

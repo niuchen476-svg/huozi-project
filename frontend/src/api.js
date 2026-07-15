@@ -6,6 +6,7 @@ const REFLECT_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions
 const EXPRESSION_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/expression";
 const SPEECH_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/speech";
 const ARTWORK_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/artwork";
+const SOUVENIR_FUNCTION_URL = "https://pfkamgzktfwfotirlocd.supabase.co/functions/v1/souvenir";
 const SUPABASE_ANON_KEY = "sb_publishable_PPOeqkqKK93vo6ugo_zCoA_6hXrSveM";
 
 // 生产构建（GitHub Pages 静态托管）没有 Express 后端，
@@ -22,6 +23,13 @@ function fetchJson(url, errorMessage) {
     if (!res.ok) throw new Error(errorMessage);
     return res.json();
   });
+}
+
+function createApiError(payload, fallbackMessage) {
+  const error = new Error(payload?.error || fallbackMessage);
+  error.code = payload?.code || null;
+  error.requestId = payload?.requestId || null;
+  return error;
 }
 
 export async function fetchLevelsIndex() {
@@ -116,7 +124,7 @@ export async function submitLevelExpression(id, payload) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "表达生成失败，请稍后重试");
+    throw createApiError(err, "表达生成失败，请稍后重试");
   }
   return res.json();
 }
@@ -156,7 +164,30 @@ export async function submitLevelArtwork(id, payload) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "画作生成失败，请稍后重试");
+    throw createApiError(err, "画作生成失败，请稍后重试");
+  }
+  return res.json();
+}
+
+export async function saveSouvenir(payload) {
+  const res = await fetch(SOUVENIR_FUNCTION_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json", apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw createApiError(err, "作品暂时无法保存");
+  }
+  return res.json();
+}
+
+export async function fetchSouvenir(token) {
+  const url = `${SOUVENIR_FUNCTION_URL}?token=${encodeURIComponent(token)}`;
+  const res = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY }, cache: "no-store" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw createApiError(err, "作品暂时无法打开");
   }
   return res.json();
 }
