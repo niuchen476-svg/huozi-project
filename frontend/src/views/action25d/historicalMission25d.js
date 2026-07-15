@@ -8,8 +8,9 @@ import {
   renderTimeline,
 } from "./historicalMissionUi.js";
 import { applyLevelFeedback } from "../levelRuntime/feedbackSystem.js";
+import { resolveLevelSource } from "../levelRuntime/sourceRegistry.js";
 
-export function renderHistoricalMission25d(root, level, config) {
+export function renderHistoricalMission25d(root, level, config, experience = null) {
   if (!config?.scenes?.length) return Promise.resolve();
 
   preloadSceneImages(config.scenes);
@@ -118,7 +119,11 @@ export function renderHistoricalMission25d(root, level, config) {
       nodes.task.replaceChildren();
       nodes.stage.className = "historical-mission__stage";
 
-      const scene = config.scenes[sceneIndex];
+      const originalScene = config.scenes[sceneIndex];
+      const scene = {
+        ...originalScene,
+        source: resolveLevelSource(experience, originalScene.sourceId || originalScene.source),
+      };
       nodes.stage.classList.add(`historical-mission__stage--${scene.type}`, `historical-mission__stage--${scene.id}`);
       applySceneBackdrop(nodes, scene);
       renderTimeline(nodes, config.scenes, sceneIndex);

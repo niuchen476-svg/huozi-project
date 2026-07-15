@@ -20,8 +20,9 @@ import {
   renderSourceCardZoom,
   renderStep,
 } from "./views.js";
+import { getLevelSource } from "../../levelRuntime/sourceRegistry.js";
 
-export function renderZunyiMeeting(root, level) {
+export function renderZunyiMeeting(root, level, experience = null) {
   return new Promise((resolve) => {
     const state = {
       level,
@@ -35,6 +36,10 @@ export function renderZunyiMeeting(root, level) {
       showRolePrompt: true,
       rewriteScene: 0,
       meetingRecordIndex: 0,
+      records: MEETING_RECORDS.map((record) => ({
+        ...record,
+        sourceCard: hydrateSourceCard(record.sourceCard, experience),
+      })),
       meetingRecords: [],
       archivedSources: [],
       lastWrittenRecord: null,
@@ -110,7 +115,7 @@ function attachEvents(root, state) {
 
   root.querySelectorAll("[data-record-choice]").forEach((button) => {
     button.addEventListener("click", () => {
-      const record = MEETING_RECORDS[state.meetingRecordIndex];
+      const record = state.records[state.meetingRecordIndex];
       if (!record || state.activeSourceCard) return;
 
       if (button.dataset.recordChoice !== record.answer) {
@@ -128,14 +133,14 @@ function attachEvents(root, state) {
   });
 
   root.querySelector("[data-collect-source-card]")?.addEventListener("click", () => {
-    const currentRecord = MEETING_RECORDS[state.meetingRecordIndex];
+    const currentRecord = state.records[state.meetingRecordIndex];
     if (currentRecord && !state.archivedSources.includes(currentRecord.id)) {
       state.archivedSources.push(currentRecord.id);
     }
     state.activeSourceCard = null;
     state.zoomSourceCard = null;
-    state.meetingRecordIndex = Math.min(MEETING_RECORDS.length, state.meetingRecordIndex + 1);
-    state.recordFeedback = state.meetingRecordIndex >= MEETING_RECORDS.length
+    state.meetingRecordIndex = Math.min(state.records.length, state.meetingRecordIndex + 1);
+    state.recordFeedback = state.meetingRecordIndex >= state.records.length
       ? "三份史料已经归档，会议记录可以收好了。"
       : "史料已归档。继续听下一句发言。";
     render(root, state);
@@ -247,6 +252,21 @@ function attachEvents(root, state) {
     state.completed.add("route");
     state.resolve("completed");
   });
+}
+
+function hydrateSourceCard(card, experience) {
+  const canonical = getLevelSource(experience, card?.sourceId);
+  if (!canonical) return card;
+  return {
+    ...card,
+    ...canonical,
+    sourceId: canonical.id,
+    text: card.text,
+    excerpt: canonical.originalExcerpt || card.excerpt,
+    credit: canonical.sourceName || card.credit,
+    note: card.note || canonical.plainExplanation,
+    zoomImage: card.zoomImage,
+  };
 }
 
 function placeSelectedCard(root, state, zoneId) {

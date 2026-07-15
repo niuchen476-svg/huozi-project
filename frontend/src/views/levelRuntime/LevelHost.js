@@ -7,6 +7,7 @@ import { createLevelSourceDrawer } from "./sourceDrawer.js";
 import { createLevelChrome, normalizeLevelPhase } from "./levelChrome.js";
 import { createCompletionRecap } from "./completionRecap.js";
 import { showLevelIdentityPrompt } from "./identityPrompt.js";
+import { createGameplayTutorial, normalizeGameplayTutorial } from "./gameplayTutorial.js";
 import {
   createClientExpressionFallback,
   createLevelExpressionPanel,
@@ -22,6 +23,7 @@ export class LevelHost {
     if (!this.session) return;
     this.session.disposing = true;
     this.session.sourceDrawer?.destroy();
+    this.session.gameplayTutorial?.destroy();
     this.session.levelChrome?.destroy();
     this.session.expressionPanel?.destroy();
     this.restoreRuntimeAudio(this.session);
@@ -43,6 +45,7 @@ export class LevelHost {
       context: null,
       experience: null,
       sourceDrawer: null,
+      gameplayTutorial: null,
       levelChrome: null,
       phase: "briefing",
       phaseBeforeOverlay: null,
@@ -96,6 +99,7 @@ export class LevelHost {
     };
     session.adapter = adapter;
     session.context = context;
+    this.mountGameplayTutorial(session);
     this.mountLevelChrome(session);
     this.attachPhaseEvents(session);
     this.mountSourceDrawer(session);
@@ -106,6 +110,8 @@ export class LevelHost {
       signal: controller.signal,
     });
     if (!acceptedIdentity || !this.isActive(session)) return;
+    await session.gameplayTutorial?.openForOnboarding();
+    if (!this.isActive(session)) return;
 
     let result;
     try {
@@ -219,10 +225,22 @@ export class LevelHost {
   }
 
   mountLevelChrome(session) {
+    const tutorialConfig = normalizeGameplayTutorial(session.experience?.phases?.gameplay?.tutorial);
     session.levelChrome = createLevelChrome({
       level: session.context.level,
       phase: session.phase,
       onRestart: () => this.restart(session),
+      helpEnabled: tutorialConfig.enabled,
+      onHelp: () => session.gameplayTutorial?.open(0),
+    }).mount(document.body);
+  }
+
+  mountGameplayTutorial(session) {
+    const config = session.experience?.phases?.gameplay?.tutorial;
+    session.gameplayTutorial = createGameplayTutorial({
+      root: session.root,
+      config,
+      onOpenChange: (open) => this.setOverlayOpen(session, "gameplay-tutorial", open),
     }).mount(document.body);
   }
 
@@ -242,6 +260,7 @@ export class LevelHost {
     const nextPhase = normalizeLevelPhase(phase);
     session.phase = nextPhase;
     session.levelChrome?.setPhase(nextPhase);
+    if (nextPhase === "gameplay") session.gameplayTutorial?.autoShow();
   }
 
   createRuntimeApi(session) {

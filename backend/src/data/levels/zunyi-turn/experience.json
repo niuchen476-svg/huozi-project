@@ -5,7 +5,28 @@
   "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
-    "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "zunyi-turn", "helpAfterFailures": 2, "assistAfterFailures": 3 },
+    "gameplay": {
+      "enabled": true,
+      "estimatedSeconds": 90,
+      "adapterId": "zunyi-turn",
+      "sourceIds": [
+        "source-zunyi-record-summary",
+        "source-zunyi-chenyun-manuscript",
+        "source-zunyi-leadership-adjustment"
+      ],
+      "helpAfterFailures": 2,
+      "assistAfterFailures": 3,
+      "tutorial": {
+        "enabled": true,
+        "autoShow": true,
+        "title": "遵义转折 · 玩法提示",
+        "steps": [
+          { "title": "你是会议小记录员", "text": "先跟随画面了解危机，再从发言中找出会议真正要解决的问题。", "anchor": ".zunyi-room" },
+          { "title": "选择重点并收好史料", "text": "每次发言选择一个记录重点；判断正确后，把出现的史料卡收进记录夹。", "anchor": ".zunyi-record-game" },
+          { "title": "区分原件与整理卡", "text": "右上角抽屉会标明哪些是手稿或决议影印件，哪些是项目制作的历史事实整理卡。", "anchor": ".level-source-drawer__launcher" }
+        ]
+      }
+    },
     "sources": {
       "enabled": true,
       "estimatedSeconds": 0,
@@ -24,9 +45,62 @@
           "image": "/assets/levels/zunyi-turn/sources/zunyi-manuscript-feishu.jpg",
           "imageAlt": "遵义会议相关手写史料影印图",
           "imageCaption": "飞书资料中的遵义会议相关手稿；在正式展陈前需核对具体题名、作者、日期和馆藏。",
+          "activeInGameplay": false,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        },
+        {
+          "id": "source-zunyi-record-summary",
+          "title": "《关于反对敌人五次“围剿”的总结的决议》",
+          "type": "决议文献影印件",
+          "date": "1935年2月",
+          "creator": "中共中央政治局",
+          "summary": "决议总结第五次反“围剿”和长征初期失利的教训，成为游戏中判断“为什么必须总结失败”的材料。",
+          "originalExcerpt": "党在揭发了这种错误之后，不是削弱而是加强了。",
+          "plainExplanation": "发现和说明错误，是为了重新凝聚队伍并找到更符合实际的办法。",
+          "sourceName": "中央档案馆藏相关决议文献（具体著录待项目审核）",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/zunyi-turn/source/zunyi-record-summary-cover.jpg",
+          "imageAlt": "关于反对敌人五次围剿的总结的决议封面影印图",
+          "imageCaption": "游戏内使用的决议文献影印图；正式展陈前需复核题名、日期与馆藏著录。",
           "activeInGameplay": true,
           "visibleInSourceDrawer": true,
           "availableForAiExpression": true
+        },
+        {
+          "id": "source-zunyi-chenyun-manuscript",
+          "title": "《（乙）遵义政治局扩大会议》（陈云手稿）",
+          "type": "会议记录手稿",
+          "date": "1935年",
+          "creator": "陈云",
+          "summary": "手稿记录会议对第五次反“围剿”和西征中军事指挥经验教训的检阅。",
+          "originalExcerpt": "检阅在反对五次‘围剿’中与西征中军事指挥上的经验与教训。",
+          "plainExplanation": "这份材料帮助玩家把会议讨论与当时最紧迫的军事指挥问题联系起来。",
+          "sourceName": "中央档案馆藏《（乙）遵义政治局扩大会议》手稿（著录待复核）",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/zunyi-turn/meeting-manuscript.png",
+          "imageAlt": "陈云关于遵义政治局扩大会议的手稿影印图",
+          "imageCaption": "游戏内会议记录环节使用的手稿影印图；授权状态待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        },
+        {
+          "id": "source-zunyi-leadership-adjustment",
+          "title": "遵义会议后的重要组织调整",
+          "type": "历史事实整理卡",
+          "date": "1935年1月后",
+          "creator": "项目史料整理",
+          "summary": "整理卡说明会议增选毛泽东为中央政治局常委，并推动军事指挥领导工作的调整。",
+          "plainExplanation": "这是根据相关史实制作的教学解释卡，不是历史原件；用于帮助玩家理解组织和指挥方式的调整。",
+          "sourceName": "根据遵义会议相关史实整理（引用依据待史实审核补全）",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-detail.jpg",
+          "imageAlt": "遵义会议后重要组织调整的教学整理图",
+          "imageCaption": "项目制作的历史事实整理卡，不作为原始文献使用。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": false
         }
       ]
     },
@@ -55,12 +129,12 @@
   "audio": { "ambience": [], "narration": [], "effects": [], "completionMusic": null },
   "fragment": {
     "id": "direction-fragment",
-    "name": "方向碎片",
-    "model": null,
-    "fallbackImage": "/assets/fragments/fragment-zunyi-direction.png",
+    "name": "会议钢笔",
+    "model": "/assets/fragments/models/zunyi-pen.glb",
+    "fallbackImage": "/assets/fragments/fallbacks/zunyi-pen.webp",
     "legacyVisualId": "direction-fragment",
-    "historicalMeaning": "",
-    "sourceIds": [],
+    "historicalMeaning": "以象征性数字钢笔表现会议记录、总结问题与重新作出战略判断。",
+    "sourceIds": ["source-zunyi-record-summary", "source-zunyi-chenyun-manuscript"],
     "narrationAudioId": null,
     "hotspots": []
   }

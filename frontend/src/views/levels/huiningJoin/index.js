@@ -48,11 +48,17 @@ const DEFAULT_TIMELINE_EVENTS = [
 ];
 
 const SCENE_IMAGES = {
-  site: "assets/levels/huining-join/huining-site-xinhua.jpg",
-  hall: "assets/levels/huining-join/huining-hall-xinhua.jpg",
-  victory: "assets/levels/huining-join/victory-meeting-painting.png",
-  reunion: "assets/levels/huining-join/reunion-painting.png",
+  site: levelAsset("assets/levels/huining-join/huining-site-xinhua.jpg"),
+  hall: levelAsset("assets/levels/huining-join/huining-hall-xinhua.jpg"),
+  victory: levelAsset("assets/levels/huining-join/victory-meeting-painting.png"),
+  reunion: levelAsset("assets/levels/huining-join/reunion-painting.png"),
 };
+
+function levelAsset(path) {
+  const runtimeBase = typeof window !== "undefined" ? window.__BASE_PATH__ : null;
+  const base = runtimeBase || import.meta.env?.BASE_URL || "/";
+  return `${base.endsWith("/") ? base : `${base}/`}${path.replace(/^\/+/, "")}`;
+}
 
 export function isCorrectMeetingNode(routeId, nodeId) {
   return ROUTES.some((route) => route.id === routeId && route.target === nodeId);
@@ -572,7 +578,7 @@ class HuiningJoinExperience {
         const wrapper = document.createElement("div");
         wrapper.className = "huining-showcase-fragment";
         wrapper.style.setProperty("--slot", String(index));
-        wrapper.innerHTML = `${renderArchiveFragmentVisual(fragment)}<span>${fragment.name}</span>`;
+        wrapper.innerHTML = `${renderArchiveFragmentVisual(fragment, { interactive3d: true })}<span>${fragment.name}</span>`;
         pedestal.appendChild(wrapper);
       });
     }

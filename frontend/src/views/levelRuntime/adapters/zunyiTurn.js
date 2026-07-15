@@ -7,8 +7,8 @@ export default {
   preload() {
     return preloadImage("assets/levels/zunyi-turn/meeting-painting-wide.jpg");
   },
-  async play({ root, level }) {
-    await renderZunyiMeeting(root, level);
+  async play({ root, level, experience }) {
+    await renderZunyiMeeting(root, level, experience);
     return completeLevel({ actionCompleted: true });
   },
 };

@@ -49,8 +49,10 @@ export function renderStory(scene, index, total) {
 }
 
 export function renderSource(source) {
-  if (!source?.url) return "";
-  return `<a class="historical-mission__source" href="${source.url}" target="_blank" rel="noreferrer">史料依据：${source.label}</a>`;
+  const url = source?.sourceUrl || source?.url;
+  const label = source?.title || source?.label;
+  if (!url || !label) return "";
+  return `<a class="historical-mission__source" href="${url}" target="_blank" rel="noreferrer">史料依据：${label}</a>`;
 }
 
 export function renderTimeline(nodes, scenes, activeIndex) {

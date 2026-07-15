@@ -24,8 +24,36 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 70,
         "adapterId": "huining-join",
+        "sourceIds": [
+          "source-huining-hoof-march",
+          "source-huining-staged-arrival",
+          "source-jiangtaibao-oct22",
+          "source-xinglong-oct23"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "会宁会师 · 玩法提示",
+          "steps": [
+            {
+              "title": "先完成马蹄裹布",
+              "text": "依次点击四只马蹄，把裹蹄布固定好，完成15至20秒的隐蔽奔袭开场。",
+              "anchor": ".huining-hoof-grid"
+            },
+            {
+              "title": "先选队伍，再选节点",
+              "text": "进入地图后，先点击一支红军队伍，再点击它应抵达的会师节点；也可以直接拖动。",
+              "anchor": ".huining-route-layout"
+            },
+            {
+              "title": "最后复原时间线并组展",
+              "text": "按日期排列四个会师节点，然后选择最多三块碎片和一个主题，组成个人数字展台。",
+              "anchor": ".huining-timeline-board"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -91,7 +119,7 @@ export const EXPERIENCES: Record<string, any> = {
             "sourceName": "中央网信办转载新华社《三军大会师》",
             "sourceUrl": "https://www.cac.gov.cn/2016-08/22/c_1119432029.htm",
             "rightsStatus": "pending",
-            "activeInGameplay": false,
+            "activeInGameplay": true,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
           },
@@ -243,8 +271,34 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 90,
         "adapterId": "luding-bridge",
+        "sourceIds": [
+          "source-luding-strategic-telegram",
+          "source-luding-historic-iron-chains"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "飞夺泸定桥 · 玩法提示",
+          "steps": [
+            {
+              "title": "先读铁索照片",
+              "text": "开场照片解释桥面险境。点击“开始行动”后，先拖动突击队员完成报名。",
+              "anchor": ".bridge-intro-source"
+            },
+            {
+              "title": "点击前进，也能左右躲避",
+              "text": "过桥时点击“前进”；攻击箭头向左就点右躲，向右就点左躲，不需要键盘。",
+              "anchor": "#bridge-controls"
+            },
+            {
+              "title": "失败可以立即重来",
+              "text": "本关强调极限时间中的协作，不会因一次失误中断整体体验。",
+              "anchor": "#bridge-caption"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -267,6 +321,23 @@ export const EXPERIENCES: Record<string, any> = {
             "activeInGameplay": true,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
+          },
+          {
+            "id": "source-luding-historic-iron-chains",
+            "title": "泸定桥铁索历史照片",
+            "type": "历史照片",
+            "date": "具体拍摄时间待审核",
+            "creator": "具体摄影者待审核",
+            "summary": "照片呈现泸定桥铁索结构，为游戏开场理解桥面木板被拆后的危险提供视觉线索。",
+            "plainExplanation": "这张照片在游戏开场直接参与判断；具体拍摄时间、摄影者和馆藏仍需项目审核。",
+            "sourceName": "项目资料库（具体出处与馆藏待审核）",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/luding-bridge/reference/historic-iron-chains.jpg",
+            "imageAlt": "泸定桥铁索历史照片",
+            "imageCaption": "游戏开场使用的铁索历史照片；著录与授权状态待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
           }
         ]
       },
@@ -327,11 +398,14 @@ export const EXPERIENCES: Record<string, any> = {
     "fragment": {
       "id": "iron-chain-fragment",
       "name": "铁索碎片",
-      "model": null,
-      "fallbackImage": "/assets/fragments/fragment-luding-chain.png",
+      "model": "/assets/fragments/models/luding-chain.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/luding-chain.webp",
       "legacyVisualId": "iron-chain-fragment",
-      "historicalMeaning": "",
-      "sourceIds": [],
+      "historicalMeaning": "以象征性数字铁索表现泸定桥的险境与突击队打开北上通道的行动。",
+      "sourceIds": [
+        "source-luding-strategic-telegram",
+        "source-luding-historic-iron-chains"
+      ],
       "narrationAudioId": null,
       "hotspots": []
     }
@@ -361,8 +435,35 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 90,
         "adapterId": "ruijin-departure",
+        "sourceIds": [
+          "source-ruijin-secret-assembly",
+          "source-ruijin-secret-march",
+          "source-ruijin-yudu-crossing"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "瑞金出发 · 玩法提示",
+          "steps": [
+            {
+              "title": "先读本幕任务",
+              "text": "每一幕左侧会说明历史情境和行动目标，先看清要保护什么、避开什么。",
+              "anchor": ".historical-mission__story"
+            },
+            {
+              "title": "直接点击完成操作",
+              "text": "点击场景中的物资、隐蔽按钮或渡口接应按钮，不需要键盘也能完成全部行动。",
+              "anchor": ".historical-mission__task"
+            },
+            {
+              "title": "史料随时可查",
+              "text": "右上角“本关史料”收录了本幕使用的历史依据；关闭抽屉后可继续当前任务。",
+              "anchor": ".level-source-drawer__launcher"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -382,9 +483,54 @@ export const EXPERIENCES: Record<string, any> = {
             "image": "/assets/levels/ruijin-departure/sources/ruijin-action-schedule-feishu.jpg",
             "imageAlt": "野战军十月十日至二十日行动日程表手稿影印图",
             "imageCaption": "飞书资料标注：1934年10月9日行动日程表原始手稿；题名、馆藏与授权状态待项目审核。",
-            "activeInGameplay": true,
+            "activeInGameplay": false,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
+          },
+          {
+            "id": "source-ruijin-secret-assembly",
+            "title": "《为什么30万人能保守一个秘密》",
+            "type": "专题史料文章",
+            "date": "1934年10月",
+            "creator": "中央纪委国家监委网站",
+            "summary": "文章以中央红军秘密集结和转移为线索，说明大规模行动中的群众守密与组织协同。",
+            "plainExplanation": "游戏第一幕据此呈现机要、通信和医疗物资在秘密集结中的作用。",
+            "sourceName": "中央纪委国家监委网站",
+            "sourceUrl": "https://www.bjsupervision.gov.cn/ywyl/201712/t20171207_46251.html",
+            "rightsStatus": "pending",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
+          },
+          {
+            "id": "source-ruijin-secret-march",
+            "title": "《长征源头话薪传》",
+            "type": "专题史料文章",
+            "date": "1934年10月",
+            "creator": "中央纪委国家监委网站",
+            "summary": "文章回顾中央红军在群众掩护下向于都秘密集结、隐蔽转移的历史过程。",
+            "plainExplanation": "游戏第二幕据此设置夜间行军、及时隐蔽和避免暴露集结方向。",
+            "sourceName": "中央纪委国家监委网站",
+            "sourceUrl": "https://m.ccdi.gov.cn/content/f0/46/12025.html",
+            "rightsStatus": "pending",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
+          },
+          {
+            "id": "source-ruijin-yudu-crossing",
+            "title": "《于都河畔：万里长征从这里出发》",
+            "type": "地方史料文章",
+            "date": "1934年10月17日至20日",
+            "creator": "于都县人民政府",
+            "summary": "资料记述中央红军主力从于都多个渡口陆续渡河、开始战略转移的过程。",
+            "plainExplanation": "游戏第三幕据此呈现渡口联络、分批接应和四天四夜渡河。",
+            "sourceName": "于都县人民政府",
+            "sourceUrl": "https://www.yudu.gov.cn/yudu/ydrw/202102/3f856d547c974b18afb023350581f9b0.shtml",
+            "rightsStatus": "pending",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
           }
         ]
       },
@@ -444,12 +590,15 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "departure-map-fragment",
-      "name": "出发碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "夜行马灯",
+      "model": "/assets/fragments/models/ruijin-lantern.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/ruijin-lantern.webp",
       "legacyVisualId": "departure-map-fragment",
-      "historicalMeaning": "",
-      "sourceIds": [],
+      "historicalMeaning": "以象征性数字马灯表现夜间集结、守密与从中央苏区出发。",
+      "sourceIds": [
+        "source-ruijin-action-schedule",
+        "source-ruijin-yudu-crossing"
+      ],
       "narrationAudioId": null,
       "hotspots": []
     }
@@ -479,8 +628,33 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 90,
         "adapterId": "sidu-chishui",
+        "sourceIds": [
+          "source-sidu-military-telegrams"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "四渡赤水 · 玩法提示",
+          "steps": [
+            {
+              "title": "路线会连续改变",
+              "text": "四次渡河按真实时间顺序展开；每一小关先读左侧日期、地点和行动目的。",
+              "anchor": ".level-panel"
+            },
+            {
+              "title": "拖动红军标志",
+              "text": "把红军标志拖到地图上闪烁的渡口。放错会回到起点，可以马上重新判断。",
+              "anchor": "#marker"
+            },
+            {
+              "title": "不要把往返理解成犹豫",
+              "text": "右上角军委电报帮助理解：路线改变是在敌情变化中重新争取主动。",
+              "anchor": ".level-source-drawer__launcher"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -562,12 +736,14 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "chishui-maneuver-fragment",
-      "name": "赤水碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "行军罗盘",
+      "model": "/assets/fragments/models/sidu-compass.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/sidu-compass.webp",
       "legacyVisualId": "chishui-maneuver-fragment",
-      "historicalMeaning": "",
-      "sourceIds": [],
+      "historicalMeaning": "以象征性数字罗盘表现四次渡河中的路线调整与机动作战。",
+      "sourceIds": [
+        "source-sidu-military-telegrams"
+      ],
       "narrationAudioId": null,
       "hotspots": []
     }
@@ -597,8 +773,34 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 90,
         "adapterId": "snow-grassland",
+        "sourceIds": [
+          "source-snow-grassland-manuscript",
+          "source-snow-xiong-qiwen-letter"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "雪山草地 · 玩法提示",
+          "steps": [
+            {
+              "title": "先看情境，再做选择",
+              "text": "每个场景会说明极端环境中的具体困难；点击物品或答案完成取舍。",
+              "anchor": "#qTask"
+            },
+            {
+              "title": "遇到家书要读材料",
+              "text": "熊启文家书环节不是常识题，要根据家书内容判断最能体现队伍精神的一项。",
+              "anchor": ".archive-letter-stage"
+            },
+            {
+              "title": "点击操作贯穿全关",
+              "text": "多选题确认、单选题作答和敲击暗号都可直接点击，不依赖键盘。",
+              "anchor": "#interact"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -618,6 +820,24 @@ export const EXPERIENCES: Record<string, any> = {
             "image": "/assets/levels/snow-grassland/sources/snow-grassland-manuscript-feishu.png",
             "imageAlt": "雪山草地长征亲历者手写记录影印图",
             "imageCaption": "飞书资料中的长征亲历手稿；具体题名、作者、形成日期与馆藏待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          },
+          {
+            "id": "source-snow-xiong-qiwen-letter",
+            "title": "熊启文致父母及幺叔的信",
+            "type": "红军战士家书",
+            "date": "1935年3月19日",
+            "creator": "熊启文",
+            "summary": "红四方面军第九军战士熊启文在家书中牵挂亲人，也写到红军官兵平等和革命信念。",
+            "plainExplanation": "这封家书直接出现在游戏判断环节，让玩家从一个具体人的文字理解队伍关系和精神信念。",
+            "sourceName": "中国国家博物馆长征主题馆藏专题",
+            "sourceUrl": "https://www.chnmuseum.cn/portals/0/web/zt/20160922longmarch/",
+            "rightsStatus": "pending",
+            "image": "/embedded/snow-grassland/assets/xiong-qiwen-letter-1935.jpg",
+            "imageAlt": "熊启文于1935年3月19日写给父母及幺叔的家书",
+            "imageCaption": "熊启文致父母及幺叔的信，1935年3月19日，纸本；馆藏信息据中国国家博物馆专题页。",
             "activeInGameplay": true,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
@@ -680,12 +900,15 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "snow-grass-fragment",
-      "name": "雪草碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "信念红星",
+      "model": "/assets/fragments/models/snow-star.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/snow-star.webp",
       "legacyVisualId": "snow-grass-fragment",
-      "historicalMeaning": "",
-      "sourceIds": [],
+      "historicalMeaning": "以象征性数字红星表现雪山草地极端环境中的坚持与互助；后续可替换为人物事件相关模型。",
+      "sourceIds": [
+        "source-snow-grassland-manuscript",
+        "source-snow-xiong-qiwen-letter"
+      ],
       "narrationAudioId": null,
       "hotspots": []
     }
@@ -715,8 +938,35 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 90,
         "adapterId": "xiangjiang-battle",
+        "sourceIds": [
+          "source-xiangjiang-operation-map",
+          "source-xiangjiang-breakthrough-report",
+          "source-xiangjiang-guangxi-history"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "湘江血战 · 玩法提示",
+          "steps": [
+            {
+              "title": "看目标，也看危险",
+              "text": "每一幕先读任务说明；敌机、炮火和救护呼叫出现时，画面会给出明显提示。",
+              "anchor": ".historical-mission__story"
+            },
+            {
+              "title": "点击完成抢修与调度",
+              "text": "点击浮桥节点、选择安全通道或响应救护目标；操作失误后可以立即重试。",
+              "anchor": ".historical-mission__task"
+            },
+            {
+              "title": "理解突破的代价",
+              "text": "每幕结束会出现史实节点与史料依据，它们不是考试答案，而是解释你刚才行动的历史背景。",
+              "anchor": ".historical-mission__source"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -739,6 +989,36 @@ export const EXPERIENCES: Record<string, any> = {
             "activeInGameplay": true,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
+          },
+          {
+            "id": "source-xiangjiang-breakthrough-report",
+            "title": "《湘江突围：长征中最为惨烈的战役》",
+            "type": "专题史料文章",
+            "date": "1934年11月27日至12月1日",
+            "creator": "新华社（中央网信办转载）",
+            "summary": "资料回顾湘江战役的渡江、阻击与惨重损失，说明浮桥和渡口为何成为行动关键。",
+            "plainExplanation": "游戏第一幕据此设置敌机轰炸间隙中的浮桥抢修。",
+            "sourceName": "中央网信办转载新华社",
+            "sourceUrl": "https://www.cac.gov.cn/2016-08/19/c_1119421570.htm",
+            "rightsStatus": "pending",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
+          },
+          {
+            "id": "source-xiangjiang-guangxi-history",
+            "title": "《红军长征过广西》",
+            "type": "党史专题文章",
+            "date": "1934年11月至12月",
+            "creator": "中共中央党史和文献研究院",
+            "summary": "资料梳理红军长征经过广西及湘江战役中的渡江、阻击和伤员救护等历史过程。",
+            "plainExplanation": "游戏第二、三幕据此呈现阻击部队争取渡江窗口，以及担架队转移伤员。",
+            "sourceName": "中共中央党史和文献研究院",
+            "sourceUrl": "https://www.dswxyjy.org.cn/n1/2026/0702/c244516-40752274.html",
+            "rightsStatus": "pending",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
           }
         ]
       },
@@ -798,12 +1078,15 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "river-crossing-fragment",
-      "name": "渡江碎片",
-      "model": null,
-      "fallbackImage": null,
+      "name": "渡江军号",
+      "model": "/assets/fragments/models/xiangjiang-bugle.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/xiangjiang-bugle.webp",
       "legacyVisualId": "river-crossing-fragment",
-      "historicalMeaning": "",
-      "sourceIds": [],
+      "historicalMeaning": "以象征性数字军号表现湘江战场上的号令、抢渡与队伍协同。",
+      "sourceIds": [
+        "source-xiangjiang-operation-map",
+        "source-xiangjiang-breakthrough-report"
+      ],
       "narrationAudioId": null,
       "hotspots": []
     }
@@ -833,8 +1116,35 @@ export const EXPERIENCES: Record<string, any> = {
         "enabled": true,
         "estimatedSeconds": 90,
         "adapterId": "zunyi-turn",
+        "sourceIds": [
+          "source-zunyi-record-summary",
+          "source-zunyi-chenyun-manuscript",
+          "source-zunyi-leadership-adjustment"
+        ],
         "helpAfterFailures": 2,
-        "assistAfterFailures": 3
+        "assistAfterFailures": 3,
+        "tutorial": {
+          "enabled": true,
+          "autoShow": true,
+          "title": "遵义转折 · 玩法提示",
+          "steps": [
+            {
+              "title": "你是会议小记录员",
+              "text": "先跟随画面了解危机，再从发言中找出会议真正要解决的问题。",
+              "anchor": ".zunyi-room"
+            },
+            {
+              "title": "选择重点并收好史料",
+              "text": "每次发言选择一个记录重点；判断正确后，把出现的史料卡收进记录夹。",
+              "anchor": ".zunyi-record-game"
+            },
+            {
+              "title": "区分原件与整理卡",
+              "text": "右上角抽屉会标明哪些是手稿或决议影印件，哪些是项目制作的历史事实整理卡。",
+              "anchor": ".level-source-drawer__launcher"
+            }
+          ]
+        }
       },
       "sources": {
         "enabled": true,
@@ -854,9 +1164,62 @@ export const EXPERIENCES: Record<string, any> = {
             "image": "/assets/levels/zunyi-turn/sources/zunyi-manuscript-feishu.jpg",
             "imageAlt": "遵义会议相关手写史料影印图",
             "imageCaption": "飞书资料中的遵义会议相关手稿；在正式展陈前需核对具体题名、作者、日期和馆藏。",
+            "activeInGameplay": false,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          },
+          {
+            "id": "source-zunyi-record-summary",
+            "title": "《关于反对敌人五次“围剿”的总结的决议》",
+            "type": "决议文献影印件",
+            "date": "1935年2月",
+            "creator": "中共中央政治局",
+            "summary": "决议总结第五次反“围剿”和长征初期失利的教训，成为游戏中判断“为什么必须总结失败”的材料。",
+            "originalExcerpt": "党在揭发了这种错误之后，不是削弱而是加强了。",
+            "plainExplanation": "发现和说明错误，是为了重新凝聚队伍并找到更符合实际的办法。",
+            "sourceName": "中央档案馆藏相关决议文献（具体著录待项目审核）",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/zunyi-turn/source/zunyi-record-summary-cover.jpg",
+            "imageAlt": "关于反对敌人五次围剿的总结的决议封面影印图",
+            "imageCaption": "游戏内使用的决议文献影印图；正式展陈前需复核题名、日期与馆藏著录。",
             "activeInGameplay": true,
             "visibleInSourceDrawer": true,
             "availableForAiExpression": true
+          },
+          {
+            "id": "source-zunyi-chenyun-manuscript",
+            "title": "《（乙）遵义政治局扩大会议》（陈云手稿）",
+            "type": "会议记录手稿",
+            "date": "1935年",
+            "creator": "陈云",
+            "summary": "手稿记录会议对第五次反“围剿”和西征中军事指挥经验教训的检阅。",
+            "originalExcerpt": "检阅在反对五次‘围剿’中与西征中军事指挥上的经验与教训。",
+            "plainExplanation": "这份材料帮助玩家把会议讨论与当时最紧迫的军事指挥问题联系起来。",
+            "sourceName": "中央档案馆藏《（乙）遵义政治局扩大会议》手稿（著录待复核）",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/zunyi-turn/meeting-manuscript.png",
+            "imageAlt": "陈云关于遵义政治局扩大会议的手稿影印图",
+            "imageCaption": "游戏内会议记录环节使用的手稿影印图；授权状态待审核。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": true
+          },
+          {
+            "id": "source-zunyi-leadership-adjustment",
+            "title": "遵义会议后的重要组织调整",
+            "type": "历史事实整理卡",
+            "date": "1935年1月后",
+            "creator": "项目史料整理",
+            "summary": "整理卡说明会议增选毛泽东为中央政治局常委，并推动军事指挥领导工作的调整。",
+            "plainExplanation": "这是根据相关史实制作的教学解释卡，不是历史原件；用于帮助玩家理解组织和指挥方式的调整。",
+            "sourceName": "根据遵义会议相关史实整理（引用依据待史实审核补全）",
+            "rightsStatus": "pending",
+            "image": "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-detail.jpg",
+            "imageAlt": "遵义会议后重要组织调整的教学整理图",
+            "imageCaption": "项目制作的历史事实整理卡，不作为原始文献使用。",
+            "activeInGameplay": true,
+            "visibleInSourceDrawer": true,
+            "availableForAiExpression": false
           }
         ]
       },
@@ -916,12 +1279,15 @@ export const EXPERIENCES: Record<string, any> = {
     },
     "fragment": {
       "id": "direction-fragment",
-      "name": "方向碎片",
-      "model": null,
-      "fallbackImage": "/assets/fragments/fragment-zunyi-direction.png",
+      "name": "会议钢笔",
+      "model": "/assets/fragments/models/zunyi-pen.glb",
+      "fallbackImage": "/assets/fragments/fallbacks/zunyi-pen.webp",
       "legacyVisualId": "direction-fragment",
-      "historicalMeaning": "",
-      "sourceIds": [],
+      "historicalMeaning": "以象征性数字钢笔表现会议记录、总结问题与重新作出战略判断。",
+      "sourceIds": [
+        "source-zunyi-record-summary",
+        "source-zunyi-chenyun-manuscript"
+      ],
       "narrationAudioId": null,
       "hotspots": []
     }

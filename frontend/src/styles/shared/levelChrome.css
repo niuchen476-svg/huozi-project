@@ -7,7 +7,7 @@
   left: max(14px, env(safe-area-inset-left));
   right: max(168px, calc(env(safe-area-inset-right) + 154px));
   display: grid;
-  grid-template-columns: auto minmax(150px, 220px) minmax(400px, 1fr) auto;
+  grid-template-columns: auto minmax(150px, 220px) minmax(400px, 1fr) auto auto;
   align-items: center;
   gap: 14px;
   min-height: 58px;
@@ -29,7 +29,8 @@
 }
 
 .level-runtime-chrome__back,
-.level-runtime-chrome__restart {
+.level-runtime-chrome__restart,
+.level-runtime-chrome__help {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -47,8 +48,10 @@
 
 .level-runtime-chrome__back:hover,
 .level-runtime-chrome__restart:hover,
+.level-runtime-chrome__help:hover,
 .level-runtime-chrome__back:focus-visible,
-.level-runtime-chrome__restart:focus-visible {
+.level-runtime-chrome__restart:focus-visible,
+.level-runtime-chrome__help:focus-visible {
   color: #fff7e6;
   background: rgba(143, 48, 38, 0.72);
   border-color: rgba(245, 214, 147, 0.72);
@@ -56,13 +59,15 @@
 }
 
 .level-runtime-chrome__back span,
-.level-runtime-chrome__restart span {
+.level-runtime-chrome__restart span,
+.level-runtime-chrome__help span {
   font-size: 1.12rem;
   line-height: 1;
 }
 
 .level-runtime-chrome__back em,
 .level-runtime-chrome__restart em,
+.level-runtime-chrome__help em,
 .level-runtime-chrome__progress em {
   font-style: normal;
 }
@@ -192,7 +197,7 @@
 
 @media (max-width: 1100px) {
   .level-runtime-chrome {
-    grid-template-columns: auto minmax(120px, 180px) minmax(300px, 1fr) auto;
+    grid-template-columns: auto minmax(120px, 180px) minmax(300px, 1fr) auto auto;
   }
 
   .level-runtime-chrome__progress li {
@@ -216,7 +221,7 @@
 @media (max-width: 760px) {
   .level-runtime-chrome {
     right: max(108px, calc(env(safe-area-inset-right) + 98px));
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
     min-height: 52px;
     gap: 8px;
     padding: 5px 6px;
@@ -234,7 +239,8 @@
   }
 
   .level-runtime-chrome__back,
-  .level-runtime-chrome__restart {
+  .level-runtime-chrome__restart,
+  .level-runtime-chrome__help {
     min-width: 40px;
     width: 40px;
     height: 40px;
@@ -243,6 +249,7 @@
 
   .level-runtime-chrome__back em,
   .level-runtime-chrome__restart em,
+  .level-runtime-chrome__help em,
   .level-runtime-chrome__identity span {
     display: none;
   }

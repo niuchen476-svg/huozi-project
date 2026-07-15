@@ -169,7 +169,34 @@ function validateExperience(level, experience) {
     }
   }
   const activeSources = (sources || []).filter((source) => source.activeInGameplay);
-  if (activeSources.length > 3) addIssue(`${prefix} 参与玩法的核心史料不能超过 3 份`);
+  if (activeSources.length > 8) addIssue(`${prefix} 参与玩法的核心史料不能超过 8 份`);
+  const gameplaySourceIds = experience.phases?.gameplay?.sourceIds;
+  if (!Array.isArray(gameplaySourceIds) || !gameplaySourceIds.length) {
+    addIssue(`${prefix} 的 phases.gameplay.sourceIds 必须列出游戏实际使用的史料`);
+  } else {
+    const sourceById = new Map((sources || []).map((source) => [source.id, source]));
+    for (const sourceId of new Set(gameplaySourceIds)) {
+      const source = sourceById.get(sourceId);
+      if (!source) {
+        addIssue(`${prefix} 的游戏史料 ${sourceId} 未在 phases.sources.items 中登记`);
+      } else if (!source.activeInGameplay || !source.visibleInSourceDrawer) {
+        addIssue(`${prefix} 的游戏史料 ${sourceId} 必须同时标记参与本关并显示在史料抽屉`);
+      }
+    }
+  }
+  const tutorial = experience.phases?.gameplay?.tutorial;
+  if (!tutorial || tutorial.enabled !== true || tutorial.autoShow !== true) {
+    addIssue(`${prefix} 缺少启用的首次玩法提示配置`);
+  }
+  if (!Array.isArray(tutorial?.steps) || tutorial.steps.length < 2 || tutorial.steps.length > 6) {
+    addIssue(`${prefix} 的玩法提示必须包含 2～6 个步骤`);
+  } else {
+    tutorial.steps.forEach((step, index) => {
+      if (!step?.title?.trim() || !step?.text?.trim()) {
+        addIssue(`${prefix} 的玩法提示第 ${index + 1} 步缺少标题或说明`);
+      }
+    });
+  }
   const hasSourceContent = Array.isArray(sources) && sources.length > 0;
   if (hasSourceContent && experience.phases?.sources?.enabled && activeSources.length < 1) {
     addIssue(`${prefix} 启用史料阶段后至少需要 1 份参与玩法的史料`);
