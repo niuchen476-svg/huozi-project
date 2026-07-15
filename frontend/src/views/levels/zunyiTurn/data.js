@@ -150,6 +150,7 @@ export const MEETING_RECORDS = [
     written: "记录一：会议认真总结第五次反“围剿”失败和长征初期受挫的教训。",
     wrongFeedback: "这句发言不是在说天气，也不是只说敌人强。它最重要的是：先把失败教训总结清楚。",
     sourceCard: {
+      sourceId: "source-zunyi-record-summary",
       title: "《关于反对敌人五次围剿的总结》的决议",
       text: "这份《决议》重点总结第五次反“围剿”和长征初期的失败教训，指出错误不是为了削弱团结，而是为了把问题讲清楚、把队伍重新凝聚起来。",
       image: "/assets/levels/zunyi-turn/source/zunyi-record-summary-cover.jpg",
@@ -169,6 +170,7 @@ export const MEETING_RECORDS = [
     written: "记录二：会议重点讨论当时最紧迫的军事指挥和作战方法问题。",
     wrongFeedback: "这句发言不是批评战士，也不是只讲物资。它指向的是当时最紧迫的军事指挥问题。",
     sourceCard: {
+      sourceId: "source-zunyi-chenyun-manuscript",
       title: "军事指挥和作战方法",
       text: "遵义会议集中讨论当时最紧迫的军事问题，批评脱离实际的指挥和死板打法。",
       image: "/assets/levels/zunyi-turn/meeting-manuscript.png",
@@ -187,6 +189,7 @@ export const MEETING_RECORDS = [
     written: "记录三：会议增选毛泽东同志为中央政治局常委，推动红军调整领导和指挥方式，重新争取主动。",
     wrongFeedback: "会议不是要继续原来的打法，也不是原地停下来。关键是调整领导和指挥方式，重新争取主动。",
     sourceCard: {
+      sourceId: "source-zunyi-leadership-adjustment",
       title: "重要组织调整",
       text: "会议增选毛泽东同志为中央政治局常委，并让他参加中央军事指挥的领导工作，红军开始重新争取主动。",
       image: "/assets/levels/zunyi-turn/zunyi-leadership-adjustment-detail.jpg",

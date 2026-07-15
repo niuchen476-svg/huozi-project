@@ -5,7 +5,28 @@
   "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
-    "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "xiangjiang-battle", "helpAfterFailures": 2, "assistAfterFailures": 3 },
+    "gameplay": {
+      "enabled": true,
+      "estimatedSeconds": 90,
+      "adapterId": "xiangjiang-battle",
+      "sourceIds": [
+        "source-xiangjiang-operation-map",
+        "source-xiangjiang-breakthrough-report",
+        "source-xiangjiang-guangxi-history"
+      ],
+      "helpAfterFailures": 2,
+      "assistAfterFailures": 3,
+      "tutorial": {
+        "enabled": true,
+        "autoShow": true,
+        "title": "湘江血战 · 玩法提示",
+        "steps": [
+          { "title": "看目标，也看危险", "text": "每一幕先读任务说明；敌机、炮火和救护呼叫出现时，画面会给出明显提示。", "anchor": ".historical-mission__story" },
+          { "title": "点击完成抢修与调度", "text": "点击浮桥节点、选择安全通道或响应救护目标；操作失误后可以立即重试。", "anchor": ".historical-mission__task" },
+          { "title": "理解突破的代价", "text": "每幕结束会出现史实节点与史料依据，它们不是考试答案，而是解释你刚才行动的历史背景。", "anchor": ".historical-mission__source" }
+        ]
+      }
+    },
     "sources": {
       "enabled": true,
       "estimatedSeconds": 0,
@@ -27,6 +48,36 @@
           "activeInGameplay": true,
           "visibleInSourceDrawer": true,
           "availableForAiExpression": true
+        },
+        {
+          "id": "source-xiangjiang-breakthrough-report",
+          "title": "《湘江突围：长征中最为惨烈的战役》",
+          "type": "专题史料文章",
+          "date": "1934年11月27日至12月1日",
+          "creator": "新华社（中央网信办转载）",
+          "summary": "资料回顾湘江战役的渡江、阻击与惨重损失，说明浮桥和渡口为何成为行动关键。",
+          "plainExplanation": "游戏第一幕据此设置敌机轰炸间隙中的浮桥抢修。",
+          "sourceName": "中央网信办转载新华社",
+          "sourceUrl": "https://www.cac.gov.cn/2016-08/19/c_1119421570.htm",
+          "rightsStatus": "pending",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": false
+        },
+        {
+          "id": "source-xiangjiang-guangxi-history",
+          "title": "《红军长征过广西》",
+          "type": "党史专题文章",
+          "date": "1934年11月至12月",
+          "creator": "中共中央党史和文献研究院",
+          "summary": "资料梳理红军长征经过广西及湘江战役中的渡江、阻击和伤员救护等历史过程。",
+          "plainExplanation": "游戏第二、三幕据此呈现阻击部队争取渡江窗口，以及担架队转移伤员。",
+          "sourceName": "中共中央党史和文献研究院",
+          "sourceUrl": "https://www.dswxyjy.org.cn/n1/2026/0702/c244516-40752274.html",
+          "rightsStatus": "pending",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": false
         }
       ]
     },
@@ -60,7 +111,7 @@
     "fallbackImage": "/assets/fragments/fallbacks/xiangjiang-bugle.webp",
     "legacyVisualId": "river-crossing-fragment",
     "historicalMeaning": "以象征性数字军号表现湘江战场上的号令、抢渡与队伍协同。",
-    "sourceIds": [],
+    "sourceIds": ["source-xiangjiang-operation-map", "source-xiangjiang-breakthrough-report"],
     "narrationAudioId": null,
     "hotspots": []
   }

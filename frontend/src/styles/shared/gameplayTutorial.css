@@ -1,0 +1,108 @@
+.level-gameplay-tutorial {
+  position: fixed;
+  z-index: 280;
+  inset: 0;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: 24px;
+  font-family: var(--font-sans);
+}
+
+.level-gameplay-tutorial[hidden] { display: none; }
+
+.level-gameplay-tutorial__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 10, 8, 0.48);
+  backdrop-filter: blur(1px);
+}
+
+.level-gameplay-tutorial__card {
+  position: relative;
+  width: min(620px, calc(100vw - 32px));
+  padding: 22px 24px 20px;
+  color: #38251b;
+  background:
+    linear-gradient(rgba(255, 250, 235, 0.94), rgba(240, 224, 187, 0.96)),
+    repeating-linear-gradient(0deg, rgba(91, 61, 40, 0.05) 0 1px, transparent 1px 5px);
+  border: 1px solid rgba(132, 43, 34, 0.62);
+  border-left: 7px solid #9b3027;
+  border-radius: 12px;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.48);
+}
+
+.level-gameplay-tutorial__eyebrow {
+  margin: 0 0 8px;
+  color: #982f26;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.level-gameplay-tutorial__card > span {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  color: #806c56;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.78rem;
+}
+
+.level-gameplay-tutorial__card h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+}
+
+.level-gameplay-tutorial__description {
+  margin: 12px 0 18px;
+  color: #594638;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.level-gameplay-tutorial__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.level-gameplay-tutorial__actions button {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 7px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.level-gameplay-tutorial__skip {
+  color: #6b5846;
+  background: rgba(255, 255, 255, 0.36);
+  border: 1px solid rgba(90, 65, 45, 0.3);
+}
+
+.level-gameplay-tutorial__next {
+  color: #fff3d8;
+  background: linear-gradient(180deg, #a43a2d, #741f1a);
+  border: 1px solid #c9895b;
+  box-shadow: 0 7px 18px rgba(86, 24, 19, 0.25);
+}
+
+.level-gameplay-tutorial__actions button:focus-visible {
+  outline: 3px solid #d99a42;
+  outline-offset: 2px;
+}
+
+body.level-gameplay-tutorial-is-open { overflow: hidden; }
+
+@media (max-width: 640px) {
+  .level-gameplay-tutorial { padding: 14px; }
+  .level-gameplay-tutorial__card { padding: 18px 18px 16px; }
+  .level-gameplay-tutorial__actions { justify-content: stretch; }
+  .level-gameplay-tutorial__actions button { flex: 1; padding: 0 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-gameplay-tutorial__backdrop { backdrop-filter: none; }
+}

@@ -21,10 +21,7 @@ export const RUIJIN_MISSION = {
       image: "assets/levels/ruijin-departure/cards/03-column.jpg?v=mission-20260710",
       imageAlt: "红军通信、医疗和后勤队伍在赣南山路上集结转移",
       imagePosition: "center",
-      source: {
-        label: "中央纪委国家监委网站《为什么30万人能保守一个秘密》",
-        url: "https://www.bjsupervision.gov.cn/ywyl/201712/t20171207_46251.html",
-      },
+      sourceId: "source-ruijin-secret-assembly",
       items: [
         { id: "radio", label: "电台与电池", detail: "维持纵队联络", x: 12, y: 61 },
         { id: "medical", label: "担架与药箱", detail: "接应伤员病号", x: 38, y: 69 },
@@ -55,10 +52,7 @@ export const RUIJIN_MISSION = {
       image: "assets/levels/ruijin-departure/cards/04-farewell.jpg?v=mission-20260710",
       imageAlt: "赣南群众在村口送别分批出发的红军队伍",
       imagePosition: "center",
-      source: {
-        label: "中央纪委国家监委网站《长征源头话薪传》",
-        url: "https://m.ccdi.gov.cn/content/f0/46/12025.html",
-      },
+      sourceId: "source-ruijin-secret-march",
     },
     {
       id: "ruijin-crossing",
@@ -80,10 +74,7 @@ export const RUIJIN_MISSION = {
       image: "assets/levels/ruijin-departure/cards/02-assembly.jpg?v=mission-20260710",
       imageAlt: "红军队伍在夜色中从于都河渡口分批渡河",
       imagePosition: "center",
-      source: {
-        label: "于都县人民政府《于都河畔：万里长征从这里出发》",
-        url: "https://www.yudu.gov.cn/yudu/ydrw/202102/3f856d547c974b18afb023350581f9b0.shtml",
-      },
+      sourceId: "source-ruijin-yudu-crossing",
     },
   ],
 };

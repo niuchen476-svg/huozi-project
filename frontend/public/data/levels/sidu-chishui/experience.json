@@ -5,7 +5,24 @@
   "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
-    "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "sidu-chishui", "helpAfterFailures": 2, "assistAfterFailures": 3 },
+    "gameplay": {
+      "enabled": true,
+      "estimatedSeconds": 90,
+      "adapterId": "sidu-chishui",
+      "sourceIds": ["source-sidu-military-telegrams"],
+      "helpAfterFailures": 2,
+      "assistAfterFailures": 3,
+      "tutorial": {
+        "enabled": true,
+        "autoShow": true,
+        "title": "四渡赤水 · 玩法提示",
+        "steps": [
+          { "title": "路线会连续改变", "text": "四次渡河按真实时间顺序展开；每一小关先读左侧日期、地点和行动目的。", "anchor": ".level-panel" },
+          { "title": "拖动红军标志", "text": "把红军标志拖到地图上闪烁的渡口。放错会回到起点，可以马上重新判断。", "anchor": "#marker" },
+          { "title": "不要把往返理解成犹豫", "text": "右上角军委电报帮助理解：路线改变是在敌情变化中重新争取主动。", "anchor": ".level-source-drawer__launcher" }
+        ]
+      }
+    },
     "sources": {
       "enabled": true,
       "estimatedSeconds": 0,
@@ -60,7 +77,7 @@
     "fallbackImage": "/assets/fragments/fallbacks/sidu-compass.webp",
     "legacyVisualId": "chishui-maneuver-fragment",
     "historicalMeaning": "以象征性数字罗盘表现四次渡河中的路线调整与机动作战。",
-    "sourceIds": [],
+    "sourceIds": ["source-sidu-military-telegrams"],
     "narrationAudioId": null,
     "hotspots": []
   }

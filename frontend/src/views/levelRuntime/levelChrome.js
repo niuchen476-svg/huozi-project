@@ -29,10 +29,12 @@ export function createLevelChrome(options = {}) {
 }
 
 class LevelChrome {
-  constructor({ level, phase = "briefing", onRestart } = {}) {
+  constructor({ level, phase = "briefing", onRestart, onHelp, helpEnabled = false } = {}) {
     this.level = level || {};
     this.phase = normalizeLevelPhase(phase);
     this.onRestart = typeof onRestart === "function" ? onRestart : () => {};
+    this.onHelp = typeof onHelp === "function" ? onHelp : () => {};
+    this.helpEnabled = helpEnabled === true;
     this.controller = new AbortController();
     this.element = this.build();
   }
@@ -110,7 +112,15 @@ class LevelChrome {
     restart.innerHTML = '<span aria-hidden="true">↻</span><em>重来</em>';
     restart.addEventListener("click", () => this.onRestart(), { signal: this.controller.signal });
 
-    root.append(back, identity, this.progress, restart);
+    const help = document.createElement("button");
+    help.type = "button";
+    help.className = "level-runtime-chrome__help";
+    help.setAttribute("aria-label", "查看本关玩法提示");
+    help.innerHTML = '<span aria-hidden="true">?</span><em>玩法</em>';
+    help.hidden = !this.helpEnabled;
+    help.addEventListener("click", () => this.onHelp(), { signal: this.controller.signal });
+
+    root.append(back, identity, this.progress, help, restart);
     return root;
   }
 

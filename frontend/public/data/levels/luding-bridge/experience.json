@@ -5,7 +5,24 @@
   "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
-    "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "luding-bridge", "helpAfterFailures": 2, "assistAfterFailures": 3 },
+    "gameplay": {
+      "enabled": true,
+      "estimatedSeconds": 90,
+      "adapterId": "luding-bridge",
+      "sourceIds": ["source-luding-strategic-telegram", "source-luding-historic-iron-chains"],
+      "helpAfterFailures": 2,
+      "assistAfterFailures": 3,
+      "tutorial": {
+        "enabled": true,
+        "autoShow": true,
+        "title": "飞夺泸定桥 · 玩法提示",
+        "steps": [
+          { "title": "先读铁索照片", "text": "开场照片解释桥面险境。点击“开始行动”后，先拖动突击队员完成报名。", "anchor": ".bridge-intro-source" },
+          { "title": "点击前进，也能左右躲避", "text": "过桥时点击“前进”；攻击箭头向左就点右躲，向右就点左躲，不需要键盘。", "anchor": "#bridge-controls" },
+          { "title": "失败可以立即重来", "text": "本关强调极限时间中的协作，不会因一次失误中断整体体验。", "anchor": "#bridge-caption" }
+        ]
+      }
+    },
     "sources": {
       "enabled": true,
       "estimatedSeconds": 0,
@@ -27,6 +44,23 @@
           "activeInGameplay": true,
           "visibleInSourceDrawer": true,
           "availableForAiExpression": true
+        },
+        {
+          "id": "source-luding-historic-iron-chains",
+          "title": "泸定桥铁索历史照片",
+          "type": "历史照片",
+          "date": "具体拍摄时间待审核",
+          "creator": "具体摄影者待审核",
+          "summary": "照片呈现泸定桥铁索结构，为游戏开场理解桥面木板被拆后的危险提供视觉线索。",
+          "plainExplanation": "这张照片在游戏开场直接参与判断；具体拍摄时间、摄影者和馆藏仍需项目审核。",
+          "sourceName": "项目资料库（具体出处与馆藏待审核）",
+          "rightsStatus": "pending",
+          "image": "/assets/levels/luding-bridge/reference/historic-iron-chains.jpg",
+          "imageAlt": "泸定桥铁索历史照片",
+          "imageCaption": "游戏开场使用的铁索历史照片；著录与授权状态待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": false
         }
       ]
     },
@@ -60,7 +94,7 @@
     "fallbackImage": "/assets/fragments/fallbacks/luding-chain.webp",
     "legacyVisualId": "iron-chain-fragment",
     "historicalMeaning": "以象征性数字铁索表现泸定桥的险境与突击队打开北上通道的行动。",
-    "sourceIds": [],
+    "sourceIds": ["source-luding-strategic-telegram", "source-luding-historic-iron-chains"],
     "narrationAudioId": null,
     "hotspots": []
   }

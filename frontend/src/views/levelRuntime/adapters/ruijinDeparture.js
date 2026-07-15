@@ -9,8 +9,8 @@ export default {
   preload() {
     return preloadImage("assets/levels/ruijin-departure/cards/03-column.jpg");
   },
-  async play({ root, level }) {
-    const result = await renderRuijinDepartureAction25d(root, level);
+  async play({ root, level, experience }) {
+    const result = await renderRuijinDepartureAction25d(root, level, experience);
     return result === "skipped"
       ? skipLevel({ actionCompleted: false })
       : continueLevel({ actionCompleted: true });

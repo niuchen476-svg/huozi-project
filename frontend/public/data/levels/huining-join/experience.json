@@ -14,8 +14,24 @@
       "enabled": true,
       "estimatedSeconds": 70,
       "adapterId": "huining-join",
+      "sourceIds": [
+        "source-huining-hoof-march",
+        "source-huining-staged-arrival",
+        "source-jiangtaibao-oct22",
+        "source-xinglong-oct23"
+      ],
       "helpAfterFailures": 2,
-      "assistAfterFailures": 3
+      "assistAfterFailures": 3,
+      "tutorial": {
+        "enabled": true,
+        "autoShow": true,
+        "title": "会宁会师 · 玩法提示",
+        "steps": [
+          { "title": "先完成马蹄裹布", "text": "依次点击四只马蹄，把裹蹄布固定好，完成15至20秒的隐蔽奔袭开场。", "anchor": ".huining-hoof-grid" },
+          { "title": "先选队伍，再选节点", "text": "进入地图后，先点击一支红军队伍，再点击它应抵达的会师节点；也可以直接拖动。", "anchor": ".huining-route-layout" },
+          { "title": "最后复原时间线并组展", "text": "按日期排列四个会师节点，然后选择最多三块碎片和一个主题，组成个人数字展台。", "anchor": ".huining-timeline-board" }
+        ]
+      }
     },
     "sources": {
       "enabled": true,
@@ -81,7 +97,7 @@
           "sourceName": "中央网信办转载新华社《三军大会师》",
           "sourceUrl": "https://www.cac.gov.cn/2016-08/22/c_1119432029.htm",
           "rightsStatus": "pending",
-          "activeInGameplay": false,
+          "activeInGameplay": true,
           "visibleInSourceDrawer": true,
           "availableForAiExpression": true
         },

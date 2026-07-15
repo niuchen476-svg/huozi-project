@@ -5,7 +5,24 @@
   "sourceDrawer": { "enabled": true, "title": "本关史料", "position": "top-right", "maxItems": 12 },
   "phases": {
     "briefing": { "enabled": false, "estimatedSeconds": 15, "title": "", "question": "" },
-    "gameplay": { "enabled": true, "estimatedSeconds": 90, "adapterId": "snow-grassland", "helpAfterFailures": 2, "assistAfterFailures": 3 },
+    "gameplay": {
+      "enabled": true,
+      "estimatedSeconds": 90,
+      "adapterId": "snow-grassland",
+      "sourceIds": ["source-snow-grassland-manuscript", "source-snow-xiong-qiwen-letter"],
+      "helpAfterFailures": 2,
+      "assistAfterFailures": 3,
+      "tutorial": {
+        "enabled": true,
+        "autoShow": true,
+        "title": "雪山草地 · 玩法提示",
+        "steps": [
+          { "title": "先看情境，再做选择", "text": "每个场景会说明极端环境中的具体困难；点击物品或答案完成取舍。", "anchor": "#qTask" },
+          { "title": "遇到家书要读材料", "text": "熊启文家书环节不是常识题，要根据家书内容判断最能体现队伍精神的一项。", "anchor": ".archive-letter-stage" },
+          { "title": "点击操作贯穿全关", "text": "多选题确认、单选题作答和敲击暗号都可直接点击，不依赖键盘。", "anchor": "#interact" }
+        ]
+      }
+    },
     "sources": {
       "enabled": true,
       "estimatedSeconds": 0,
@@ -24,6 +41,24 @@
           "image": "/assets/levels/snow-grassland/sources/snow-grassland-manuscript-feishu.png",
           "imageAlt": "雪山草地长征亲历者手写记录影印图",
           "imageCaption": "飞书资料中的长征亲历手稿；具体题名、作者、形成日期与馆藏待审核。",
+          "activeInGameplay": true,
+          "visibleInSourceDrawer": true,
+          "availableForAiExpression": true
+        },
+        {
+          "id": "source-snow-xiong-qiwen-letter",
+          "title": "熊启文致父母及幺叔的信",
+          "type": "红军战士家书",
+          "date": "1935年3月19日",
+          "creator": "熊启文",
+          "summary": "红四方面军第九军战士熊启文在家书中牵挂亲人，也写到红军官兵平等和革命信念。",
+          "plainExplanation": "这封家书直接出现在游戏判断环节，让玩家从一个具体人的文字理解队伍关系和精神信念。",
+          "sourceName": "中国国家博物馆长征主题馆藏专题",
+          "sourceUrl": "https://www.chnmuseum.cn/portals/0/web/zt/20160922longmarch/",
+          "rightsStatus": "pending",
+          "image": "/embedded/snow-grassland/assets/xiong-qiwen-letter-1935.jpg",
+          "imageAlt": "熊启文于1935年3月19日写给父母及幺叔的家书",
+          "imageCaption": "熊启文致父母及幺叔的信，1935年3月19日，纸本；馆藏信息据中国国家博物馆专题页。",
           "activeInGameplay": true,
           "visibleInSourceDrawer": true,
           "availableForAiExpression": true
@@ -60,7 +95,7 @@
     "fallbackImage": "/assets/fragments/fallbacks/snow-star.webp",
     "legacyVisualId": "snow-grass-fragment",
     "historicalMeaning": "以象征性数字红星表现雪山草地极端环境中的坚持与互助；后续可替换为人物事件相关模型。",
-    "sourceIds": [],
+    "sourceIds": ["source-snow-grassland-manuscript", "source-snow-xiong-qiwen-letter"],
     "narrationAudioId": null,
     "hotspots": []
   }

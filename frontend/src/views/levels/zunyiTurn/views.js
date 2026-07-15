@@ -93,7 +93,8 @@ export function renderRewriteCanvas(state) {
 }
 
 export function renderMeetingSpeakerBubble(state) {
-  const record = MEETING_RECORDS[state.meetingRecordIndex];
+  const records = state.records || MEETING_RECORDS;
+  const record = records[state.meetingRecordIndex];
   if (!["lesson", "command", "direction"].includes(record?.id)) return "";
   const positionClass = record.id === "command"
     ? "zunyi-meeting-speaker-bubble--left"
@@ -110,8 +111,9 @@ export function renderMeetingSpeakerBubble(state) {
 }
 
 export function renderMeetingRecordGame(state) {
-  const record = MEETING_RECORDS[state.meetingRecordIndex];
-  const completed = state.meetingRecords.length >= MEETING_RECORDS.length && !state.activeSourceCard;
+  const records = state.records || MEETING_RECORDS;
+  const record = records[state.meetingRecordIndex];
+  const completed = state.meetingRecords.length >= records.length && !state.activeSourceCard;
 
   if (completed) {
     return `
@@ -119,7 +121,7 @@ export function renderMeetingRecordGame(state) {
         <div class="zunyi-record-game__paper">
           <strong>会议记录纸</strong>
           <b class="zunyi-record-game__status">会议记录完成</b>
-          ${MEETING_RECORDS.map((item) => `<em class="is-written">${item.written}</em>`).join("")}
+          ${records.map((item) => `<em class="is-written">${item.written}</em>`).join("")}
           ${renderArchivedSourceTags(state)}
           <b class="zunyi-record-game__stamp">记录归档</b>
         </div>
@@ -144,7 +146,7 @@ export function renderMeetingRecordGame(state) {
       `}
       <div class="zunyi-record-game__paper">
         <strong>会议记录纸</strong>
-        ${MEETING_RECORDS.map((item) => {
+        ${records.map((item) => {
           const written = state.meetingRecords.includes(item.id);
           const fresh = state.lastWrittenRecord === item.id;
           return `<em class="${written ? "is-written" : ""} ${fresh ? "is-fresh-written" : ""}">${written ? item.written : "等待记录..."}</em>`;
@@ -158,11 +160,12 @@ export function renderMeetingRecordGame(state) {
 
 export function renderArchivedSourceTags(state) {
   if (!state.archivedSources.length) return "";
+  const records = state.records || MEETING_RECORDS;
 
   return `
     <div class="zunyi-record-game__archives" aria-label="已归档史料">
       ${state.archivedSources.map((id, index) => {
-        const item = MEETING_RECORDS.find((record) => record.id === id);
+        const item = records.find((record) => record.id === id);
         return `<span>史料${index + 1}已归档：${item?.sourceCard.title || "相关史料"}</span>`;
       }).join("")}
     </div>

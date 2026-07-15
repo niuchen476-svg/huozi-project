@@ -26,10 +26,7 @@ export const XIANGJIANG_MISSION = {
       image: "assets/levels/xiangjiang-battle/cards/02-crossing.jpg?v=mission-20260710",
       imageAlt: "湘江渡口的红军工兵在炮火下抢修木排浮桥",
       imagePosition: "center",
-      source: {
-        label: "中央网信办转载新华社《湘江突围：长征中最为惨烈的战役》",
-        url: "https://www.cac.gov.cn/2016-08/19/c_1119421570.htm",
-      },
+      sourceId: "source-xiangjiang-breakthrough-report",
       points: [
         { x: 38, y: 76, label: "岸边接头" },
         { x: 46, y: 68, label: "第一木排" },
@@ -58,10 +55,7 @@ export const XIANGJIANG_MISSION = {
       image: "assets/levels/xiangjiang-battle/cards/01-blockade.jpg?v=mission-20260710",
       imageAlt: "红军在湘江两岸观察渡口与炮火并组织部队过江",
       imagePosition: "center",
-      source: {
-        label: "中共中央党史和文献研究院《红军长征过广西》",
-        url: "https://www.dswxyjy.org.cn/n1/2026/0702/c244516-40752274.html",
-      },
+      sourceId: "source-xiangjiang-guangxi-history",
     },
     {
       id: "xiangjiang-rescue",
@@ -82,10 +76,7 @@ export const XIANGJIANG_MISSION = {
       image: "assets/levels/xiangjiang-battle/cards/03-cost.jpg?v=mission-20260710",
       imageAlt: "湘江战役后红军医疗与担架队在江滩转移伤员",
       imagePosition: "center",
-      source: {
-        label: "中共中央党史和文献研究院《红军长征过广西》",
-        url: "https://www.dswxyjy.org.cn/n1/2026/0702/c244516-40752274.html",
-      },
+      sourceId: "source-xiangjiang-guangxi-history",
       targets: [
         { x: 36, y: 68, label: "江滩伤员" },
         { x: 56, y: 69, label: "浮桥伤员" },
