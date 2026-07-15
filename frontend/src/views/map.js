@@ -185,7 +185,7 @@ function renderArchiveBagPanel(fragments) {
       <section class="archive-bag-panel__sheet" aria-label="档案袋">
         <div class="archive-bag-panel__header">
           <div>
-            <p>长征档案行</p>
+            <p>重走长征路</p>
             <h2>碎片收集</h2>
           </div>
           <button type="button" data-close-archive-bag>关闭</button>
