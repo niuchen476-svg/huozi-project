@@ -350,7 +350,7 @@ function artworkFallbackMessage(reason) {
     timeout: "在线画作等待超时，本次没有自动重试。",
     config: "在线画作尚未启用或配置完成。",
     response: "在线画作结果暂时无法解析。",
-    validation: "本次画作选择未通过数据校验。",
+    validation: "本次画作请求未被在线模型接受。",
     upstream: "在线画作服务暂时不可用。",
   };
   return messages[reason] || messages.upstream;

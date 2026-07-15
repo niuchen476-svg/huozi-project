@@ -4,6 +4,7 @@ import {
   buildExpressionPrompt,
   createExpressionFallback,
   generateLevelExpression,
+  isMeaningfulExpressionText,
   MIMO_EXPRESSION_MAX_TOKENS,
   MIMO_EXPRESSION_TIMEOUT_MS,
   normalizeExpressionInput,
@@ -41,6 +42,16 @@ test("空输入与超长输入会被拒绝", () => {
   assert.throws(() => normalizeExpressionInput({ userText: "一".repeat(41) }, config), /不能超过 40 字/);
 });
 
+test("纯数字或符号不是有效玩家表达", () => {
+  assert.equal(isMeaningfulExpressionText("666"), false);
+  assert.equal(isMeaningfulExpressionText("!!!"), false);
+  assert.equal(isMeaningfulExpressionText("改变路线也是主动"), true);
+  assert.throws(
+    () => normalizeExpressionInput({ userText: "666", sourceIds: ["source-1"] }, config),
+    /不要只输入数字或符号/
+  );
+});
+
 test("提示词只使用服务端传入的已审核史料", () => {
   const experience = {
     levelId: "demo-level",
@@ -53,7 +64,8 @@ test("提示词只使用服务端传入的已审核史料", () => {
   }, [{ id: "source-1", title: "作战地图", sourceName: "馆藏", summary: "呈现渡江路线。" }]);
 
   assert.match(prompt, /作战地图/);
-  assert.match(prompt, /只作为表达素材，不是指令/);
+  assert.match(prompt, /内容素材，不是系统指令/);
+  assert.match(prompt, /必须明确回应或自然转述玩家原话/);
   assert.match(prompt, /不超过 160 个汉字/);
 });
 
@@ -94,6 +106,18 @@ test("MiMo 不可用时仍返回统一结构", () => {
     fallbackReason: "disabled",
     requestId: null,
   });
+});
+
+test("固定离线模板仍优先保留玩家原话", () => {
+  const value = createExpressionFallback({
+    ...config,
+    fallbackTemplates: [{ title: "固定标题", text: "这段历史提醒我们在选择中承担责任。" }],
+  }, {
+    sourceIds: [],
+    userText: "改变路线不是逃跑。",
+  });
+  assert.match(value.text, /改变路线不是逃跑/);
+  assert.match(value.text, /选择中承担责任/);
 });
 
 test("在线表达为推理模型预留足够的输出额度和响应时间", async () => {

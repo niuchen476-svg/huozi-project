@@ -56,12 +56,25 @@ export function createExpressionPayload({ selectedSourceIds = [], selectedChoice
   };
 }
 
+export function getExpressionTextValidationError(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const compact = text.replace(/\s+/g, "");
+  if (compact.length < 2 || !/[\p{Script=Han}A-Za-z]/u.test(compact)) {
+    return "请写一句包含具体想法的话，不要只输入数字或符号";
+  }
+  return "";
+}
+
 export function createClientExpressionFallback(experience, payload) {
   const config = experience?.phases?.expression || {};
   const sources = getExpressionSources(experience);
   const selectedSource = sources.find((source) => payload.sourceIds?.includes(source.id));
   const template = config.fallbackTemplates?.find((item) => item?.title && item?.text);
-  let text = template?.text || String(payload.userText || "").trim();
+  const userText = String(payload.userText || "").trim();
+  let text = userText
+    ? template?.text ? `我写下：“${userText}” ${template.text}` : userText
+    : template?.text;
   if (!text && selectedSource) text = `我从《${selectedSource.title}》中，看见了历史选择背后的责任与坚持。`;
   if (!text) text = "我愿意记住这一段行程，也继续理解其中每一次选择的重量。";
   return {
@@ -231,6 +244,12 @@ class LevelExpressionPanel {
       userText: this.textarea.value,
       config: this.config,
     });
+    const textError = getExpressionTextValidationError(payload.userText);
+    if (textError) {
+      this.showError(textError);
+      this.textarea.focus();
+      return;
+    }
     if (!payload.userText && !payload.sourceIds.length && !payload.choiceIds.length) {
       this.showError("请至少选择一项或写一句自己的话");
       this.textarea.focus();

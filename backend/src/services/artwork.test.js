@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildArtworkPrompt, generateLevelArtwork, normalizeArtworkInput } from "./artwork.js";
-import { callAihubmixImage, getImagePredictionUrl, reserveDailyImageCall } from "./aihubmixImageClient.js";
+import {
+  buildArtworkPrompt,
+  generateLevelArtwork,
+  MAX_ARTWORK_PROMPT_CHARACTERS,
+  normalizeArtworkInput,
+} from "./artwork.js";
+import { callAihubmixImage, getImageGenerationUrl, reserveDailyImageCall } from "./aihubmixImageClient.js";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -29,11 +34,12 @@ test("绘画提示词包含主题、玩家表达、史料、碎片含义和署�
   assert.match(prompt, /记住牺牲/);
   assert.match(prompt, /全州、兴安方向作战部署图/);
   assert.match(prompt, /渡江军号/);
-  assert.match(prompt, /右下角只保留/);
-  assert.match(prompt, /不得出现现代武器/);
+  assert.match(prompt, /右下角保留/);
+  assert.match(prompt, /现代武器/);
+  assert.ok(prompt.length <= MAX_ARTWORK_PROMPT_CHARACTERS);
 });
 
-test("AIHubMix 使用支持参考图的 Qwen 原生接口且不自动重试", async () => {
+test("AIHubMix 使用文档规定的图片生成接口且不自动重试", async () => {
   let requestUrl;
   let requestBody;
   const result = await callAihubmixImage({
@@ -53,15 +59,35 @@ test("AIHubMix 使用支持参考图的 Qwen 原生接口且不自动重试", as
       });
     },
   });
-  assert.equal(requestUrl, getImagePredictionUrl("https://aihubmix.com/v1", "qianfan/qwen-image-2.0"));
-  assert.equal(requestBody.input.n, 1);
-  assert.equal(requestBody.input.size, "1024*576");
-  assert.equal(requestBody.input.watermark, false);
-  assert.equal(requestBody.input.prompt, "测试画面");
-  assert.deepEqual(requestBody.input.images, ["https://example.com/fragment.webp"]);
-  assert.equal(requestBody.input.prompt_extend, false);
-  assert.match(requestBody.input.negative_prompt, /日期/);
+  assert.equal(requestUrl, getImageGenerationUrl("https://aihubmix.com/v1"));
+  assert.equal(requestBody.model, "qwen-image-2.0");
+  assert.equal(requestBody.n, 1);
+  assert.equal(requestBody.size, "1024x576");
+  assert.equal(requestBody.watermark, false);
+  assert.equal(requestBody.prompt, "测试画面");
+  assert.equal(requestBody.images, undefined);
+  assert.equal(requestBody.response_format, "url");
+  assert.equal(requestBody.prompt_extend, false);
+  assert.equal(requestBody.negative_prompt, undefined);
+  assert.equal(requestBody.input, undefined);
   assert.deepEqual(result, { url: "https://example.com/result.png" });
+});
+
+test("AIHubMix 上游校验错误保留状态和原始详情", async () => {
+  await assert.rejects(() => callAihubmixImage({
+    prompt: "测试画面",
+    apiKey: "test-key",
+    imageEnabled: "true",
+    reserveBudget: async () => ({ count: 1, limit: 1 }),
+    fetchImpl: async () => new Response('{"error":"prompt too long"}', {
+      status: 400,
+      headers: { "content-type": "application/json" },
+    }),
+  }), (error) => {
+    assert.equal(error.providerStatus, 400);
+    assert.match(error.providerDetail, /prompt too long/);
+    return true;
+  });
 });
 
 test("每日预算持久化限制为一张", async () => {

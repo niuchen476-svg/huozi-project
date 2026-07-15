@@ -41,12 +41,6 @@ export function getImageGenerationUrl(apiBase = DEFAULT_API_BASE) {
   return `${cleanBaseUrl(apiBase)}/images/generations`;
 }
 
-export function getImagePredictionUrl(apiBase = DEFAULT_API_BASE, model = DEFAULT_MODEL) {
-  const rawModel = String(model || DEFAULT_MODEL).replace(/^\/+|\/+$/g, "");
-  const modelPath = rawModel.includes("/") ? rawModel : `qianfan/${rawModel}`;
-  return `${cleanBaseUrl(apiBase)}/models/${modelPath}/predictions`;
-}
-
 function normalizeModel(model = DEFAULT_MODEL) {
   // 兼容早期配置中的 qianfan/qwen-image-2.0；OpenAI 兼容接口要求只传模型 ID。
   return String(model || DEFAULT_MODEL).split("/").filter(Boolean).at(-1) || DEFAULT_MODEL;
@@ -76,8 +70,8 @@ function firstImageCandidate(payload) {
 
 export async function callAihubmixImage({
   prompt,
-  size = "1024*576",
-  referenceImages = [],
+  size = "1024x576",
+  referenceImages: _referenceImages = [],
   apiBase = process.env.AIHUBMIX_API_BASE,
   apiKey = process.env.AIHUBMIX_API_KEY,
   model = process.env.AIHUBMIX_IMAGE_MODEL,
@@ -99,24 +93,21 @@ export async function callAihubmixImage({
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const images = Array.isArray(referenceImages)
-      ? referenceImages.filter((value) => typeof value === "string" && /^(https?:|data:image\/)/i.test(value)).slice(0, 3)
-      : [];
-    const response = await fetchImpl(getImagePredictionUrl(apiBase, model), {
+    const response = await fetchImpl(getImageGenerationUrl(apiBase), {
       method: "POST",
       headers: {
         "content-type": "application/json",
         authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({ input: {
+      body: JSON.stringify({
+        model: normalizeModel(model),
         prompt,
-        ...(images.length ? { images } : {}),
         n: 1,
         size,
+        response_format: "url",
         watermark: false,
         prompt_extend: false,
-        negative_prompt: "任何文字、汉字、字母、数字、日期、标题、标语、题字、署名、水印、二维码、边框，现代建筑，现代武器，错误年代信息",
-      } }),
+      }),
       signal: controller.signal,
     });
     if (!response.ok) {
@@ -124,6 +115,7 @@ export async function callAihubmixImage({
       throw Object.assign(new Error(`生图服务请求失败（${response.status}）${detail ? `：${detail}` : ""}`), {
         statusCode: response.status === 429 ? 429 : 502,
         providerStatus: response.status,
+        providerDetail: detail,
       });
     }
     return firstImageCandidate(await response.json());

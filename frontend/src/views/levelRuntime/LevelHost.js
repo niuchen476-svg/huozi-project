@@ -349,9 +349,9 @@ export class LevelHost {
         <a class="back-link" href="#/map">← 返回路线图</a>
         <div data-level-completion-recap-slot></div>
         <div class="level-complete-actions level-completion-phase__actions">
-          <button type="button" data-complete-level>领取本关碎片</button>
-          <button type="button" data-restart-level>重来</button>
-          <a href="#/map">返回路线图</a>
+          <button class="level-complete-actions__primary" type="button" data-complete-level>收下碎片并返回路线图</button>
+          <button class="level-complete-actions__secondary" type="button" data-restart-level>再体验一次</button>
+          <a class="level-complete-actions__link" href="#/map">直接返回路线图</a>
         </div>
       </div>
     `;
@@ -450,8 +450,8 @@ export class LevelHost {
     actions.className = "level-complete-actions";
     actions.dataset.expressionCompleteActions = "";
     actions.innerHTML = `
-      <button type="button" data-restart-level>重来</button>
-      <a href="#/map">返回路线图</a>
+      <a class="level-complete-actions__primary" href="#/map">完成并返回路线图</a>
+      <button class="level-complete-actions__secondary" type="button" data-restart-level>再体验一次</button>
     `;
     actions.querySelector("[data-restart-level]")?.addEventListener("click", () => this.restart(session));
     result.appendChild(actions);

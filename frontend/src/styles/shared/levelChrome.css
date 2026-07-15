@@ -72,6 +72,11 @@
   font-style: normal;
 }
 
+/* 通关页已有完整操作栏，避免顶部和底部同时出现两个“重来”。 */
+.level-runtime-chrome[data-phase="completion"] .level-runtime-chrome__restart {
+  display: none;
+}
+
 .level-runtime-chrome__identity {
   display: grid;
   gap: 1px;
