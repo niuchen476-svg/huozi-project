@@ -121,16 +121,19 @@
 }
 
 .level-source-drawer__close {
-  display: grid;
-  place-items: center;
-  width: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
   height: 42px;
+  padding: 0 14px;
   flex: 0 0 auto;
   color: #4e3023;
   background: rgba(255, 255, 255, 0.4);
   border: 1px solid rgba(78, 48, 35, 0.28);
-  border-radius: 50%;
-  font-size: 1.8rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 800;
   line-height: 1;
   cursor: pointer;
 }
@@ -402,10 +405,12 @@ body.level-source-drawer-is-open {
 .level-source-drawer__viewer-close {
   top: 8px;
   right: 8px;
-  width: 44px;
+  width: auto;
   height: 44px;
-  border-radius: 50%;
-  font-size: 1.8rem;
+  padding: 0 15px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .level-source-drawer__viewer-nav {

@@ -1186,6 +1186,82 @@
   line-height: 1.55;
 }
 
+.huining-fragment-takeaway {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 16px;
+  color: #d7c9af;
+  background: rgba(255, 247, 226, 0.055);
+  border: 1px solid rgba(223, 199, 152, 0.18);
+  border-radius: 6px;
+}
+
+.huining-fragment-takeaway > div > span {
+  color: #d89a63;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.huining-fragment-takeaway h2,
+.huining-fragment-takeaway p {
+  margin: 0;
+}
+
+.huining-fragment-takeaway h2 {
+  margin-top: 4px;
+  color: #fff0d0;
+  font-size: 1rem;
+}
+
+.huining-fragment-takeaway > div > p {
+  margin-top: 5px;
+  color: #9f927f;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.huining-fragment-takeaway label {
+  display: grid;
+  gap: 5px;
+  color: #bcae96;
+  font-size: 0.7rem;
+}
+
+.huining-fragment-takeaway input,
+.huining-fragment-takeaway select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 11px;
+  color: #f9e8c7;
+  background: rgba(17, 13, 10, 0.72);
+  border: 1px solid rgba(223, 199, 152, 0.26);
+  border-radius: 4px;
+}
+
+.huining-fragment-takeaway button {
+  min-height: 44px;
+  color: #fff2d4;
+  background: linear-gradient(180deg, #a53b31, #79251f);
+  border: 1px solid rgba(240, 189, 120, 0.55);
+  border-radius: 4px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.huining-fragment-takeaway button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.huining-fragment-takeaway__status {
+  min-height: 1.4em;
+  color: #d7a871;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
 .huining-showcase-stage {
   position: relative;
   display: grid;

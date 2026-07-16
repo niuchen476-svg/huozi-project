@@ -314,7 +314,7 @@ async function completeSpecialChallenge(root, challenge, { onRestart, onComplete
     </div>
   `;
   panel.querySelector("[data-restart-level]")?.addEventListener("click", onRestart);
-  const completion = await onComplete({ reward: true, redirect: "if-reward" });
+  const completion = await onComplete({ reward: true });
   if (completion?.deferred) {
     panel.querySelector(".challenge-complete__eyebrow").textContent = "行动完成";
     panel.querySelector(".level-complete-actions")?.remove();
