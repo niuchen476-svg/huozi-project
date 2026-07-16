@@ -3,616 +3,266 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#4a0908" />
-  <title>重走长征路 · 项目路演汇报</title>
-  <style>
-    :root {
-      --red-950: #270404;
-      --red-900: #3a0706;
-      --red-800: #67100d;
-      --red-700: #8f211a;
-      --red-600: #b93b2d;
-      --gold-100: #fff3d5;
-      --gold-200: #f3d7a1;
-      --gold-300: #dcb66d;
-      --gold-500: #b9853b;
-      --ink: #261711;
-      --paper: #f3e7cb;
-      --muted: rgba(255, 243, 213, 0.68);
-      --line: rgba(243, 215, 161, 0.23);
-      --shadow: 0 30px 90px rgba(15, 0, 0, 0.45);
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
-    body {
-      margin: 0;
-      color: var(--gold-100);
-      background: var(--red-950);
-      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
-    }
-    button, a { font: inherit; }
-    a { color: inherit; }
-    img { display: block; max-width: 100%; }
-
-    .deck-progress {
-      position: fixed;
-      inset: 0 auto auto 0;
-      z-index: 30;
-      width: 100%;
-      height: 3px;
-      background: rgba(255,255,255,.08);
-    }
-    .deck-progress span {
-      display: block;
-      width: 8.333%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--gold-500), #ffe7a7);
-      box-shadow: 0 0 18px rgba(255, 218, 135, .6);
-      transition: width .35s ease;
-    }
-
-    .deck-nav {
-      position: fixed;
-      top: 50%;
-      right: 25px;
-      z-index: 20;
-      display: grid;
-      gap: 9px;
-      transform: translateY(-50%);
-    }
-    .deck-nav a {
-      width: 9px;
-      height: 9px;
-      background: rgba(255, 240, 205, .28);
-      border: 1px solid rgba(255, 240, 205, .45);
-      border-radius: 99px;
-      transition: height .2s ease, background .2s ease;
-    }
-    .deck-nav a.is-active {
-      height: 30px;
-      background: var(--gold-200);
-    }
-
-    .deck-count {
-      position: fixed;
-      top: 26px;
-      right: 24px;
-      z-index: 20;
-      color: rgba(255, 239, 204, .78);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .15em;
-    }
-
-    .slide {
-      position: relative;
-      display: grid;
-      min-height: 100vh;
-      padding: clamp(68px, 8vh, 92px) clamp(58px, 9vw, 132px) 66px;
-      overflow: hidden;
-      isolation: isolate;
-      scroll-snap-align: start;
-      background:
-        radial-gradient(circle at 14% 20%, rgba(199, 48, 35, .35), transparent 30%),
-        radial-gradient(circle at 85% 12%, rgba(237, 186, 88, .15), transparent 24%),
-        linear-gradient(135deg, #2d0404 0%, #5a0a08 48%, #981e17 100%);
-    }
-    .slide:nth-of-type(even) {
-      background:
-        radial-gradient(circle at 78% 24%, rgba(193, 42, 29, .34), transparent 29%),
-        linear-gradient(145deg, #250303 0%, #470706 54%, #6f100c 100%);
-    }
-    .slide::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -2;
-      opacity: .17;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 44px 44px;
-      mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
-    }
-    .slide::after {
-      content: attr(data-watermark);
-      position: absolute;
-      right: 4.5vw;
-      bottom: -6vh;
-      z-index: -1;
-      color: rgba(255, 237, 199, .04);
-      font-family: "SimSun", serif;
-      font-size: clamp(170px, 23vw, 340px);
-      font-weight: 900;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .slide-inner {
-      align-self: center;
-      width: min(1180px, 100%);
-      margin: 0 auto;
-    }
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0 0 18px;
-      color: var(--gold-300);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-    .eyebrow::before { content: ""; width: 36px; height: 2px; background: currentColor; }
-    h1, h2, h3, p { margin-top: 0; }
-    h1, h2 {
-      font-family: "STKaiti", "KaiTi", "Microsoft YaHei", sans-serif;
-      text-wrap: balance;
-    }
-    h1 {
-      max-width: 980px;
-      margin-bottom: 24px;
-      font-size: clamp(62px, 8.7vw, 126px);
-      line-height: .98;
-      letter-spacing: -.04em;
-    }
-    h1 span { display: block; color: var(--gold-200); }
-    h2 {
-      max-width: 1040px;
-      margin-bottom: 22px;
-      font-size: clamp(36px, 5vw, 72px);
-      line-height: 1.08;
-      letter-spacing: -.025em;
-    }
-    .lead {
-      max-width: 850px;
-      color: rgba(255, 244, 217, .82);
-      font-size: clamp(17px, 1.7vw, 25px);
-      line-height: 1.75;
-    }
-    .lead strong { color: var(--gold-200); }
-
-    .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
-    .tag {
-      padding: 9px 15px;
-      color: var(--gold-200);
-      background: rgba(42, 4, 4, .34);
-      border: 1px solid rgba(243, 215, 161, .32);
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .cover-actions { display: flex; gap: 12px; margin-top: 36px; }
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-      padding: 0 21px;
-      text-decoration: none;
-      background: var(--gold-200);
-      color: var(--ink);
-      border: 1px solid var(--gold-100);
-      border-radius: 4px;
-      font-weight: 900;
-    }
-    .button--ghost { color: var(--gold-100); background: rgba(255,255,255,.04); }
-
-    .split {
-      display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(430px, 1.1fr);
-      gap: clamp(34px, 6vw, 90px);
-      align-items: center;
-    }
-    .visual-card {
-      position: relative;
-      overflow: hidden;
-      min-height: 460px;
-      background: #160b08;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      box-shadow: var(--shadow);
-    }
-    .visual-card > img { width: 100%; height: 100%; min-height: 460px; object-fit: cover; opacity: .76; }
-    .visual-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(32,5,4,.82), transparent 56%); }
-    .visual-caption { position: absolute; right: 24px; bottom: 22px; left: 24px; z-index: 2; }
-    .visual-caption strong { display: block; font-size: 22px; }
-    .visual-caption span { color: var(--muted); font-size: 13px; }
-
-    .metric-grid, .card-grid, .level-grid, .feature-grid { display: grid; gap: 16px; }
-    .metric-grid { grid-template-columns: repeat(3, 1fr); margin-top: 38px; }
-    .metric {
-      min-height: 132px;
-      padding: 20px;
-      background: rgba(24, 2, 2, .26);
-      border: 1px solid var(--line);
-      border-top: 3px solid var(--gold-500);
-    }
-    .metric strong { display: block; color: var(--gold-200); font-size: clamp(30px, 4vw, 54px); }
-    .metric span { color: var(--muted); font-size: 14px; line-height: 1.55; }
-
-    .card-grid { grid-template-columns: repeat(2, 1fr); margin-top: 30px; }
-    .paper-card {
-      min-height: 210px;
-      padding: 26px;
-      color: var(--ink);
-      background:
-        linear-gradient(rgba(255,255,255,.18), rgba(255,255,255,0)),
-        var(--paper);
-      border: 1px solid rgba(255, 239, 203, .56);
-      box-shadow: 0 18px 55px rgba(20, 0, 0, .26);
-    }
-    .paper-card small { color: var(--red-700); font-weight: 900; letter-spacing: .12em; }
-    .paper-card h3 { margin: 12px 0 8px; font-size: 26px; }
-    .paper-card p { margin-bottom: 0; color: #624c3d; line-height: 1.7; }
-
-    .loop {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-top: 45px;
-      counter-reset: loop;
-    }
-    .loop article {
-      position: relative;
-      min-height: 220px;
-      padding: 23px 18px;
-      background: rgba(255,255,255,.045);
-      border: 1px solid var(--line);
-      counter-increment: loop;
-    }
-    .loop article::before { content: "0" counter(loop); display: block; margin-bottom: 35px; color: var(--gold-300); font-size: 13px; font-weight: 900; }
-    .loop article:not(:last-child)::after { content: "→"; position: absolute; top: 50%; right: -19px; z-index: 2; color: var(--gold-300); font-size: 20px; }
-    .loop h3 { margin-bottom: 9px; font-size: 21px; }
-    .loop p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
-
-    .level-grid { grid-template-columns: repeat(4, 1fr); margin-top: 34px; }
-    .level-card {
-      min-height: 170px;
-      padding: 20px;
-      background: linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
-      border: 1px solid var(--line);
-    }
-    .level-card:last-child { grid-column: span 2; background: rgba(218, 172, 94, .12); }
-    .level-card b { display: block; color: var(--gold-300); font-size: 12px; }
-    .level-card h3 { margin: 28px 0 7px; font-size: 22px; }
-    .level-card p { margin: 0; color: var(--muted); font-size: 13px; }
-
-    .source-stack { position: relative; min-height: 520px; }
-    .source-sheet {
-      position: absolute;
-      width: min(420px, 76%);
-      overflow: hidden;
-      background: var(--paper);
-      border: 8px solid #eee2c7;
-      box-shadow: 0 22px 60px rgba(15,0,0,.35);
-    }
-    .source-sheet:nth-child(1) { top: 5%; left: 2%; transform: rotate(-5deg); }
-    .source-sheet:nth-child(2) { top: 16%; right: 0; transform: rotate(5deg); }
-    .source-sheet:nth-child(3) { bottom: 0; left: 18%; transform: rotate(-1deg); }
-    .source-sheet img { width: 100%; height: 250px; object-fit: cover; filter: sepia(.14); }
-    .source-sheet span { display: block; padding: 12px 14px; color: #4d382a; font-size: 12px; font-weight: 800; }
-
-    .feature-grid { grid-template-columns: repeat(3, 1fr); margin-top: 34px; }
-    .feature {
-      padding: 24px;
-      background: rgba(19, 2, 2, .28);
-      border: 1px solid var(--line);
-    }
-    .feature i { display: grid; place-items: center; width: 42px; height: 42px; color: var(--ink); background: var(--gold-200); border-radius: 50%; font-style: normal; font-weight: 900; }
-    .feature h3 { margin: 20px 0 8px; }
-    .feature p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
-
-    .fragment-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 36px; }
-    .fragment {
-      padding: 14px 10px 17px;
-      text-align: center;
-      background: rgba(255,255,255,.045);
-      border: 1px solid var(--line);
-    }
-    .fragment img { width: 100%; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 16px 18px rgba(0,0,0,.45)); }
-    .fragment strong { display: block; margin-top: 9px; font-size: 13px; }
-    .fragment small { color: var(--muted); font-size: 11px; }
-
-    .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); align-items: stretch; gap: 12px; margin-top: 38px; }
-    .pipeline article { position: relative; padding: 22px; background: rgba(255,255,255,.045); border: 1px solid var(--line); }
-    .pipeline article:not(:last-child)::after { content: "+"; position: absolute; top: 50%; right: -20px; z-index: 2; color: var(--gold-200); font-size: 24px; font-weight: 900; }
-    .pipeline b { color: var(--gold-300); font-size: 12px; }
-    .pipeline h3 { margin: 19px 0 7px; font-size: 19px; }
-    .pipeline p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
-
-    .takeaway-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 16px; align-items: center; margin-top: 38px; }
-    .takeaway-flow article { min-height: 230px; padding: 24px; color: var(--ink); background: var(--paper); }
-    .takeaway-flow > b { color: var(--gold-200); font-size: 30px; }
-    .takeaway-flow h3 { font-size: 24px; }
-    .takeaway-flow p { color: #665040; line-height: 1.65; }
-
-    .status-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
-    .status-list div { display: flex; align-items: center; gap: 14px; padding: 18px 20px; background: rgba(255,255,255,.045); border: 1px solid var(--line); }
-    .status-list b { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; color: var(--ink); background: var(--gold-200); border-radius: 50%; }
-    .status-list span { color: rgba(255,244,217,.82); }
-
-    .ending { text-align: center; }
-    .ending h2 { max-width: 1120px; margin-right: auto; margin-left: auto; font-size: clamp(45px, 6.5vw, 92px); }
-    .ending .lead { margin-right: auto; margin-left: auto; }
-    .ending-mark { margin-top: 42px; color: var(--gold-200); font-family: "STKaiti", "KaiTi", serif; font-size: clamp(42px, 6vw, 80px); }
-
-    .slide-foot {
-      position: absolute;
-      right: clamp(58px, 9vw, 132px);
-      bottom: 26px;
-      left: clamp(58px, 9vw, 132px);
-      display: flex;
-      justify-content: space-between;
-      color: rgba(255, 239, 204, .48);
-      font-size: 11px;
-      letter-spacing: .1em;
-    }
-
-    @media (max-width: 900px) {
-      html { scroll-snap-type: none; }
-      .slide { min-height: auto; padding: 72px 28px 58px; }
-      .deck-nav { display: none; }
-      .split { grid-template-columns: 1fr; }
-      .metric-grid, .feature-grid { grid-template-columns: 1fr; }
-      .loop { grid-template-columns: 1fr; }
-      .loop article { min-height: 0; }
-      .loop article:not(:last-child)::after { display: none; }
-      .level-grid { grid-template-columns: repeat(2, 1fr); }
-      .fragment-row { grid-template-columns: repeat(3, 1fr); }
-      .pipeline { grid-template-columns: 1fr 1fr; }
-      .pipeline article::after { display: none; }
-      .takeaway-flow { grid-template-columns: 1fr; }
-      .takeaway-flow > b { transform: rotate(90deg); text-align: center; }
-      .status-list, .card-grid { grid-template-columns: 1fr; }
-      .slide-foot { right: 28px; left: 28px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; }
-    }
-    @media print {
-      .deck-nav, .deck-count, .deck-progress { display: none; }
-      .slide { min-height: 100vh; break-after: page; }
-    }
-  </style>
+  <meta name="theme-color" content="#5f0e0b" />
+  <meta name="description" content="《重走长征路》博物馆互动教育项目路演" />
+  <title>重走长征路 · 产品路演</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2368100c'/%3E%3Cpath d='M32 9l5.6 14.5L53 24.4 41 34.1l3.9 15-12.9-8.5-12.9 8.5 3.9-15-12-9.7 15.4-.9z' fill='%23f2d89f'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="deck-progress" aria-hidden="true"><span id="progress"></span></div>
-  <div class="deck-count" aria-live="polite"><span id="current">01</span> / 12</div>
-  <nav class="deck-nav" aria-label="汇报页导航">
-    <a href="#s1" aria-label="第1页"></a><a href="#s2" aria-label="第2页"></a><a href="#s3" aria-label="第3页"></a>
-    <a href="#s4" aria-label="第4页"></a><a href="#s5" aria-label="第5页"></a><a href="#s6" aria-label="第6页"></a>
-    <a href="#s7" aria-label="第7页"></a><a href="#s8" aria-label="第8页"></a><a href="#s9" aria-label="第9页"></a>
-    <a href="#s10" aria-label="第10页"></a><a href="#s11" aria-label="第11页"></a><a href="#s12" aria-label="第12页"></a>
-  </nav>
+  <div class="deck-count" aria-live="polite"><span id="current">01</span> / <span id="total">14</span></div>
+  <nav class="deck-nav" id="deck-nav" aria-label="路演页面导航"></nav>
 
   <main>
-    <section class="slide" id="s1" data-watermark="征">
-      <div class="slide-inner">
-        <p class="eyebrow">Interactive Museum Education · 2026</p>
-        <h1>重走<span>长征路</span></h1>
-        <p class="lead">纪念长征胜利90周年——让小朋友通过<strong>游戏、史料、碎片与个人表达</strong>，在1—3分钟里走进一个历史节点。</p>
-        <div class="tags"><span class="tag">博物馆展台</span><span class="tag">七关任选</span><span class="tag">史料驱动</span><span class="tag">AI 个性化作品</span></div>
-        <div class="cover-actions"><a class="button" href="https://niuchen476-svg.github.io/huozi-project/">打开线上项目</a><a class="button button--ghost" href="#s2">开始汇报 ↓</a></div>
-      </div>
-      <div class="slide-foot"><span>项目路演汇报 · 初版</span><span>01</span></div>
-    </section>
-
-    <section class="slide" id="s2" data-watermark="忆">
-      <div class="slide-inner">
-        <p class="eyebrow">Core Question</p>
-        <h2>观众带来什么，<br>又能带走什么？</h2>
-        <div class="card-grid">
-          <article class="paper-card"><small>BRING IN</small><h3>带来好奇与选择</h3><p>观众无需预先掌握完整知识，只需要进入一个任务、作出一次判断，并愿意看看真实材料。</p></article>
-          <article class="paper-card"><small>TAKE AWAY</small><h3>带走一份个人长征记忆</h3><p>一块亲手获得的碎片、一段基于史料生成的表达，以及一张可以扫码或打印带走的纪念作品。</p></article>
+    <section class="slide cover" id="s1" data-short="封面" data-watermark="征">
+      <div class="slide-inner cover-layout">
+        <div>
+          <p class="eyebrow">Interactive Museum Education · 2026</p>
+          <h1>重走<span>长征路</span></h1>
+          <p class="cover-kicker">不是把历史变简单，<br />而是把进入历史的路径设计得更好。</p>
+          <p class="lead">纪念长征胜利90周年——面向博物馆展台的互动式长征史料体验。</p>
+          <div class="cover-actions">
+            <a class="button" href="https://niuchen476-svg.github.io/huozi-project/#/" target="_blank" rel="noreferrer">进入产品</a>
+            <a class="button button--ghost" href="http://3250102672-huozi-project.apps.zaowuyun.com/#/" target="_blank" rel="noreferrer">备用入口</a>
+            <a class="text-link" href="#s2">开始讲述 ↓</a>
+          </div>
+        </div>
+        <div class="cover-seal" aria-label="项目核心主张">
+          <span>史料</span><i>守住历史</i>
+          <span>互动</span><i>让人进入</i>
+          <span>AI</span><i>帮助表达</i>
         </div>
       </div>
-      <div class="slide-foot"><span>从“看完展览”走向“留下自己的表达”</span><span>02</span></div>
+      <div class="slide-foot"><span>《重走长征路》产品路演</span><span>01</span></div>
     </section>
 
-    <section class="slide" id="s3" data-watermark="馆">
+    <section class="slide" id="s2" data-short="进入历史" data-watermark="择">
+      <div class="slide-inner">
+        <p class="eyebrow">30-Second Opening</p>
+        <h2>如果只能带走三样物资，<br />你会怎么选？</h2>
+        <p class="lead">1934年的瑞金，转移即将开始。电台、药品、地图和粮食不能全部带走——请先作出判断。</p>
+        <div class="choice-board" id="choice-board" aria-label="开场互动选择">
+          <button type="button" data-choice="电台">电台<small>保持联络</small></button>
+          <button type="button" data-choice="药品">药品<small>救治伤员</small></button>
+          <button type="button" data-choice="地图">地图<small>判断方向</small></button>
+          <button type="button" data-choice="粮食">粮食<small>维持行军</small></button>
+        </div>
+        <div class="choice-result" id="choice-result" role="status">这里没有立刻公布的标准答案。玩家先选择，再用转移命令、渡口地图和回忆材料检查自己的判断。</div>
+      </div>
+      <div class="slide-foot"><span>先行动，再遇见史料</span><span>02</span></div>
+    </section>
+
+    <section class="slide" id="s3" data-short="真实问题" data-watermark="问">
+      <div class="slide-inner split">
+        <div>
+          <p class="eyebrow">The Real Problem</p>
+          <h2>展馆不缺历史，<br />为什么观众仍然匆匆走过？</h2>
+          <p class="lead">许多数字展陈仍然是把展板搬到屏幕：观众看到了结论，却很少经历结论形成的过程。</p>
+        </div>
+        <div class="problem-stack">
+          <article><b>01</b><h3>只允许接收</h3><p>观看、听讲、记忆，观众很少有机会作出真正影响体验的选择。</p></article>
+          <article><b>02</b><h3>把互动等同答题</h3><p>历史被压缩成对错判断，真实材料只是答案后的补充说明。</p></article>
+          <article><b>03</b><h3>体验没有留下来</h3><p>屏幕关闭以后，观众与这段历史建立的关系也随之结束。</p></article>
+        </div>
+      </div>
+      <div class="slide-foot"><span>真实问题不是内容不足，而是关系没有建立</span><span>03</span></div>
+    </section>
+
+    <section class="slide newspaper-slide" id="s4" data-short="人民日报" data-watermark="信">
+      <div class="slide-inner newspaper-layout">
+        <article class="newspaper">
+          <header><span>人民日报</span><small>2026年7月14日 · 第20版</small></header>
+          <p class="newspaper-label">文艺评论</p>
+          <h2>永远不要低估观众</h2>
+          <p>文章提醒创作者：不要把用户画像等同于真实观众，不要把迎合当成尊重，也不要预设年轻人只能接受简单、快速和强刺激的内容。</p>
+          <footer>作者：王枫</footer>
+        </article>
+        <div class="article-takeaway">
+          <p class="eyebrow">What It Means For Us</p>
+          <h2>它帮助我们确认：<br />需要改变的不是观众。</h2>
+          <ul class="clean-list">
+            <li>年轻观众并非不关心历史。</li>
+            <li>复杂历史也能抵达人，只要找到与当下经验的连接。</li>
+            <li>真正的尊重，是相信观众能够判断、感受和表达。</li>
+          </ul>
+          <p class="source-note">来源：《人民日报》2026年7月14日第20版，王枫《永远不要低估观众》。</p>
+        </div>
+      </div>
+      <div class="slide-foot"><span>“永远不要低估观众”</span><span>04</span></div>
+    </section>
+
+    <section class="slide statement-slide" id="s5" data-short="认知转折" data-watermark="转">
+      <div class="slide-inner statement">
+        <p class="eyebrow">Cognitive Shift</p>
+        <p class="statement-before">我们原来以为：要让小朋友靠近历史，就要把历史讲得更短、更简单。</p>
+        <h2>后来我们发现，真正的问题不是历史太远，<br /><strong>而是观众只能旁观。</strong></h2>
+        <p class="lead">历史教育不应只让观众记住答案，还应该让他理解：答案是如何在材料、选择与行动中形成的。</p>
+      </div>
+      <div class="slide-foot"><span>从“替观众解释”转向“邀请观众进入”</span><span>05</span></div>
+    </section>
+
+    <section class="slide" id="s6" data-short="产品定位" data-watermark="馆">
       <div class="slide-inner split">
         <div>
           <p class="eyebrow">Product Positioning</p>
-          <h2>面向展馆大屏的轻量互动教育平台</h2>
-          <p class="lead">不是一款需要长时间投入的重度游戏，而是能在展陈现场快速进入、快速理解、快速留下记忆的数字展项。</p>
-          <div class="metric-grid"><div class="metric"><strong>1—3</strong><span>分钟单次体验目标</span></div><div class="metric"><strong>7</strong><span>个代表性历史关卡，可任选</span></div><div class="metric"><strong>16:9</strong><span>优先适配展馆大屏</span></div></div>
+          <h2>一套面向博物馆展台的互动式长征史料体验</h2>
+          <p class="lead">观众在1—3分钟内进入一个历史节点，依据史料完成行动，并生成一份个人长征记忆。</p>
+          <div class="metric-grid">
+            <div class="metric"><strong>1—3</strong><span>分钟单关目标时长</span></div>
+            <div class="metric"><strong>7</strong><span>个代表性关卡，可自由选择</span></div>
+            <div class="metric"><strong>16:9</strong><span>触屏与展馆大屏优先</span></div>
+          </div>
         </div>
-        <figure class="visual-card"><img src="../frontend/public/assets/map/route.jpg" alt="项目长征路线图"><figcaption class="visual-caption"><strong>一张路线图，七个独立入口</strong><span>观众可以从任何感兴趣的历史节点开始</span></figcaption></figure>
+        <figure class="visual-card">
+          <img src="./assets/route.jpg" alt="长征互动路线图" />
+          <figcaption><strong>一张路线图，七个独立入口</strong><span>观众可以从任何感兴趣的历史节点开始</span></figcaption>
+        </figure>
       </div>
-      <div class="slide-foot"><span>短流程 · 低门槛 · 可围观</span><span>03</span></div>
+      <div class="slide-foot"><span>短流程 · 可任选 · 可围观 · 可带走</span><span>06</span></div>
     </section>
 
-    <section class="slide" id="s4" data-watermark="路">
+    <section class="slide" id="s7" data-short="体验主循环" data-watermark="路">
       <div class="slide-inner">
         <p class="eyebrow">Unified Experience</p>
-        <h2>玩法可以不同，体验节奏必须统一</h2>
-        <p class="lead">每一关都遵循同一套五段式主循环，让玩家知道自己在哪里、为什么行动，以及最后获得了什么。</p>
+        <h2>玩法可以不同，<br />但每关都遵循同一种历史学习节奏</h2>
         <div class="loop">
-          <article><h3>进入历史</h3><p>身份提示、时间地点与本关核心问题。</p></article>
-          <article><h3>身处历史</h3><p>行动、排序、判断、路线或资源管理。</p></article>
-          <article><h3>遇见文献</h3><p>照片、地图、手稿与电报直接参与操作。</p></article>
-          <article><h3>作出表达</h3><p>玩家选择史料、主题并说出自己的理解。</p></article>
-          <article><h3>完成本关</h3><p>历史复盘、获得碎片、决定下一步去向。</p></article>
+          <article><b>01</b><h3>进入历史</h3><p>身份、时间地点与本关问题。</p></article>
+          <article><b>02</b><h3>身处历史</h3><p>行动、判断、路线与资源管理。</p></article>
+          <article><b>03</b><h3>遇见史料</h3><p>照片、地图、手稿直接参与操作。</p></article>
+          <article><b>04</b><h3>作出表达</h3><p>选择材料、主题并说出理解。</p></article>
+          <article><b>05</b><h3>留下记忆</h3><p>历史复盘、获得碎片与个人作品。</p></article>
         </div>
+        <p class="loop-caption">不是先告诉观众“应该怎么想”，而是让他先行动，再用史料重新理解自己的选择。</p>
       </div>
-      <div class="slide-foot"><span>70%统一外壳 · 30%关卡个性</span><span>04</span></div>
+      <div class="slide-foot"><span>行动—证据—理解—表达</span><span>07</span></div>
     </section>
 
-    <section class="slide" id="s5" data-watermark="七">
+    <section class="slide" id="s8" data-short="七关体验" data-watermark="七">
       <div class="slide-inner">
-        <p class="eyebrow">Seven Levels</p>
-        <h2>七关不是七个孤立页面，而是一条完整记忆线</h2>
+        <p class="eyebrow">Seven Historical Experiences</p>
+        <h2>七关玩法不同，<br />因为每段历史提出的问题不同</h2>
         <div class="level-grid">
-          <article class="level-card"><b>01 · 出发</b><h3>瑞金出发</h3><p>在有限物资中保住继续前进的力量。</p></article>
-          <article class="level-card"><b>02 · 突围</b><h3>湘江血战</h3><p>调度渡口、通路与阻击，理解抢渡代价。</p></article>
-          <article class="level-card"><b>03 · 转折</b><h3>遵义会议</h3><p>从发言和手稿中重新判断方向。</p></article>
-          <article class="level-card"><b>04 · 主动</b><h3>四渡赤水</h3><p>通过四次路线变化理解机动与主动。</p></article>
-          <article class="level-card"><b>05 · 勇气</b><h3>飞夺泸定桥</h3><p>在铁索、火力与队友协同中完成突击。</p></article>
-          <article class="level-card"><b>06 · 坚持</b><h3>雪山草地</h3><p>用具体人物故事连接宏大历史。</p></article>
-          <article class="level-card"><b>07 · 汇聚</b><h3>会宁会师 · 总收束</h3><p>前六关的史料、主题和碎片在这里组成个人数字展台。</p></article>
+          <article><b>01 · 取舍</b><h3>瑞金出发</h3><p>有限条件下保住继续前进的力量。</p></article>
+          <article><b>02 · 代价</b><h3>湘江血战</h3><p>理解时间、路线、阻击与牺牲。</p></article>
+          <article><b>03 · 方向</b><h3>遵义转折</h3><p>在材料与争论中重新判断方向。</p></article>
+          <article><b>04 · 主动</b><h3>四渡赤水</h3><p>从四次路线变化理解战略机动。</p></article>
+          <article><b>05 · 协同</b><h3>飞夺泸定桥</h3><p>在时间压力中完成突击与配合。</p></article>
+          <article><b>06 · 坚持</b><h3>雪山草地</h3><p>从具体人物进入宏大历史。</p></article>
+          <article class="level-finale"><b>07 · 汇聚</b><h3>会宁会师</h3><p>前六关的史料、碎片与表达在这里完成总收束。</p></article>
         </div>
       </div>
-      <div class="slide-foot"><span>独立玩法 · 统一协议 · 共同结局</span><span>05</span></div>
+      <div class="slide-foot"><span>玩法各有个性，界面与体验协议保持统一</span><span>08</span></div>
     </section>
 
-    <section class="slide" id="s6" data-watermark="史">
+    <section class="slide" id="s9" data-short="史料机制" data-watermark="史">
       <div class="slide-inner split">
         <div>
-          <p class="eyebrow">Historical Sources</p>
-          <h2>让史料参与行动，而不是停留在说明文字里</h2>
-          <p class="lead">每关右上角都有统一史料抽屉。观众不点也不阻断通关；点开后可以查看本关全部照片、地图、手稿及来源说明。</p>
-          <div class="tags"><span class="tag">参与本关的核心史料</span><span class="tag">大图查看</span><span class="tag">上下滑动</span><span class="tag">来源登记</span></div>
+          <p class="eyebrow">Primary Sources In Action</p>
+          <h2>史料不是游戏结束后的阅读材料，<br />而是玩家行动的依据</h2>
+          <p class="lead">每关右上角都有统一史料抽屉。玩家可以查看本关涉及的地图、照片、手稿及来源说明；不点开也不会阻断通关。</p>
+          <ul class="clean-list compact">
+            <li>核心史料直接参与玩法。</li>
+            <li>全部材料在抽屉中随时回看。</li>
+            <li>原始材料、解释文字与AI内容明确区分。</li>
+          </ul>
         </div>
         <div class="source-stack" aria-label="项目史料示例">
-          <div class="source-sheet"><img src="../frontend/public/assets/levels/zunyi-turn/sources/zunyi-manuscript-feishu.jpg" alt="遵义会议手稿"><span>遵义会议相关手稿影印件</span></div>
-          <div class="source-sheet"><img src="../frontend/public/assets/levels/sidu-chishui/sources/sidu-route-02.png" alt="二渡赤水路线图"><span>二渡赤水河路线图</span></div>
-          <div class="source-sheet"><img src="../frontend/public/assets/levels/huining-join/three-armies-map.png" alt="三大主力会师示意图"><span>红军三大主力会师示意图</span></div>
+          <figure><img src="./assets/zunyi-manuscript.jpg" alt="遵义会议相关手稿影印件" /><figcaption>遵义会议相关手稿影印件</figcaption></figure>
+          <figure><img src="./assets/sidu-route.png" alt="二渡赤水路线图" /><figcaption>二渡赤水河路线图</figcaption></figure>
+          <figure><img src="./assets/three-armies-map.png" alt="红军三大主力会师示意图" /><figcaption>红军三大主力会师示意图</figcaption></figure>
         </div>
       </div>
-      <div class="slide-foot"><span>真实材料是互动机制的一部分</span><span>06</span></div>
+      <div class="slide-foot"><span>材料中的信息，不等于系统替玩家作出的结论</span><span>09</span></div>
     </section>
 
-    <section class="slide" id="s7" data-watermark="同">
+    <section class="slide" id="s10" data-short="碎片主线" data-watermark="片">
       <div class="slide-inner">
-        <p class="eyebrow">Unified UI System</p>
-        <h2>同一个项目，需要同一种交互语言</h2>
-        <p class="lead">现有七关保留不同机制，同时统一身份提示、红色主按钮、操作反馈、帮助、史料、重来、返回、复盘和表达面板。</p>
-        <div class="feature-grid">
-          <article class="feature"><i>01</i><h3>一眼看懂</h3><p>任务弹窗先说身份、目标和操作，不要求玩家猜玩法。</p></article>
-          <article class="feature"><i>02</i><h3>一致反馈</h3><p>正确、错误、辅助和完成状态使用统一颜色与语言。</p></article>
-          <article class="feature"><i>03</i><h3>触屏优先</h3><p>第1、2关移除键盘依赖，关键操作都能直接点击完成。</p></article>
-          <article class="feature"><i>04</i><h3>随时求助</h3><p>每关都有玩法提示，连续失败时可以获得辅助。</p></article>
-          <article class="feature"><i>05</i><h3>明确退出</h3><p>重来与返回路线图由玩家主动决定，不发生意外跳转。</p></article>
-          <article class="feature"><i>06</i><h3>展馆适配</h3><p>大字号、强对比、短文本和清晰按钮支持围观与触控。</p></article>
-        </div>
-      </div>
-      <div class="slide-foot"><span>统一不是把玩法做成一样</span><span>07</span></div>
-    </section>
-
-    <section class="slide" id="s8" data-watermark="片">
-      <div class="slide-inner">
-        <p class="eyebrow">3D Archive Fragments</p>
-        <h2>碎片把七次独立体验串成一条视觉主线</h2>
-        <p class="lead">每关完成后获得一件象征性数字文物。优先展示轻量 GLB 模型，设备不支持时自动使用2D备用图。</p>
+        <p class="eyebrow">3D Memory Fragments</p>
+        <h2>六件碎片，<br />把分散的关卡变成一条个人记忆线</h2>
         <div class="fragment-row">
-          <div class="fragment"><img src="../frontend/public/assets/fragments/fallbacks/ruijin-lantern.webp" alt="夜行马灯"><strong>夜行马灯</strong><small>瑞金出发</small></div>
-          <div class="fragment"><img src="../frontend/public/assets/fragments/fallbacks/xiangjiang-bugle.webp" alt="渡江军号"><strong>渡江军号</strong><small>湘江血战</small></div>
-          <div class="fragment"><img src="../frontend/public/assets/fragments/fallbacks/zunyi-pen.webp" alt="会议钢笔"><strong>会议钢笔</strong><small>遵义会议</small></div>
-          <div class="fragment"><img src="../frontend/public/assets/fragments/fallbacks/sidu-compass.webp" alt="行军罗盘"><strong>行军罗盘</strong><small>四渡赤水</small></div>
-          <div class="fragment"><img src="../frontend/public/assets/fragments/fallbacks/luding-chain.webp" alt="泸定铁索"><strong>泸定铁索</strong><small>泸定桥</small></div>
-          <div class="fragment"><img src="../frontend/public/assets/fragments/fallbacks/snow-star.webp" alt="信念红星"><strong>信念红星</strong><small>雪山草地</small></div>
+          <figure><img src="./assets/fragment-lantern.webp" alt="夜行马灯" /><figcaption><strong>夜行马灯</strong><span>瑞金出发</span></figcaption></figure>
+          <figure><img src="./assets/fragment-bugle.webp" alt="渡江军号" /><figcaption><strong>渡江军号</strong><span>湘江血战</span></figcaption></figure>
+          <figure><img src="./assets/fragment-pen.webp" alt="会议钢笔" /><figcaption><strong>会议钢笔</strong><span>遵义转折</span></figcaption></figure>
+          <figure><img src="./assets/fragment-compass.webp" alt="行军罗盘" /><figcaption><strong>行军罗盘</strong><span>四渡赤水</span></figcaption></figure>
+          <figure><img src="./assets/fragment-chain.webp" alt="泸定铁索" /><figcaption><strong>泸定铁索</strong><span>飞夺泸定桥</span></figcaption></figure>
+          <figure><img src="./assets/fragment-star.webp" alt="信念红星" /><figcaption><strong>信念红星</strong><span>雪山草地</span></figcaption></figure>
         </div>
-        <div class="tags"><span class="tag">收藏后停留复盘</span><span class="tag">档案袋长期查看</span><span class="tag">会宁展台重新组合</span><span class="tag">可以打印带走</span></div>
+        <div class="fragment-logic"><span>通关获得</span><b>→</b><span>档案收藏</span><b>→</b><span>会宁重组</span><b>→</b><span>作品融合</span><b>→</b><span>打印带走</span></div>
       </div>
-      <div class="slide-foot"><span>获得 · 收藏 · 组合 · 带走</span><span>08</span></div>
+      <div class="slide-foot"><span>碎片不是奖杯，而是记忆的视觉载体</span><span>10</span></div>
     </section>
 
-    <section class="slide" id="s9" data-watermark="会">
+    <section class="slide" id="s11" data-short="会宁收束" data-watermark="会">
       <div class="slide-inner split">
         <div>
           <p class="eyebrow">Finale · Huining</p>
-          <h2>会宁不是普通第七关，而是前六关的总收束</h2>
-          <p class="lead">玩家可以从七关史料中任选1—3份，选择一个主题和最多三块碎片，再说一句自己理解的长征。</p>
-          <div class="pipeline"><article><b>01</b><h3>选史料</h3><p>跨七关选择真实材料</p></article><article><b>02</b><h3>选主题</h3><p>团结、选择、牺牲、信念……</p></article><article><b>03</b><h3>选碎片</h3><p>组成个人数字展台</p></article><article><b>04</b><h3>说感悟</h3><p>形成个人表达与画作</p></article></div>
+          <h2>会宁不是普通第七关，<br />而是整段体验的总收束</h2>
+          <p class="lead">玩家从前七关史料中选择材料，选择一个主题与三块碎片，再说出自己理解的长征。</p>
+          <div class="pipeline">
+            <article><b>01</b><h3>选史料</h3><p>跨关卡选择历史依据</p></article>
+            <article><b>02</b><h3>选主题</h3><p>团结、选择、牺牲、信念</p></article>
+            <article><b>03</b><h3>选碎片</h3><p>组成个人数字展台</p></article>
+            <article><b>04</b><h3>说感悟</h3><p>留下自己的理解</p></article>
+          </div>
         </div>
-        <figure class="visual-card"><img src="../frontend/public/assets/levels/huining-join/reunion-painting.png" alt="红军会师主题油画"><figcaption class="visual-caption"><strong>把一路经历放在一起</strong><span>从历史复盘走向个人表达</span></figcaption></figure>
+        <figure class="visual-card"><img src="./assets/reunion-painting.png" alt="红军会师主题画作" /><figcaption><strong>把一路经历重新放在一起</strong><span>从历史复盘走向个人表达</span></figcaption></figure>
       </div>
-      <div class="slide-foot"><span>终点也是一次重新组织</span><span>09</span></div>
+      <div class="slide-foot"><span>汇聚的不只是队伍，也是玩家一路形成的理解</span><span>11</span></div>
     </section>
 
-    <section class="slide" id="s10" data-watermark="创">
+    <section class="slide" id="s12" data-short="AI与带走" data-watermark="创">
       <div class="slide-inner">
-        <p class="eyebrow">AI Expression</p>
-        <h2>AI不替玩家下结论，而是帮助他完成一件作品</h2>
-        <div class="pipeline">
-          <article><b>INPUT 01</b><h3>玩家的话</h3><p>一句感悟或现场表达，是创作的主体。</p></article>
-          <article><b>INPUT 02</b><h3>历史依据</h3><p>所选史料、主题与碎片约束内容边界。</p></article>
-          <article><b>OUTPUT 01</b><h3>讲解文字</h3><p>MiMo生成短讲解，并可通过TTS朗读。</p></article>
-          <article><b>OUTPUT 02</b><h3>主题画作</h3><p>生图模型融合碎片意象，系统在右下角准确署名。</p></article>
+        <p class="eyebrow">AI As An Expression Amplifier</p>
+        <h2>AI不负责讲述历史，<br />只帮助玩家把自己的理解变成作品</h2>
+        <div class="ai-formula">
+          <article><small>玩家主体</small><h3>玩家说的话</h3><p>真正想表达的感受与判断</p></article><b>＋</b>
+          <article><small>历史边界</small><h3>史料与主题</h3><p>为生成内容提供事实约束</p></article><b>＋</b>
+          <article><small>视觉线索</small><h3>所选碎片</h3><p>成为画作中的核心意象</p></article><b>＝</b>
+          <article class="ai-output"><small>个人作品</small><h3>文字、画作与署名</h3><p>通过二维码保存或现场打印</p></article>
         </div>
-        <div class="metric-grid"><div class="metric"><strong>优先在线</strong><span>AI成功时不显示离线提示</span></div><div class="metric"><strong>失败兜底</strong><span>断网或额度不足仍能完成体验</span></div><div class="metric"><strong>史实约束</strong><span>历史原文与AI创作明确区分</span></div></div>
+        <p class="big-quote">AI不是历史的讲述者，而是观众表达的放大器。</p>
       </div>
-      <div class="slide-foot"><span>有限输入 · 开放表达 · 稳定兜底</span><span>10</span></div>
+      <div class="slide-foot"><span>在线生成优先 · 稳定模板兜底 · 史实与创作分开</span><span>12</span></div>
     </section>
 
-    <section class="slide" id="s11" data-watermark="带">
+    <section class="slide" id="s13" data-short="带来带走" data-watermark="带">
       <div class="slide-inner">
-        <p class="eyebrow">Take It Home</p>
-        <h2>让数字体验真正被带离展台</h2>
-        <div class="takeaway-flow">
-          <article><h3>生成作品</h3><p>玩家的主题、史料、碎片和表达共同形成一幅个性化画作。</p></article><b>→</b>
-          <article><h3>扫码保存</h3><p>二维码指向云端纪念页，观众可以用手机保存完整作品。</p></article><b>→</b>
-          <article><h3>现场打印</h3><p>也可以从全部已获得碎片中任选一块，直接打印或保存A6纪念卡。</p></article>
+        <p class="eyebrow">Bring In · Take Away · Why Now</p>
+        <h2>观众带来一点好奇，<br />带走一份只属于自己的长征记忆</h2>
+        <div class="takeaway-grid">
+          <article><small>BRING IN</small><h3>带来好奇与选择</h3><p>不要求预先掌握完整历史，只需要愿意进入一个任务、作出一次判断。</p></article>
+          <article><small>EXPERIENCE</small><h3>经历行动与证据</h3><p>从任务、史料和复盘中，形成有依据但不被统一规定的理解。</p></article>
+          <article><small>TAKE AWAY</small><h3>带走作品与纪念</h3><p>个人文字、主题画作、署名二维码，以及一块可以打印的档案碎片。</p></article>
         </div>
-        <p class="lead" style="margin-top:30px">打印碎片与AI画作彼此独立：即使在线生图暂时不可用，观众仍然可以带走一件属于自己的纪念物。</p>
+        <div class="why-now">
+          <b>为什么是现在？</b>
+          <span>长征胜利90周年</span><span>博物馆数字化从“内容上屏”走向“体验设计”</span><span>生成式AI让个性化表达成为可能</span>
+        </div>
       </div>
-      <div class="slide-foot"><span>数字作品 + 实体纪念卡</span><span>11</span></div>
+      <div class="slide-foot"><span>参观不是结束于展台，而是延伸到观众自己的生活</span><span>13</span></div>
     </section>
 
-    <section class="slide ending" id="s12" data-watermark="传">
+    <section class="slide ending" id="s14" data-short="团队与愿景" data-watermark="传">
       <div class="slide-inner">
-        <p class="eyebrow" style="justify-content:center">Current Status & Vision</p>
-        <h2>让玩家经历历史、接触史料、作出表达，最后带走一份个人长征记忆。</h2>
-        <div class="status-list">
-          <div><b>✓</b><span>七关玩法与 Level Host 统一接入</span></div><div><b>✓</b><span>统一任务、反馈、史料与复盘系统</span></div>
-          <div><b>✓</b><span>六块3D碎片与2D降级方案</span></div><div><b>✓</b><span>会宁数字展台、AI表达、二维码与打印</span></div>
+        <p class="eyebrow centered">Team & Vision</p>
+        <h2>让每一次参观，<br />都完成一场观众与历史的对话。</h2>
+        <p class="lead centered-copy">我们尊重史实，也尊重观众形成理解的能力。因为真正有力量的历史，不只是把人送回过去，更会帮助人看见今天的自己。</p>
+        <div class="team-grid">
+          <article><small>项目组成员</small><h3>董卓然 · 蔡续岩 · 孟好</h3></article>
+          <article><small>指导老师</small><h3>邱懿轩 · 陈诗中 · 王炸</h3><p>以及其他助教老师</p></article>
         </div>
-        <p class="ending-mark">重走长征路</p>
-        <p class="lead">用今天的互动方式，把历史讲给未来的人听。</p>
-        <div class="cover-actions" style="justify-content:center"><a class="button" href="https://niuchen476-svg.github.io/huozi-project/">查看线上项目</a><a class="button button--ghost" href="#s1">回到封面 ↑</a></div>
+        <div class="ending-actions">
+          <a class="button" href="https://niuchen476-svg.github.io/huozi-project/#/" target="_blank" rel="noreferrer">体验《重走长征路》</a>
+          <a class="button button--ghost" href="http://3250102672-huozi-project.apps.zaowuyun.com/#/" target="_blank" rel="noreferrer">备用产品入口</a>
+          <a class="text-link" href="#s1">回到封面 ↑</a>
+        </div>
+        <p class="ending-mark">谢谢</p>
       </div>
-      <div class="slide-foot"><span>谢谢</span><span>12</span></div>
+      <div class="slide-foot"><span>重走长征路 · 2026</span><span>14</span></div>
     </section>
   </main>
 
-  <script>
-    const slides = [...document.querySelectorAll('.slide')];
-    const dots = [...document.querySelectorAll('.deck-nav a')];
-    const current = document.querySelector('#current');
-    const progress = document.querySelector('#progress');
-    let activeIndex = 0;
-
-    function setActive(index) {
-      activeIndex = Math.max(0, Math.min(slides.length - 1, index));
-      current.textContent = String(activeIndex + 1).padStart(2, '0');
-      progress.style.width = `${((activeIndex + 1) / slides.length) * 100}%`;
-      dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === activeIndex));
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) setActive(slides.indexOf(visible.target));
-    }, { threshold: [0.45, 0.7] });
-    slides.forEach((slide) => observer.observe(slide));
-    const initialIndex = slides.findIndex((slide) => `#${slide.id}` === location.hash);
-    setActive(initialIndex >= 0 ? initialIndex : 0);
-
-    window.addEventListener('hashchange', () => {
-      const hashIndex = slides.findIndex((slide) => `#${slide.id}` === location.hash);
-      if (hashIndex >= 0) setActive(hashIndex);
-    });
-
-    document.querySelectorAll('a[href^="#s"]').forEach((link) => {
-      link.addEventListener('click', () => {
-        const linkIndex = slides.findIndex((slide) => `#${slide.id}` === link.getAttribute('href'));
-        if (linkIndex >= 0) setActive(linkIndex);
-      });
-    });
-
-    window.addEventListener('keydown', (event) => {
-      if (!['ArrowDown', 'ArrowRight', 'PageDown', 'ArrowUp', 'ArrowLeft', 'PageUp', 'Home', 'End'].includes(event.key)) return;
-      event.preventDefault();
-      if (event.key === 'Home') activeIndex = 0;
-      else if (event.key === 'End') activeIndex = slides.length - 1;
-      else activeIndex += ['ArrowDown', 'ArrowRight', 'PageDown'].includes(event.key) ? 1 : -1;
-      activeIndex = Math.max(0, Math.min(slides.length - 1, activeIndex));
-      slides[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  </script>
+  <script src="./script.js"></script>
 </body>
 </html>
