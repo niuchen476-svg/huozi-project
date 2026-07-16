@@ -4,6 +4,7 @@ import {
 } from "../../../archiveFragments.js";
 import { saveHuiningShowcase } from "../../../state.js";
 import { applyLevelFeedback } from "../../levelRuntime/feedbackSystem.js";
+import { printArchiveFragmentCard } from "../../levelRuntime/fragmentPrint.js";
 
 const ROUTES = [
   {
@@ -550,6 +551,27 @@ class HuiningJoinExperience {
           <div class="huining-showcase-status" role="status" aria-live="polite" data-level-feedback data-feedback-tone="neutral" data-showcase-message>
             ${collected.length ? `你已经带来 ${collected.length} 块历史碎片。` : "你还没有获得前六关碎片，本次将使用会师史料搭建基础展台。"}
           </div>
+          <section class="huining-fragment-takeaway" aria-labelledby="huining-fragment-takeaway-title">
+            <div>
+              <span>现场带走</span>
+              <h2 id="huining-fragment-takeaway-title">打印一块碎片纪念卡</h2>
+              <p>从已经获得的全部碎片中任选一块，不必等待 AI 画作生成。</p>
+            </div>
+            <label>
+              <span>署名（选填）</span>
+              <input type="text" maxlength="20" data-fragment-print-name placeholder="输入姓名或昵称" />
+            </label>
+            <label>
+              <span>选择碎片</span>
+              <select data-fragment-print-select ${collected.length ? "" : "disabled"}>
+                ${collected.length
+                  ? collected.map((fragment) => `<option value="${escapeHtml(fragment.id)}">${escapeHtml(fragment.name)}</option>`).join("")
+                  : '<option value="">尚未获得碎片</option>'}
+              </select>
+            </label>
+            <button type="button" data-print-fragment-card ${collected.length ? "" : "disabled"}>打印或保存碎片卡</button>
+            <p class="huining-fragment-takeaway__status" data-fragment-print-status role="status" aria-live="polite"></p>
+          </section>
         </div>
         <div class="huining-showcase-stage">
           <img class="huining-showcase-stage__painting" src="assets/levels/huining-join/reunion-painting.png" alt="红军会师主题油画" loading="lazy" decoding="async" />
@@ -620,6 +642,29 @@ class HuiningJoinExperience {
       });
     });
     this.root.querySelector("[data-showcase-finish]")?.addEventListener("click", () => this.finishShowcase());
+    this.root.querySelector("[data-print-fragment-card]")?.addEventListener("click", (event) => this.printFragmentCard(event));
+  }
+
+  async printFragmentCard(event) {
+    const button = event.currentTarget;
+    const select = this.root.querySelector("[data-fragment-print-select]");
+    const nameInput = this.root.querySelector("[data-fragment-print-name]");
+    const status = this.root.querySelector("[data-fragment-print-status]");
+    const fragment = this.fragments.find((item) => item.collected && item.id === select?.value);
+    if (!fragment) {
+      if (status) status.textContent = "请先完成至少一个关卡并获得碎片。";
+      return;
+    }
+    button.disabled = true;
+    if (status) status.textContent = "正在制作碎片纪念卡……";
+    try {
+      await printArchiveFragmentCard({ fragment, playerName: nameInput?.value || "" });
+      if (status) status.textContent = "打印窗口已打开，可直接打印或另存为 PDF。";
+    } catch (error) {
+      if (status) status.textContent = error.message || "碎片纪念卡生成失败，请重试。";
+    } finally {
+      button.disabled = false;
+    }
   }
 
   updateShowcase() {

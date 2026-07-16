@@ -141,10 +141,10 @@ export class LevelHost {
       // 玩家整理表达时在后台预取本关模型，降低 GitHub Pages 冷加载超时概率。
       preloadArchiveFragmentForLevel(session.levelId).catch(() => false);
       if (this.isExpressionEnabled(session)) {
-        this.renderExpressionPhase(session, { reward: true, redirect: "if-reward" });
+        this.renderExpressionPhase(session, { reward: true });
         return;
       }
-      this.renderCompletionPhase(session, { reward: true, redirect: "always" });
+      this.renderCompletionPhase(session, { reward: true });
       return;
     }
 
@@ -167,7 +167,7 @@ export class LevelHost {
       },
     });
     if (useUnifiedExpression && !adapter.challenge) {
-      this.mountExpressionInDossier(session, { reward: true, redirect: "if-reward" });
+      this.mountExpressionInDossier(session, { reward: true });
     }
   }
 
@@ -188,10 +188,7 @@ export class LevelHost {
       : false;
 
     if (!this.isActive(session)) return showedReward;
-    const shouldRedirect = showedReward && (
-      options.redirect === "always" || options.redirect === "if-reward"
-    );
-    if (shouldRedirect) window.location.hash = "#/map";
+    // 收藏碎片后留在本关复盘；返回路线图必须由玩家明确选择。
     return showedReward;
   }
 
@@ -349,7 +346,7 @@ export class LevelHost {
         <a class="back-link" href="#/map">← 返回路线图</a>
         <div data-level-completion-recap-slot></div>
         <div class="level-complete-actions level-completion-phase__actions">
-          <button class="level-complete-actions__primary" type="button" data-complete-level>收下碎片并返回路线图</button>
+          <button class="level-complete-actions__primary" type="button" data-complete-level>收进档案袋</button>
           <button class="level-complete-actions__secondary" type="button" data-restart-level>再体验一次</button>
           <a class="level-complete-actions__link" href="#/map">直接返回路线图</a>
         </div>
@@ -363,8 +360,10 @@ export class LevelHost {
       })
     );
     session.root.querySelector("[data-complete-level]")?.addEventListener("click", async (event) => {
-      event.currentTarget.disabled = true;
+      const button = event.currentTarget;
+      button.disabled = true;
       await this.completeLevel(session, completionOptions);
+      if (this.isActive(session)) button.textContent = "碎片已收进档案袋";
     });
     session.root.querySelector("[data-restart-level]")?.addEventListener("click", () => this.restart(session));
   }
@@ -382,7 +381,6 @@ export class LevelHost {
     if (!slot) return;
     this.mountExpressionPanel(session, slot, {
       reward: true,
-      redirect: "if-reward",
       ...completionOptions,
     });
     window.requestAnimationFrame(() => slot.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -437,8 +435,8 @@ export class LevelHost {
       } : null,
       onComplete: async () => {
         session.expressionCompleted = true;
-        const showedReward = await this.completeLevel(session, completionOptions);
-        if (!showedReward && this.isActive(session)) this.appendCompletionActions(session);
+        await this.completeLevel(session, completionOptions);
+        if (this.isActive(session)) this.appendCompletionActions(session);
       },
     }).mount(container);
   }

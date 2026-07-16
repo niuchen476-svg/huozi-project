@@ -131,7 +131,7 @@ export function showArchiveFragmentReward(root, levelId) {
           </div>
         </div>
         <p class="archive-fragment-reward__status" data-fragment-reward-status role="status" aria-live="polite"></p>
-        <button type="button" data-collect-archive-fragment>${fragment.newlyCollected ? "收进档案袋并返回路线图" : "关闭"}</button>
+        <button type="button" data-collect-archive-fragment>${fragment.newlyCollected ? "收进档案袋" : "关闭"}</button>
       </div>
     `;
 
@@ -143,7 +143,7 @@ export function showArchiveFragmentReward(root, levelId) {
       const status = overlay.querySelector("[data-fragment-reward-status]");
       if (button) button.disabled = true;
       if (fragment.newlyCollected && status) {
-        status.textContent = "碎片已收进档案袋，正在返回路线图……";
+        status.textContent = "碎片已收进档案袋。你可以继续查看本关复盘。";
       }
       const delay = fragment.newlyCollected ? 950 : 180;
       if (fragment.newlyCollected) {
@@ -153,7 +153,7 @@ export function showArchiveFragmentReward(root, levelId) {
       }
       window.setTimeout(() => {
         overlay.remove();
-        // 只有第一次获得碎片才触发自动返回；重复查看由玩家自行决定去向。
+        // 奖励层只负责收藏碎片；后续去向由完成页上的明确按钮决定。
         resolve(fragment.newlyCollected);
       }, delay);
     }

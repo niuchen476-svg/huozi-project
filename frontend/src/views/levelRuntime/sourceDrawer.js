@@ -158,7 +158,7 @@ class LevelSourceDrawer {
     this.closeButton.type = "button";
     this.closeButton.className = "level-source-drawer__close";
     this.closeButton.setAttribute("aria-label", "关闭本关史料");
-    this.closeButton.textContent = "×";
+    this.closeButton.textContent = "关闭 ×";
     header.append(headingGroup, this.closeButton);
 
     this.scroller = document.createElement("div");
@@ -188,7 +188,7 @@ class LevelSourceDrawer {
     viewer.setAttribute("aria-label", "史料图片放大查看");
     viewer.innerHTML = `
       <div class="level-source-drawer__viewer-stage">
-        <button type="button" class="level-source-drawer__viewer-close" aria-label="关闭大图">×</button>
+        <button type="button" class="level-source-drawer__viewer-close" aria-label="关闭大图">关闭 ×</button>
         <button type="button" class="level-source-drawer__viewer-nav level-source-drawer__viewer-nav--prev" aria-label="上一张">‹</button>
         <figure>
           <img alt="" />
